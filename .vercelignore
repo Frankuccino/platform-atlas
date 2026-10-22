@@ -1,0 +1,4 @@
+# Vercel deploy source: serve only the site entry point.
+# Everything else (git history, docs, config) stays out of the deployment.
+/*
+!index.html
