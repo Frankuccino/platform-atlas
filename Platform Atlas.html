@@ -1,0 +1,463 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Platform Atlas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky category index on the left, one section per market category on the right; each entry is a row of name / what it is / alternatives. */
+:root{
+  --bg:#edf0f3; --surface:#ffffff; --fg:#111b25; --muted:#556473; --line:#d3dae1;
+  --accent:#0a6a86; --accent-soft:#d6ebf2; --hover:#f4f7f9;
+  --m-managed-bg:#dbeaf7; --m-managed-fg:#17497a;
+  --m-oss-bg:#dcefdc; --m-oss-fg:#21571f;
+  --m-both-bg:#e6e0f3; --m-both-fg:#48358a;
+  --m-cloud-bg:#f6e6cf; --m-cloud-fg:#7a4a0c;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d141a; --surface:#141d25; --fg:#e5ecf2; --muted:#92a2b0; --line:#25313c;
+    --accent:#5cb9d6; --accent-soft:#16323c; --hover:#192530;
+    --m-managed-bg:#173352; --m-managed-fg:#a9cdf0;
+    --m-oss-bg:#193a1c; --m-oss-fg:#a8dba6;
+    --m-both-bg:#2c2650; --m-both-fg:#cbbff2;
+    --m-cloud-bg:#4a3212; --m-cloud-fg:#f0cd96;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d141a; --surface:#141d25; --fg:#e5ecf2; --muted:#92a2b0; --line:#25313c;
+  --accent:#5cb9d6; --accent-soft:#16323c; --hover:#192530;
+  --m-managed-bg:#173352; --m-managed-fg:#a9cdf0;
+  --m-oss-bg:#193a1c; --m-oss-fg:#a8dba6;
+  --m-both-bg:#2c2650; --m-both-fg:#cbbff2;
+  --m-cloud-bg:#4a3212; --m-cloud-fg:#f0cd96;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+header.top{padding-block:28px 18px;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,5vw,40px);letter-spacing:-.01em;line-height:1.05;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:68ch}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 260px;min-width:0;position:relative}
+.search input{width:100%;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-height:42px}
+.search input::placeholder{color:var(--muted)}
+.search input:focus-visible,.seg button:focus-visible,.cat-link:focus-visible,.alt:focus-visible,.reset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 12px var(--f-mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 11px;cursor:pointer;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.status{font:400 12px var(--f-mono);color:var(--muted);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.reset{font:inherit;background:none;border:0;color:var(--accent);cursor:pointer;padding:2px 0;text-decoration:underline}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 18px;font-size:12.5px;color:var(--muted);margin:0;padding:0;list-style:none}
+.legend li{min-width:0}
+.badge{display:inline-block;font:500 10.5px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.b-S{background:var(--m-managed-bg);color:var(--m-managed-fg)}
+.b-O{background:var(--m-oss-bg);color:var(--m-oss-fg)}
+.b-B{background:var(--m-both-bg);color:var(--m-both-fg)}
+.b-C{background:var(--m-cloud-bg);color:var(--m-cloud-fg)}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
+nav.index{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;display:flex;flex-direction:column;gap:1px;padding-right:4px}
+.index h2{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.cat-link{display:flex;justify-content:space-between;gap:8px;font:inherit;text-align:left;background:none;border:0;border-radius:5px;color:var(--fg);padding:6px 8px;cursor:pointer}
+.cat-link:hover{background:var(--hover)}
+.cat-link[aria-current="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.cat-link .n{font:400 11.5px var(--f-mono);color:var(--muted);flex:none}
+.cat-link.off{opacity:.38}
+section.cat{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:18px;scroll-margin-top:12px;overflow:hidden}
+section.cat>header{padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+section.cat h2{font-family:var(--f-display);font-weight:600;font-size:22px;margin:0 0 4px;letter-spacing:-.005em}
+section.cat p{margin:0;color:var(--muted);max-width:75ch}
+.row{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(0,3fr) minmax(0,1.6fr);gap:6px 20px;padding:12px 20px;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row:hover{background:var(--hover)}
+.row .nm{font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;overflow-wrap:anywhere}
+.row .what{min-width:0}
+.row .alts{min-width:0;display:flex;flex-wrap:wrap;gap:4px 6px;align-content:flex-start}
+.alts-l{display:none;font:500 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);width:100%}
+.alt{font:inherit;font-size:12.5px;background:none;border:1px solid var(--line);color:var(--fg);border-radius:4px;padding:1px 7px;cursor:pointer}
+.alt:hover{border-color:var(--accent);color:var(--accent)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:28px 20px;color:var(--muted)}
+footer{margin-top:10px;color:var(--muted);font-size:12.5px;max-width:80ch}
+footer p{margin:0 0 8px}
+@media (max-width:860px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:14px}
+  nav.index{position:static;max-height:none;flex-direction:row;overflow-x:auto;gap:6px;padding:0 0 6px}
+  .index h2{display:none}
+  .cat-link{flex:none;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+  .cat-link .n{margin-left:4px}
+  .row{grid-template-columns:minmax(0,1fr);padding:14px 16px}
+  .row .nm{flex-direction:row;align-items:center;gap:8px}
+  .alts-l{display:block}
+  section.cat>header{padding:16px}
+}
+@media (prefers-reduced-motion:no-preference){.cat-link,.alt{transition:background .12s,border-color .12s,color .12s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Platform Atlas</h1>
+    <p class="lede">A personal map of the products and APIs you can build a company on, sorted by the market category each one belongs to. Read a category blurb first, then compare the vendors inside it.</p>
+    <div class="tools">
+      <div class="search"><input id="q" type="search" placeholder="Search a product, category, or what it does" autocomplete="off" aria-label="Search the catalog"></div>
+      <div class="seg" id="seg" role="group" aria-label="Filter by delivery model">
+        <button type="button" data-m="all" aria-pressed="true">All</button>
+        <button type="button" data-m="S" aria-pressed="false">Managed</button>
+        <button type="button" data-m="O" aria-pressed="false">Open source</button>
+        <button type="button" data-m="B" aria-pressed="false">Both</button>
+        <button type="button" data-m="C" aria-pressed="false">Cloud</button>
+      </div>
+    </div>
+    <ul class="legend">
+      <li><span class="badge b-S">Managed</span> Vendor runs it, you call an API or log in.</li>
+      <li><span class="badge b-O">Open source</span> Free software you host yourself.</li>
+      <li><span class="badge b-B">Both</span> Open core with a paid hosted version.</li>
+      <li><span class="badge b-C">Cloud</span> A service inside AWS, Google Cloud or Azure.</li>
+    </ul>
+    <div class="status"><span id="count"></span><button class="reset" id="reset" type="button" hidden>Clear filters</button></div>
+  </header>
+
+  <div class="layout">
+    <nav class="index" id="index" aria-label="Categories"><h2>Categories</h2></nav>
+    <main id="main"></main>
+  </div>
+
+  <footer>
+    <p>Compiled 22 Oct 2026 from general market knowledge plus a check of recent ownership changes. Vendors merge and sunset products often, so confirm pricing and status on the vendor's own site before committing.</p>
+    <p>Recent changes captured here: Twilio acquired Stytch (Oct 2025), Vercel acquired Better Auth (Jul 2026), Cisco owns Splunk, Okta owns Auth0, New Relic is privately held, Helicone entered maintenance mode after its acquisition by Mintlify, and ServiceNow retired Lightstep (Mar 2026).</p>
+  </footer>
+</div>
+
+<script>
+/* Row format:  Name | model | what it is and when to reach for it | alternatives (comma separated)
+   Model: S managed, O open source, B both, C cloud-provider service */
+var CATS = [
+{id:"cloud",name:"Cloud infrastructure",blurb:"The raw building blocks: virtual machines, networking, storage, managed databases. Hyperscalers sell everything; smaller clouds sell fewer things more simply. Most other categories on this page run on top of one of these.",rows:`
+AWS|C|Largest general-purpose cloud with the widest service menu and hiring pool. Default pick when you expect to need many different services.|Google Cloud, Microsoft Azure
+Google Cloud|C|Strong in data and analytics (BigQuery), Kubernetes (GKE) and AI tooling. Good for data-heavy or Kubernetes-first products.|AWS, Microsoft Azure
+Microsoft Azure|C|Cloud tied closely to Microsoft's enterprise stack (Entra ID, .NET, Office). Pick it when your customers already run on Microsoft.|AWS, Google Cloud
+DigitalOcean|S|Simple virtual servers, managed databases and an app platform with flat monthly pricing. Good for small teams that want fewer knobs.|Hetzner, Vultr, Akamai Linode
+Hetzner|S|Very cheap European servers and bare metal. Most compute per dollar if you are fine managing things yourself.|DigitalOcean, OVHcloud
+Cloudflare|S|Edge network: CDN, DNS, DDoS and WAF protection, Workers (serverless) and R2 storage. Put it in front of almost any product.|Fastly, Akamai, AWS CloudFront
+Fly.io|S|Runs containers in many regions close to users. Good for low-latency apps without Kubernetes.|Railway, Render
+`},
+{id:"hosting",name:"App hosting and deploy platforms",blurb:"Platform-as-a-service: push code, get a running app with TLS, previews and scaling handled. You trade control for speed, and usually pay more per unit than raw cloud.",rows:`
+Vercel|S|Hosting built around Next.js with preview deploys, serverless and edge functions. Best for React and Next.js frontends.|Netlify, Cloudflare Pages
+Netlify|S|Static and Jamstack hosting with forms, functions and deploy previews.|Vercel, Cloudflare Pages
+Render|S|Heroku-style hosting for web services, workers, cron jobs and databases.|Railway, Fly.io, Heroku
+Railway|S|Deploy from a repo with databases and usage-based billing. Quick for prototypes and small backends.|Render, Fly.io
+Heroku|S|The original PaaS (owned by Salesforce). Git-push deploys, large add-on marketplace.|Render, Railway
+`},
+{id:"database",name:"Databases and data stores",blurb:"Where application state lives. Relational (SQL) is the default; document, key-value, and in-memory stores each fit a narrower job. Managed versions remove backups, patching and failover.",rows:`
+PostgreSQL|O|The default relational database, with a huge extension ecosystem (pgvector, PostGIS, and more). Start here unless you have a reason not to.|MySQL, SQL Server
+Supabase|B|Postgres plus auth, storage, realtime and edge functions in one open-source backend. Fast way to get a full backend.|Firebase, Appwrite, Neon
+Neon|S|Serverless Postgres with branching and scale-to-zero. Good for per-branch dev databases and spiky workloads.|Supabase, Aurora Serverless
+PlanetScale|S|Managed MySQL on Vitess for horizontal scale, now with Postgres as well.|Neon, Vitess, Aurora
+MongoDB Atlas|S|Managed document database. Fits data that is naturally nested JSON.|DynamoDB, Firestore, Couchbase
+Amazon DynamoDB|C|Serverless key-value and document store with single-digit millisecond reads at any scale. Needs careful access-pattern design.|Cosmos DB, Firestore, Cassandra
+Redis|B|In-memory store for caching, rate limiting, queues and leaderboards. Hosted by Redis and by every major cloud.|Valkey, Memcached, Upstash
+CockroachDB|B|Distributed SQL that speaks the Postgres protocol and spans regions. For global apps that need strong consistency.|Google Spanner, YugabyteDB
+Turso|S|SQLite (libSQL) at the edge, convenient for one database per tenant.|Cloudflare D1, SQLite
+`},
+{id:"warehouse",name:"Data warehouse and pipelines",blurb:"Analytics side of data: collect from many sources (ELT), store in a column-oriented warehouse, transform with SQL, then query. Separate from the database that runs your app.",rows:`
+Snowflake|S|Cloud data warehouse that separates storage from compute. Common enterprise standard for analytics.|BigQuery, Redshift, Databricks
+BigQuery|C|Google's serverless warehouse, billed by data scanned or reserved capacity. No clusters to manage.|Snowflake, Redshift
+Databricks|S|Lakehouse built on Spark that combines data engineering, SQL and ML. Strong where ML and big data meet.|Snowflake, Microsoft Fabric
+ClickHouse|B|Column-oriented database for very fast queries over huge event or log data. Powers many product analytics and observability backends.|Apache Druid, Apache Pinot, BigQuery
+dbt|B|SQL transformations with tests, docs and lineage that run inside your warehouse.|SQLMesh, Dataform
+Fivetran|S|Managed connectors that load SaaS and database data into a warehouse. Pay to avoid building ingestion.|Airbyte, Stitch
+Airbyte|B|Open-source connectors for the same job, self-hosted or managed.|Fivetran, Meltano
+`},
+{id:"observability",name:"Observability and monitoring",blurb:"Tools that show what your running software is doing: metrics, logs, traces, uptime, and increasingly cost and AI workloads. This is the category New Relic and Datadog sit in. Pricing is usually per host or per gigabyte ingested, so bills grow with traffic.",rows:`
+Datadog|S|Market-leading unified platform for metrics, logs, traces, real-user monitoring and security. Broad integrations, but costs climb quickly.|New Relic, Dynatrace, Grafana Cloud
+New Relic|S|Full-stack observability with a large free tier and ingest-plus-user pricing. Now privately held (Francisco Partners). Friendly for startups.|Datadog, Grafana Cloud
+Grafana Cloud|B|Managed Grafana with Prometheus-compatible metrics, Loki (logs) and Tempo (traces). Leading choice for open-source-first teams.|Datadog, self-hosted Grafana stack
+Dynatrace|S|AI-assisted automatic discovery and root-cause analysis. Strong in large regulated enterprises.|Datadog, Splunk Observability
+Splunk Observability|S|Cisco-owned. Splunk covers logs and security, SignalFx covers cloud metrics and traces, AppDynamics covers classic APM.|Datadog, Dynatrace
+Honeycomb|S|Event-based tracing built for debugging unusual behavior in high-cardinality data.|Datadog, Grafana Tempo
+Chronosphere|S|Cloud-native metrics platform with cost controls; acquired by Palo Alto Networks.|Grafana Cloud, Datadog
+Elastic (ELK)|B|Elasticsearch-based log search, APM and security analytics.|Splunk, OpenSearch, Grafana Loki
+Better Stack|S|Uptime monitoring, log management and status pages at a lower price point.|Datadog, Pingdom
+Prometheus|O|The Kubernetes-era standard for metrics collection and alerting.|VictoriaMetrics, Mimir
+OpenTelemetry|O|Vendor-neutral standard for emitting traces, metrics and logs. Instrument once, then switch backends freely.|Vendor agents
+SigNoz|B|Open-source Datadog-style APM built on OpenTelemetry and ClickHouse.|Grafana stack, OpenObserve
+`},
+{id:"errors",name:"Error tracking and product analytics",blurb:"Two related questions: what is breaking in your code (error tracking), and what are users doing in your product (product analytics, session replay). Often installed together as one SDK.",rows:`
+Sentry|B|Error and performance tracking with session replay across most languages. Standard first install for any app.|Rollbar, Bugsnag
+PostHog|B|Product analytics, session replay, feature flags and experiments in one suite with an open-source core.|Mixpanel, Amplitude
+Mixpanel|S|Event-based analytics for funnels and retention.|Amplitude, PostHog
+Amplitude|S|Product analytics aimed at growth teams, with enterprise governance features.|Mixpanel, Heap
+LogRocket|S|Session replay tied to frontend errors and performance.|FullStory, Hotjar
+Segment|S|Customer data pipeline (owned by Twilio) that routes one event stream to many tools.|RudderStack, mParticle
+`},
+{id:"incident",name:"Incident response and status",blurb:"What happens after an alert fires: who is on call, how an incident is coordinated, and how customers are told. Sits downstream of observability.",rows:`
+PagerDuty|S|On-call scheduling, alert routing and escalation. The long-time default.|incident.io, Opsgenie
+incident.io|S|Slack-native incident coordination, on-call and status pages.|PagerDuty, Rootly
+Atlassian Statuspage|S|Hosted public status pages.|Better Stack, Instatus
+Opsgenie|S|Atlassian's on-call tool, which Atlassian is retiring in favor of Jira Service Management and Compass. Avoid for new projects.|PagerDuty, incident.io
+`},
+{id:"realtime",name:"Realtime and messaging infrastructure",blurb:"Hosted pub/sub over WebSockets and similar transports, so your app can push updates to many clients instantly: chat, live dashboards, presence, collaboration, live location. This is where PubNub lives. You buy the global network and delivery guarantees instead of running it.",rows:`
+PubNub|S|Hosted pub/sub with chat, presence, geolocation and IoT features, aimed at enterprise customers. Pricing can be hard to predict.|Ably, Pusher
+Ably|S|Edge pub/sub platform with chat, push notifications and AI streaming transport. Supports the PubNub and Pusher protocols, which eases migration.|PubNub, Pusher
+Pusher|S|Simple hosted WebSocket pub/sub (Channels) and push (Beams). Easy start for small apps.|Ably, PubNub
+Liveblocks|S|Collaboration primitives: presence, live cursors, comments and shared storage.|Velt, PartyKit, Yjs
+Stream|S|Chat, activity feeds and video APIs with ready-made UI kits.|Sendbird, PubNub Chat
+Sendbird|S|Chat and messaging API with moderation and notifications.|Stream, PubNub Chat
+Socket.IO|O|Self-hosted WebSocket library with fallbacks. You operate the servers and scaling.|ws, Centrifugo
+Centrifugo|O|Self-hosted realtime messaging server written in Go.|Socket.IO, Mercure
+`},
+{id:"streaming",name:"Message queues and event streaming",blurb:"Backend plumbing between your own services. Queues hand work to one consumer; event logs like Kafka keep an ordered history many consumers can replay. Not for browsers, which is the realtime category above.",rows:`
+Apache Kafka|O|Distributed event log for high-throughput streaming and replay. The reference system for event-driven architectures.|Apache Pulsar, Redpanda
+Confluent|S|Managed Kafka plus connectors, from Kafka's original creators.|Amazon MSK, Redpanda
+Redpanda|B|Kafka-API-compatible streaming platform in a single binary with lower operational overhead.|Kafka, Confluent
+RabbitMQ|O|Classic message broker with flexible routing (AMQP). Good for task queues between services.|ActiveMQ, Amazon SQS
+NATS|B|Lightweight, fast messaging written in Go, with JetStream for persistence. Synadia sells the managed version.|RabbitMQ, Kafka
+Amazon SQS and SNS|C|Managed queue (SQS) and fan-out notifications (SNS). Low-effort inside AWS.|Google Pub/Sub, Azure Service Bus
+Google Pub/Sub|C|Managed global messaging service on Google Cloud.|Amazon SNS, Azure Service Bus
+`},
+{id:"workflow",name:"Workflow and background jobs",blurb:"Run long or scheduled work reliably: retries, timers, multi-step processes that survive crashes. Includes data pipeline schedulers.",rows:`
+Temporal|B|Durable execution: write long-running workflows as normal code and the platform handles retries and state.|AWS Step Functions, Inngest
+Inngest|S|Event-driven functions with step-based workflows and no queue infrastructure.|Trigger.dev, Temporal
+Trigger.dev|B|Background jobs and long tasks for TypeScript apps.|Inngest, BullMQ
+Apache Airflow|O|Scheduler for data pipelines defined as DAGs. Astronomer sells it managed.|Dagster, Prefect
+Dagster|B|Asset-based orchestration for data platforms.|Airflow, Prefect
+Prefect|B|Python-first workflow orchestration with a hosted control plane.|Airflow, Dagster
+`},
+{id:"comms",name:"Communications APIs (SMS, voice, video)",blurb:"Often called CPaaS. You send texts, place calls, verify phone numbers or embed video through an API, and the vendor handles carrier relationships. Carrier fees make pricing vary a lot by country.",rows:`
+Twilio|S|The default API for SMS, voice, WhatsApp, one-time-code verification and email (SendGrid). Also owns Segment and, since late 2025, Stytch.|Vonage, Sinch, Telnyx
+Vonage|S|Communications APIs owned by Ericsson, strong in voice and video.|Twilio, Sinch
+Sinch|S|Messaging and voice APIs with direct carrier connections.|Twilio, Infobip
+Telnyx|S|Voice and SMS on its own private network, often cheaper than Twilio.|Twilio, Plivo
+Bird|S|Omnichannel messaging platform formerly known as MessageBird.|Twilio, Infobip
+Daily|S|Video call API with prebuilt UI and recording.|LiveKit, Agora, Twilio Video
+LiveKit|B|Open-source WebRTC infrastructure, popular for realtime voice and AI agents.|Daily, Agora
+Agora|S|Realtime voice and video SDKs with strong coverage in Asia.|Daily, LiveKit
+`},
+{id:"notify",name:"Email and notifications",blurb:"Getting a message to a person: transactional email, push notifications, in-app inboxes, and lifecycle campaigns. Deliverability, not sending, is the hard part.",rows:`
+Amazon SES|C|Cheapest bulk email by far, with minimal tooling around it.|Postmark, SendGrid
+SendGrid|S|Twilio's email API for transactional and marketing mail.|Postmark, Mailgun
+Postmark|S|Transactional email with strong deliverability reputation.|Resend, SendGrid
+Resend|S|Developer-friendly email API with React-based templates.|Postmark, Loops
+Mailgun|S|Email API with routing and validation features.|SendGrid, Postmark
+OneSignal|S|Push, in-app, email and SMS messaging with a generous free tier.|Firebase Cloud Messaging, Airship
+Firebase Cloud Messaging|C|Free push notification delivery for Android, iOS and web.|OneSignal, Amazon SNS
+Knock|S|Notification infrastructure: workflows, user preferences and in-app feeds.|Courier, Novu
+Novu|B|Open-source notification infrastructure with the same goals.|Knock, Courier
+Customer.io|S|Event-driven lifecycle messaging across email, push and SMS.|Braze, Iterable
+`},
+{id:"auth",name:"Authentication and identity",blurb:"Login, sessions, single sign-on and permissions. Customer identity (CIAM) is for your app's users; workforce identity is for employees. Auth is a risky thing to hand-build and a painful thing to migrate later.",rows:`
+Auth0|S|Okta's Customer Identity Cloud. Mature and feature-complete; its older Rules and Hooks reach end-of-life in Nov 2026 in favor of Actions.|Clerk, WorkOS, Firebase Auth
+Okta|S|Workforce identity and single sign-on for employees; owns Auth0.|Microsoft Entra ID, Ping Identity
+Clerk|S|Prebuilt login UI and user management for React and Next.js apps.|Auth0, Stytch
+WorkOS|S|Adds enterprise features (SSO, SCIM directory sync, audit logs) to B2B products.|Auth0, Frontegg
+Stytch|S|Passkey-first developer authentication; now part of Twilio.|Clerk, Descope
+Descope|S|Visual flow builder for authentication journeys.|Auth0, Clerk
+Better Auth|O|TypeScript auth library you self-host; joined Vercel in Jul 2026.|NextAuth (Auth.js), Lucia
+Keycloak|O|Self-hosted identity server with SSO and standard protocols.|Authentik, Zitadel
+Amazon Cognito|C|AWS user pools and identity federation. Cheap and tightly integrated, with a rough developer experience.|Auth0, Firebase Auth
+`},
+{id:"payments",name:"Payments and billing",blurb:"Taking money: card and wallet processing, subscriptions, tax, and payouts. A merchant of record handles global sales tax for you; a gateway leaves that to you. Local wallets matter a lot outside the US and Europe.",rows:`
+Stripe|S|Payments, subscriptions (Billing), marketplace payouts (Connect), tax and identity. Default for online software businesses.|Adyen, Paddle, Braintree
+Adyen|S|Enterprise payment platform with global acquiring and unified in-store and online.|Stripe, Worldpay
+PayPal and Braintree|S|Wallet checkout and card processing; Braintree is PayPal's developer-focused arm.|Stripe, Adyen
+Paddle|S|Merchant of record: sells on your behalf and handles global tax and compliance.|Lemon Squeezy, FastSpring
+Lemon Squeezy|S|Merchant of record for small digital products; owned by Stripe.|Paddle, Gumroad
+Xendit|S|Payments across Southeast Asia, including cards, bank transfer and e-wallets.|PayMongo, Midtrans
+PayMongo|S|Payment gateway for the Philippines covering cards and local wallets.|Xendit, Maya Business
+Chargebee|S|Subscription billing and revenue operations layer.|Recurly, Zuora
+Lago|B|Open-source usage-based billing and metering.|Orb, Metronome
+`},
+{id:"fintech",name:"Fintech and identity verification",blurb:"APIs that connect to the financial system or prove who a person is: bank account linking, card issuing, cross-border transfers, KYC checks.",rows:`
+Plaid|S|Links users' bank accounts to your app for data and payments.|MX, Tink, Finicity
+Persona|S|Configurable identity verification (KYC) workflows.|Onfido, Veriff
+Marqeta|S|Card issuing platform for building your own debit or credit cards.|Lithic, Stripe Issuing
+Wise Platform|S|API for cross-border transfers and multi-currency accounts.|Airwallex, Currencycloud
+`},
+{id:"search",name:"Search",blurb:"Fast full-text search with typo tolerance and filters, so you do not have to build it on top of your database.",rows:`
+Algolia|S|Hosted search with instant results and relevance tuning. Premium priced.|Typesense Cloud, Elastic
+Elasticsearch|B|The standard search and analytics engine. Powerful and heavy to operate.|OpenSearch, Solr
+OpenSearch|O|Open-source fork of Elasticsearch, backed by AWS.|Elasticsearch
+Typesense|B|Fast, simple open-source search that is easy to self-host.|Meilisearch, Algolia
+Meilisearch|B|Open-source search focused on instant, forgiving results.|Typesense, Algolia
+`},
+{id:"ai",name:"AI and machine learning platforms",blurb:"Model APIs, places to run open models, vector databases for retrieval, and tools to trace and evaluate LLM apps. A fast-moving category with frequent acquisitions, so check status before committing.",rows:`
+OpenAI API|S|GPT models, embeddings, image and audio APIs.|Anthropic API, Google Gemini
+Anthropic API|S|Claude models through a direct API, and also via AWS Bedrock and Google Vertex AI.|OpenAI API, Google Gemini
+Google Vertex AI|C|Google Cloud's platform for Gemini and other models, plus training and deployment.|AWS Bedrock, Azure AI Foundry
+AWS Bedrock|C|One AWS API to call models from several providers, inside your AWS account.|Vertex AI, Azure AI Foundry
+Hugging Face|B|Hub for open models and datasets, with hosted inference endpoints.|Replicate, Together AI
+Replicate|S|Run open-source models behind a simple API.|Together AI, Fireworks
+Together AI|S|Hosted inference and fine-tuning of open-weight models.|Fireworks, Groq
+Modal|S|Serverless GPUs and batch compute for Python code.|RunPod, Replicate
+Pinecone|S|Managed vector database for semantic search and retrieval.|Weaviate, Qdrant, pgvector
+Langfuse|B|Tracing and evaluation for LLM apps; now part of ClickHouse.|LangSmith, Braintrust, Arize Phoenix
+LangSmith|S|LangChain's tracing, evaluation and prompt testing tool.|Langfuse, Braintrust
+Helicone|B|LLM gateway and logging tool in maintenance mode since its acquisition by Mintlify. Avoid for new projects.|Langfuse, Portkey
+`},
+{id:"devops",name:"CI/CD, containers and infrastructure as code",blurb:"How code becomes a running system: source hosting, build and test pipelines, container runtimes, and declarative infrastructure.",rows:`
+GitHub|S|Code hosting with Actions CI/CD and Copilot; owned by Microsoft. The default home for open source.|GitLab, Bitbucket
+GitLab|B|All-in-one DevOps platform you can self-host.|GitHub, Bitbucket
+CircleCI|S|Hosted CI pipelines with fast parallelism.|GitHub Actions, Buildkite
+Jenkins|O|Self-hosted automation server with a huge plugin library.|GitHub Actions, GitLab CI
+Terraform|B|Declarative infrastructure as code for any cloud, made by HashiCorp (now owned by IBM).|OpenTofu, Pulumi
+OpenTofu|O|Community fork of Terraform under the Linux Foundation.|Terraform, Pulumi
+Pulumi|B|Infrastructure as code written in TypeScript, Go or Python.|Terraform, AWS CDK
+Docker|B|Container build and packaging standard, plus the Docker Hub registry.|Podman, containerd
+Kubernetes|O|Container orchestration, offered managed as EKS, GKE and AKS. Powerful but heavy for small teams.|Nomad, ECS
+Argo CD|O|GitOps continuous delivery for Kubernetes.|Flux, Spinnaker
+`},
+{id:"security",name:"Security and secrets",blurb:"Protecting code, credentials and running systems: dependency scanning, secret storage, endpoint protection, and network defenses.",rows:`
+Snyk|S|Scans dependencies, code and containers for vulnerabilities.|GitHub Advanced Security, Semgrep
+Doppler|S|Central secrets management that syncs to every environment.|Infisical, AWS Secrets Manager
+HashiCorp Vault|B|Secrets and encryption service with dynamic credentials.|AWS Secrets Manager, Infisical
+Infisical|B|Open-source secrets management with a friendlier setup.|Doppler, Vault
+CrowdStrike|S|Endpoint detection and response for company laptops and servers.|SentinelOne, Microsoft Defender
+`},
+{id:"flags",name:"Feature flags and experimentation",blurb:"Ship code turned off, enable it for some users, and measure the result. Decouples deploying from releasing.",rows:`
+LaunchDarkly|S|Enterprise feature management with targeting and audit trails.|Statsig, Unleash
+Statsig|S|Feature flags with built-in experimentation and analytics.|LaunchDarkly, GrowthBook
+GrowthBook|B|Open-source flags and A/B testing that reads from your own warehouse.|Statsig, PostHog
+Unleash|B|Open-source feature flag server.|LaunchDarkly, Flagsmith
+`},
+{id:"backend",name:"Backend-as-a-service and content",blurb:"Ready-made backends and content systems so a small team does not write standard plumbing: user accounts, data sync, file storage, editors for non-developers.",rows:`
+Firebase|C|Google's backend platform: auth, Firestore, realtime sync, push messaging, hosting. Fast for mobile apps.|Supabase, Appwrite
+Appwrite|B|Open-source backend with auth, databases, storage and functions.|Supabase, Firebase
+Contentful|S|Enterprise headless CMS delivered as an API.|Sanity, Storyblok
+Sanity|S|Headless CMS with customizable editing studio and real-time collaboration.|Contentful, Payload
+Strapi|B|Open-source headless CMS you can self-host.|Payload, Directus
+Payload CMS|O|Code-first headless CMS built on TypeScript.|Strapi, Sanity
+`},
+{id:"storage",name:"Storage and media",blurb:"Files, images and video. Object storage holds anything; media platforms resize, transcode and deliver it.",rows:`
+Amazon S3|C|The standard object store. Most tools speak its API.|Cloudflare R2, Backblaze B2
+Cloudflare R2|S|S3-compatible storage with no data transfer fees.|Amazon S3, Backblaze B2
+Backblaze B2|S|Low-cost object storage.|Amazon S3, Wasabi
+Cloudinary|S|Image and video transformation, optimization and delivery.|imgix, ImageKit
+Mux|S|Video encoding, streaming and analytics API.|Cloudflare Stream, api.video
+UploadThing|S|File uploads for TypeScript apps with minimal setup.|S3 presigned URLs, Filestack
+`},
+{id:"maps",name:"Maps and location",blurb:"Map tiles, geocoding, routing and places data. Pricing is per request, so heavy usage gets expensive.",rows:`
+Google Maps Platform|S|Most complete places data, routing and geocoding. Highest coverage, highest cost at scale.|Mapbox, HERE
+Mapbox|S|Customizable maps and navigation SDKs.|Google Maps Platform, MapTiler
+HERE|S|Mapping and logistics APIs favored by automotive and fleets.|Google Maps Platform, TomTom
+MapLibre|O|Open-source map rendering library, used with OpenStreetMap data.|Mapbox GL (older), Leaflet
+`},
+{id:"integration",name:"Integrations and automation",blurb:"Connect your product to other people's apps. No-code tools serve your internal workflows; embedded integration platforms let your customers connect their own accounts.",rows:`
+Zapier|S|No-code automation across thousands of apps.|Make, n8n
+Make|S|Visual workflow builder with more control than Zapier.|Zapier, n8n
+n8n|B|Source-available workflow automation you can self-host.|Zapier, Make
+Merge|S|One unified API for many HR, CRM and ticketing systems.|Apideck, Finch
+Nango|B|Open-source tooling for product integrations and OAuth.|Merge, Paragon
+`},
+{id:"apimgmt",name:"API management and documentation",blurb:"Publishing an API: gateways that handle keys, rate limits and routing; tools for testing and documenting it.",rows:`
+Kong|B|API gateway, open source with enterprise features.|Apigee, AWS API Gateway
+Apigee|C|Google Cloud's full API management platform.|Kong, Azure API Management
+AWS API Gateway|C|Managed REST and WebSocket gateway for Lambda backends.|Kong, Cloudflare API Shield
+Postman|S|API design, testing and collaboration workspace.|Insomnia, Bruno
+Apollo GraphOS|S|Managed GraphQL schema registry and router.|Hasura, WunderGraph
+Hasura|B|Instant GraphQL and REST over your databases.|Apollo GraphOS, PostGraphile
+Mintlify|S|Hosted developer documentation sites.|ReadMe, Docusaurus
+`},
+{id:"business",name:"Customer and business platforms",blurb:"Systems your sales and support teams live in. Many expose APIs and are worth knowing as integration targets for a B2B product.",rows:`
+Salesforce|S|Dominant enterprise CRM with a very large app ecosystem.|HubSpot, Microsoft Dynamics
+HubSpot|S|CRM, marketing and support suite popular with small and mid-size companies.|Salesforce, Pipedrive
+Zendesk|S|Customer support ticketing and help center.|Intercom, Freshdesk
+Intercom|S|In-app messaging and AI-driven support for software products.|Zendesk, Front
+`}
+];
+
+var MODEL_LABEL = {S:"Managed",O:"Open source",B:"Both",C:"Cloud"};
+var ALL = [], total = 0;
+CATS.forEach(function(c){
+  c.items = c.rows.trim().split("\n").map(function(l){
+    var p = l.split("|");
+    return {n:p[0],m:p[1],w:p[2],a:p[3]?p[3].split(",").map(function(s){return s.trim();}):[],cat:c.name,hay:(p[0]+" "+p[2]+" "+p[3]+" "+c.name).toLowerCase()};
+  });
+  total += c.items.length;
+});
+
+var state = {q:"", m:"all"};
+var main = document.getElementById("main");
+var index = document.getElementById("index");
+var qEl = document.getElementById("q");
+var countEl = document.getElementById("count");
+var resetEl = document.getElementById("reset");
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+function build(){
+  var html = "", nav = "", shown = 0;
+  CATS.forEach(function(c){
+    var rows = c.items.filter(function(it){
+      return (state.m==="all"||it.m===state.m) && (!state.q || it.hay.indexOf(state.q)>-1);
+    });
+    nav += '<button type="button" class="cat-link'+(rows.length?"":" off")+'" data-id="'+c.id+'"><span>'+esc(c.name)+'</span><span class="n">'+rows.length+'</span></button>';
+    if(!rows.length) return;
+    shown += rows.length;
+    html += '<section class="cat" id="cat-'+c.id+'"><header><h2>'+esc(c.name)+'</h2><p>'+esc(c.blurb)+'</p></header>';
+    rows.forEach(function(it){
+      html += '<div class="row"><div class="nm"><span>'+esc(it.n)+'</span><span class="badge b-'+it.m+'">'+MODEL_LABEL[it.m]+'</span></div>'
+        + '<div class="what">'+esc(it.w)+'</div>'
+        + '<div class="alts"><span class="alts-l">Compare with</span>'
+        + it.a.map(function(a){return '<button type="button" class="alt" data-q="'+esc(a)+'">'+esc(a)+'</button>';}).join("")
+        + '</div></div>';
+    });
+    html += '</section>';
+  });
+  if(!shown) html = '<div class="empty">Nothing matches. Try a shorter search, or clear the filters.</div>';
+  main.innerHTML = html;
+  index.innerHTML = '<h2>Categories</h2>' + nav;
+  var filtered = state.q || state.m!=="all";
+  countEl.textContent = (filtered ? shown+" of "+total : total) + " products in " + CATS.length + " categories";
+  resetEl.hidden = !filtered;
+}
+
+main.addEventListener("click", function(e){
+  var b = e.target.closest(".alt");
+  if(!b) return;
+  state.q = b.getAttribute("data-q").toLowerCase();
+  qEl.value = b.getAttribute("data-q");
+  build();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+index.addEventListener("click", function(e){
+  var b = e.target.closest(".cat-link");
+  if(!b) return;
+  var t = document.getElementById("cat-"+b.getAttribute("data-id"));
+  if(t) t.scrollIntoView({behavior:"smooth",block:"start"});
+});
+qEl.addEventListener("input", function(){state.q = qEl.value.trim().toLowerCase(); build();});
+document.getElementById("seg").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  state.m = b.getAttribute("data-m");
+  Array.prototype.forEach.call(this.querySelectorAll("button"), function(x){x.setAttribute("aria-pressed", x===b ? "true":"false");});
+  build();
+});
+resetEl.addEventListener("click", function(){
+  state = {q:"", m:"all"}; qEl.value = "";
+  var seg = document.getElementById("seg");
+  Array.prototype.forEach.call(seg.querySelectorAll("button"), function(x){x.setAttribute("aria-pressed", x.getAttribute("data-m")==="all" ? "true":"false");});
+  build();
+});
+
+/* highlight the category in view */
+var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function(es){
+  es.forEach(function(en){
+    if(en.isIntersecting){
+      var id = en.target.id.replace("cat-","");
+      Array.prototype.forEach.call(index.querySelectorAll(".cat-link"), function(l){
+        if(l.getAttribute("data-id")===id) l.setAttribute("aria-current","true"); else l.removeAttribute("aria-current");
+      });
+    }
+  });
+},{rootMargin:"-10% 0px -80% 0px"}) : null;
+var _build = build;
+build = function(){ _build(); if(io){ io.disconnect(); Array.prototype.forEach.call(main.querySelectorAll("section.cat"), function(s){io.observe(s);}); } };
+build();
+</script>
+
+</body></html>
