@@ -1,4 +1,5 @@
-# Vercel deploy source: serve only the site entry point.
-# Everything else (git history, docs, config) stays out of the deployment.
+# Vercel deploy source: ship the built site, not the repository.
+# The app is a Vite build, so everything needed at runtime is produced into
+# dist/. Serving only index.html would deploy a page with no JavaScript.
 /*
-!index.html
+!dist
