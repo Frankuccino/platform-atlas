@@ -8,7 +8,7 @@ import {
   getProduct,
 } from '../catalog';
 import type { MapLayout } from './layout';
-import { CLUSTER_LABEL_BAND, DOMAIN_LABEL_BAND, NODE_PITCH } from './layout';
+import { CLUSTER_LABEL_BAND, DOMAIN_LABEL_BAND, NODE_PITCH, NODE_PITCH_H } from './layout';
 
 /** Categories that the given category's products run on top of. */
 function layerEdgeTargets(categoryId: string): string[] {
@@ -55,7 +55,22 @@ export interface RenderOptions {
   /** 0 = fully zoomed out, 1 = fully zoomed in. Drives edge and label density. */
   zoomT: number;
   highlightedProductId: string | null;
+  /**
+   * Transient "you are here" marker for a node the user just jumped to.
+   *
+   * `phase` runs 0..1 and is advanced by the caller on each animation frame, so
+   * the ring expands and fades in a loop rather than being a static outline.
+   */
+  pulse?: { productId: string; phase: number } | null;
 }
+
+/**
+ * Minimum world-space gap between a label and the next row's node.
+ *
+ * Without it a label is drawn flush against the row below, which reads as the
+ * label belonging to that row instead of its own.
+ */
+const LABEL_CLEARANCE = 10;
 
 const COLORS = {
   bg: '#edf0f3',
@@ -88,6 +103,7 @@ export function renderMap(
   options: RenderOptions,
 ): void {
   const { camera, zoomT, highlightedProductId } = options;
+  const pulse = options.pulse ?? null;
 
   applyCamera(ctx, camera, options.width, options.height);
 
@@ -217,6 +233,23 @@ export function renderMap(
     ctx.lineWidth = isHighlighted ? 2 : 1;
     ctx.stroke();
 
+    // Transient "you are here" marker. The user asked for this when jumping to a
+    // product from a panel: the camera keeps its zoom and only pans, so without
+    // something moving the target is easy to lose among a hundred identical dots.
+    //
+    // A ring that expands and fades in a loop reads as "this one" at any zoom,
+    // including fit-to-view where a node is only a few pixels across.
+    if (pulse && pulse.productId === node.productId) {
+      const spread = 4 + pulse.phase * 12;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + spread, 0, Math.PI * 2);
+      ctx.strokeStyle = COLORS.highlight;
+      ctx.globalAlpha = (1 - pulse.phase) * 0.85;
+      ctx.lineWidth = 2 * invScale;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
     // Brand mark inside the node, only once the node is large enough on screen
     // for the shape to be legible. At fit-to-view a node is about 11px across,
     // which is too small for any logo to read.
@@ -241,9 +274,19 @@ export function renderMap(
     // such as "Vercel" appear while still zoomed out, long ones such as
     // "Google Cloud" only once there is room, and the set grows smoothly as you
     // zoom in instead of switching on at one scale.
+    //
+    // The horizontal check is against the pitch, and the vertical check is
+    // against the row below: the label sits under its node, so it must clear the
+    // next row's node as well as the node beside it. Both must hold, or the label
+    // would paint across a neighbouring node.
     ctx.font = nameFont;
     const name = getProduct(node.productId).name;
-    if (NODE_PITCH > ctx.measureText(name).width + 8 * invScale) {
+    const labelHeight = 11 * invScale;
+    // The label sits below its node, so it must clear the next row's node as
+    // well as the node beside it. The margin keeps a visible gap rather than
+    // letting the text sit flush against the row below.
+    const labelFitsRow = node.radius + 4 + labelHeight + LABEL_CLEARANCE <= NODE_PITCH_H - node.radius;
+    if (NODE_PITCH > ctx.measureText(name).width + 8 * invScale && labelFitsRow) {
       // The label sits below the node, on the light cluster fill, so it must be
       // a dark colour. White would be invisible. The highlighted label uses the
       // same accent as the node's fill and ring, so the two read as one unit.

@@ -6,6 +6,8 @@ interface Props {
   onJumpDomain: (domainId: string) => void;
   /** Open a category's product list. */
   onSelectCategory: (categoryId: string) => void;
+  /** Open a domain's category list. */
+  onSelectDomain: (domainId: string) => void;
 }
 
 /**
@@ -19,7 +21,11 @@ interface Props {
  * Domains and categories are listed in catalog order, which is stable, so a row
  * never moves between renders.
  */
-export default function DomainNav({ onJumpDomain, onSelectCategory }: Props) {
+export default function DomainNav({
+  onJumpDomain,
+  onSelectCategory,
+  onSelectDomain,
+}: Props) {
   return (
     <nav className="sidebar" aria-label="Browse the map">
       <h2 className="sidebar-title">Browse</h2>
@@ -29,10 +35,23 @@ export default function DomainNav({ onJumpDomain, onSelectCategory }: Props) {
           <button
             type="button"
             className="nav-domain-head"
-            onClick={() => onJumpDomain(domain.id)}
+            onClick={() => onSelectDomain(domain.id)}
           >
             <span className="nav-domain-name">{domain.name}</span>
             <span className="nav-count">{domain.categoryIds.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className="nav-domain-jump"
+            onClick={() => onJumpDomain(domain.id)}
+            aria-label={`Jump to ${domain.name}`}
+            title={`Jump to ${domain.name}`}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" />
+              <path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" />
+            </svg>
           </button>
 
           <ul className="nav-cats">

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { zoom as d3zoom, zoomIdentity, type ZoomBehavior } from 'd3-zoom';
 import { pointer, select, type Selection } from 'd3-selection';
 import { DOMAINS } from './catalog';
@@ -6,11 +6,17 @@ import { computeLayout, searchProducts } from './map/layout';
 import { renderMap, screenToWorld, type Camera } from './map/render';
 import ProductDetail from './ProductDetail';
 import CategoryPanel from './CategoryPanel';
+import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
 import type { MapLayout } from './map/layout';
 
 const MIN_SCALE = 0.12;
 const MAX_SCALE = 4;
+
+/** How long the "you are here" ring keeps pulsing after a jump. */
+const PULSE_DURATION = 2600;
+/** Length of one expand-and-fade cycle, so the ring repeats rather than playing once. */
+const PULSE_CYCLE = 850;
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -24,6 +30,8 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+  const [pulseStart, setPulseStart] = useState<{ productId: string; startedAt: number } | null>(null);
   const [size, setSize] = useState({ width: 800, height: 600 });
 
   const matches = useMemo(() => searchProducts(query), [query]);
@@ -50,31 +58,86 @@ export default function App() {
     };
   }, []);
 
-  // Draw whenever anything that affects the picture changes.
-  useEffect(() => {
+  // The animation loop needs the current camera and layout without restarting,
+  // so the latest values are kept in a ref rather than in the effect's deps.
+  const liveRef = useRef({ camera, layout, size, highlighted, pulseStart });
+  liveRef.current = { camera, layout, size, highlighted, pulseStart };
+
+  // Dev-only handle for the verification script, so it can locate a node on the
+  // canvas without guessing pixel coordinates. Stripped from production builds.
+  if (import.meta.env.DEV) {
+    (window as unknown as { __atlasLayout?: unknown }).__atlasLayout = layout;
+  }
+
+  /**
+   * Paint one frame.
+   *
+   * Extracted from the effect so the pulse loop can call it on every animation
+   * frame without re-rendering React. The pulse is derived from its start time
+   * rather than stored as a phase, so a frame can never show a stale ring.
+   */
+  const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const live = liveRef.current;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(size.width * dpr);
-    canvas.height = Math.round(size.height * dpr);
-    canvas.style.width = `${size.width}px`;
-    canvas.style.height = `${size.height}px`;
+    canvas.width = Math.round(live.size.width * dpr);
+    canvas.height = Math.round(live.size.height * dpr);
+    canvas.style.width = `${live.size.width}px`;
+    canvas.style.height = `${live.size.height}px`;
 
-    const scaleForZoomT = Math.min(Math.max(camera.scale, MIN_SCALE), MAX_SCALE);
+    const scaleForZoomT = Math.min(Math.max(live.camera.scale, MIN_SCALE), MAX_SCALE);
     const zoomT = (scaleForZoomT - MIN_SCALE) / (MAX_SCALE - MIN_SCALE);
 
+    let pulse: { productId: string; phase: number } | null = null;
+    if (live.pulseStart) {
+      const elapsed = performance.now() - live.pulseStart.startedAt;
+      if (elapsed < PULSE_DURATION) {
+        pulse = {
+          productId: live.pulseStart.productId,
+          phase: (elapsed % PULSE_CYCLE) / PULSE_CYCLE,
+        };
+      }
+    }
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    renderMap(ctx, layout, {
-      camera,
-      width: size.width,
-      height: size.height,
+    renderMap(ctx, live.layout, {
+      camera: live.camera,
+      width: live.size.width,
+      height: live.size.height,
       zoomT,
-      highlightedProductId: highlighted,
+      highlightedProductId: live.highlighted,
+      pulse,
     });
-  }, [camera, layout, size, highlighted]);
+  }, []);
+
+  // Draw whenever anything that affects the picture changes.
+  useEffect(() => {
+    draw();
+  }, [draw, camera, layout, size, highlighted, pulseStart]);
+
+  // Keep painting while a pulse is running. The loop reads the live ref, so a
+  // camera change mid-pulse does not restart it, and it stops itself once the
+  // duration has elapsed.
+  useEffect(() => {
+    if (!pulseStart) return;
+
+    let raf = 0;
+    const tick = () => {
+      if (performance.now() - pulseStart.startedAt >= PULSE_DURATION) {
+        setPulseStart(null);
+        return;
+      }
+      draw();
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [pulseStart, draw]);
 
   // Fit the whole map once, reading the container's real size straight from the
   // DOM. React's size state is not used here because it is still the 800x600
@@ -155,17 +218,27 @@ export default function App() {
       if (best) {
         setHighlighted(best.id);
         setSelectedCategory(null);
+        setSelectedDomain(null);
         return;
       }
 
-      setSelectedCategory(clusterAt(world.x, world.y));
+      const categoryId = clusterAt(world.x, world.y);
+      if (categoryId) {
+        setSelectedCategory(categoryId);
+        setHighlighted(null);
+        setSelectedDomain(null);
+        return;
+      }
+
+      setSelectedDomain(domainAt(world.x, world.y));
       setHighlighted(null);
+      setSelectedCategory(null);
     });
 
     return () => {
       selection.on('click', null);
     };
-  }, [layout, camera]);
+  }, [layout, camera, focusProduct]);
 
   /**
    * Centre the camera on a world point at a given scale.
@@ -197,12 +270,19 @@ export default function App() {
     // The category panel and the detail panel occupy the same corner, so opening
     // one must close the other or they overlap.
     setSelectedCategory(null);
-    focusOn(node.x, node.y, 1.6);
+    setSelectedDomain(null);
+    // Keep the user's zoom and only pan. Forcing a fixed scale discarded whatever
+    // level they had chosen, which made the gesture feel like a reset. The pulse
+    // is what tells them where the target ended up.
+    focusOn(node.x, node.y, camera.scale);
+    setPulseStart({ productId, startedAt: performance.now() });
   }
 
   function jumpToDomain(domainId: string) {
     setSelectedCategory(null);
+    setSelectedDomain(null);
     setHighlighted(null);
+    setPulseStart(null);
     const domain = layout.domainById.get(domainId);
     if (!domain) return;
     focusOn(
@@ -229,6 +309,21 @@ export default function App() {
     return null;
   }
 
+  /** The domain box containing a world point, or null if it is outside one. */
+  function domainAt(x: number, y: number): string | null {
+    for (const domain of layout.domains) {
+      if (
+        x >= domain.x &&
+        x <= domain.x + domain.width &&
+        y >= domain.y &&
+        y <= domain.y + domain.height
+      ) {
+        return domain.domainId;
+      }
+    }
+    return null;
+  }
+
   function resetView() {
     const margin = 40;
     const scaleX = (size.width - margin * 2) / layout.width;
@@ -236,11 +331,20 @@ export default function App() {
     const scale = Math.min(scaleX, scaleY, 1);
     focusOn(layout.width / 2, layout.height / 2, scale);
     setHighlighted(null);
+    setPulseStart(null);
   }
 
   /** Open a category's product list without moving the camera. */
   function selectCategory(categoryId: string) {
     setSelectedCategory(categoryId);
+    setSelectedDomain(null);
+    setHighlighted(null);
+  }
+
+  /** Open a domain's category list without moving the camera. */
+  function selectDomain(domainId: string) {
+    setSelectedDomain(domainId);
+    setSelectedCategory(null);
     setHighlighted(null);
   }
 
@@ -290,10 +394,23 @@ export default function App() {
       </header>
 
       <div className="body">
-        <DomainNav onJumpDomain={jumpToDomain} onSelectCategory={selectCategory} />
+        <DomainNav
+          onJumpDomain={jumpToDomain}
+          onSelectCategory={selectCategory}
+          onSelectDomain={selectDomain}
+        />
 
         <div className="canvas-wrap" ref={containerRef}>
           <canvas ref={canvasRef} />
+
+          {selectedDomain && (
+            <DomainPanel
+              domainId={selectedDomain}
+              onSelect={selectCategory}
+              onJump={jumpToDomain}
+              onClose={() => setSelectedDomain(null)}
+            />
+          )}
 
           {selectedCategory && (
             <CategoryPanel

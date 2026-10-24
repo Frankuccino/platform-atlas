@@ -185,10 +185,24 @@ body {
 
 .nav-domain {
   margin-bottom: 4px;
+  /* The separator belongs to the row, not to each child. With it on the
+     children, the head and the jump control had different heights and their two
+     borders sat at different heights, which read as a crooked line. */
+  border-top: 1px solid var(--line);
+  /* The head and the jump control sit on one row; the category list wraps to
+     the next line. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
+/* One explicit row height for both children, so their contents share a single
+   vertical centre. box-sizing is border-box, so the padding would otherwise be
+   subtracted from the height and push the icon off-centre. */
 .nav-domain-head {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -199,8 +213,7 @@ body {
   color: var(--fg);
   background: none;
   border: 0;
-  border-top: 1px solid var(--line);
-  padding: 8px 12px 5px;
+  padding: 0 4px 0 12px;
   cursor: pointer;
   text-align: left;
 }
@@ -209,7 +222,33 @@ body {
   color: var(--accent);
 }
 
+.nav-domain-jump {
+  flex: none;
+  width: 24px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  padding: 0 8px 0 0;
+  cursor: pointer;
+}
+
+.nav-domain-jump svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.nav-domain-jump:hover {
+  color: var(--accent);
+}
+
 .nav-cats {
+  flex: 1 0 100%;
   list-style: none;
   margin: 0;
   padding: 0 0 4px;

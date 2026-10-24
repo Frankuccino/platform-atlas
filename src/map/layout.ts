@@ -55,7 +55,21 @@ export const DOMAIN_LABEL_BAND = 46;
 export const CLUSTER_LABEL_BAND = 32;
 
 const PRODUCT_CELL_W = 112;
-const PRODUCT_CELL_H = 56;
+/**
+ * Vertical distance between two adjacent nodes, in world units.
+ *
+ * This is deliberately larger than the horizontal cell. A node is 44 units
+ * across and its label is drawn below it, so the vertical cell has to hold the
+ * node, the label, and a gap before the next row's node.
+ *
+ * The label is drawn at a screen-constant size, so its world height grows as you
+ * zoom out: at scale 0.5 it is 22 units tall. The cell therefore has to be large
+ * enough for the node, the label, and clearance at the zoom where labels first
+ * appear. 80 units gives 36 units of gap, which fits a 22-unit label with room
+ * to spare. The original 56 put the label's baseline inside the next row's node,
+ * so rows read as one crowded block and the text was unreadable.
+ */
+const PRODUCT_CELL_H = 80;
 const CLUSTER_PADDING = 8 + CLUSTER_LABEL_BAND;
 const CLUSTER_GAP = 30;
 const DOMAIN_PADDING = 12 + DOMAIN_LABEL_BAND;
@@ -69,6 +83,15 @@ const DOMAIN_GAP = 40;
  * it is only drawn once there is room.
  */
 export const NODE_PITCH = PRODUCT_CELL_W;
+
+/**
+ * Vertical distance between two adjacent nodes, in world units.
+ *
+ * Exported so the renderer can check that a label fits between its node and the
+ * row below before drawing it. Without that check a label drawn at low zoom
+ * would paint across the next row's nodes.
+ */
+export const NODE_PITCH_H = PRODUCT_CELL_H;
 
 /** Columns that fit `count` items into a roughly square block. */
 function gridColumns(count: number): number {
