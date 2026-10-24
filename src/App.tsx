@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { zoom as d3zoom, zoomIdentity, type ZoomBehavior } from 'd3-zoom';
+import { zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
+// Side effect: adds .transition() to selections, which d3-zoom's transform
+// transition path needs. d3-zoom already depends on this package.
+import 'd3-transition';
 import { pointer, select, type Selection } from 'd3-selection';
 import { DOMAINS } from './catalog';
 import { computeLayout, searchProducts } from './map/layout';
@@ -8,10 +11,15 @@ import ProductDetail from './ProductDetail';
 import CategoryPanel from './CategoryPanel';
 import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
-import type { MapLayout } from './map/layout';
+import type { DomainLayout, MapLayout } from './map/layout';
 
 const MIN_SCALE = 0.12;
 const MAX_SCALE = 4;
+
+/** Space left between a domain's edge and the canvas edge when it is framed. */
+const DOMAIN_FIT_PADDING = 40;
+/** How long a jump takes to travel and settle, in milliseconds. */
+const JUMP_DURATION = 750;
 
 /** How long the "you are here" ring keeps pulsing after a jump. */
 const PULSE_DURATION = 2600;
@@ -290,6 +298,49 @@ export default function App() {
     setPulseStart({ productId, startedAt: performance.now() });
   }
 
+  /**
+   * Animate the camera to a transform.
+   *
+   * This goes through d3-zoom's transition path rather than setting the
+   * transform directly. The behaviour owns the transform on the canvas node,
+   * and a transition interpolates from the current transform to the target
+   * using the same zoom interpolation a wheel zoom uses, so the movement reads
+   * as one continuous gesture instead of a snap. A new jump interrupts the one
+   * in flight, so clicking another domain mid-flight does not fight it.
+   */
+  function flyTo(transform: ZoomTransform, durationMs: number) {
+    const selection = selectionRef.current;
+    const behavior = zoomBehaviorRef.current;
+    if (!selection || !behavior) return;
+
+    selection
+      .transition()
+      .duration(durationMs)
+      .call(behavior.transform, transform);
+  }
+
+  /**
+   * The transform that frames a domain centred, with padding around it.
+   *
+   * Both axes are considered. Fitting on width alone can leave a tall domain
+   * running off the top and bottom, and the result is clamped to the zoom
+   * extent so a small domain is not scaled past the maximum.
+   */
+  function fitDomain(domain: DomainLayout): ZoomTransform {
+    const scale = Math.min(
+      (size.width - DOMAIN_FIT_PADDING * 2) / domain.width,
+      (size.height - DOMAIN_FIT_PADDING * 2) / domain.height,
+      MAX_SCALE,
+    );
+    const clamped = Math.max(scale, MIN_SCALE);
+    const cx = domain.x + domain.width / 2;
+    const cy = domain.y + domain.height / 2;
+
+    return zoomIdentity
+      .translate(size.width / 2 - cx * clamped, size.height / 2 - cy * clamped)
+      .scale(clamped);
+  }
+
   function jumpToDomain(domainId: string) {
     setSelectedCategory(null);
     setSelectedDomain(null);
@@ -297,11 +348,7 @@ export default function App() {
     setPulseStart(null);
     const domain = layout.domainById.get(domainId);
     if (!domain) return;
-    focusOn(
-      domain.x + domain.width / 2,
-      domain.y + domain.height / 2,
-      Math.max(size.width / (domain.width + 80), MIN_SCALE),
-    );
+    flyTo(fitDomain(domain), JUMP_DURATION);
   }
 
   /** The category block containing a world point, or null if it is empty space. */
@@ -341,7 +388,13 @@ export default function App() {
     const scaleX = (size.width - margin * 2) / layout.width;
     const scaleY = (size.height - margin * 2) / layout.height;
     const scale = Math.min(scaleX, scaleY, 1);
-    focusOn(layout.width / 2, layout.height / 2, scale);
+    const target = zoomIdentity
+      .translate(
+        size.width / 2 - (layout.width / 2) * scale,
+        size.height / 2 - (layout.height / 2) * scale,
+      )
+      .scale(scale);
+    flyTo(target, JUMP_DURATION);
     setHighlighted(null);
     setPulseStart(null);
   }

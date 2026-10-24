@@ -11,12 +11,14 @@
     "validate": "tsx scripts/validate-catalog.ts"
   },
   "dependencies": {
+    "d3-transition": "^3.0.1",
     "d3-zoom": "^3.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/d3-selection": "^3.0.11",
+    "@types/d3-transition": "^3.0.9",
     "@types/d3-zoom": "^3.0.7",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
