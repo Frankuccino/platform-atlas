@@ -1,4 +1,4 @@
-import { getBrandIcon, getCategory, getProduct } from './catalog';
+import { getBrandIcon, getCategory, getProduct, getProductLinks } from './catalog';
 import type { Product } from './catalog/types';
 
 interface Props {
@@ -31,6 +31,7 @@ export default function ProductDetail({ productId, onSelect, onClose }: Props) {
   const category = getCategory(product.categoryId);
   const brandIcon = getBrandIcon(product.id);
   const alternatives = product.alternatives.map((id) => getProduct(id));
+  const links = getProductLinks(product.id);
 
   return (
     <aside className="detail" aria-label={`Details for ${product.name}`}>
@@ -49,6 +50,17 @@ export default function ProductDetail({ productId, onSelect, onClose }: Props) {
       <h2>{product.name}</h2>
       <p className="category">{category.name}</p>
       <p className="what">{product.what}</p>
+
+      {links && (
+        <div className="links">
+          <a className="link" href={links.docs} target="_blank" rel="noreferrer noopener">
+            Documentation
+          </a>
+          <a className="link" href={links.site} target="_blank" rel="noreferrer noopener">
+            Website
+          </a>
+        </div>
+      )}
 
       {alternatives.length > 0 && (
         <div className="alts">

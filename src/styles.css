@@ -491,6 +491,31 @@ body {
   color: var(--fg);
 }
 
+/* Outbound links. They are real anchors, not buttons, because they leave the
+   app: a button-styled link would hide that from the cursor and from keyboard
+   focus order. */
+.detail .links {
+  display: flex;
+  gap: 4px;
+  margin: 10px 0 0;
+}
+
+.detail .link {
+  flex: 1;
+  font: 500 11px var(--f-mono);
+  text-align: center;
+  text-decoration: none;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.detail .link:hover {
+  border-color: var(--accent);
+}
+
 .detail .alt-list {
   display: flex;
   flex-wrap: wrap;
