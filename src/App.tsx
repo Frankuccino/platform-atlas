@@ -18,6 +18,15 @@ const PULSE_DURATION = 2600;
 /** Length of one expand-and-fade cycle, so the ring repeats rather than playing once. */
 const PULSE_CYCLE = 850;
 
+/**
+ * The detail panel overlays the right edge of the canvas, so the map's centre is
+ * not where the viewer's attention is. Centering a node on the canvas centre
+ * leaves it pushed right by half the panel, which reads as a mis-centred jump.
+ * This is the panel's width plus its inset, kept in sync with the width and
+ * `right` values in `.detail` in styles.css.
+ */
+const PANEL_INSET = 308;
+
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -216,9 +225,10 @@ export default function App() {
       }
 
       if (best) {
-        setHighlighted(best.id);
-        setSelectedCategory(null);
-        setSelectedDomain(null);
+        // Selecting a node on the map also pans to it. Reading the detail card
+        // while the node sits off in a corner defeats the point of having both,
+        // and it keeps map clicks and list clicks behaving the same way.
+        focusProduct(best.id);
         return;
       }
 
@@ -250,14 +260,15 @@ export default function App() {
    * to wherever the camera had been before. Driving the behaviour updates both,
    * and it emits the zoom event that updates the state.
    */
-  function focusOn(worldX: number, worldY: number, scale: number) {
+  function focusOn(worldX: number, worldY: number, scale: number, rightInset = 0) {
     const clamped = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
     const selection = selectionRef.current;
     const behavior = zoomBehaviorRef.current;
     if (!selection || !behavior) return;
 
+    const freeWidth = size.width - rightInset;
     const transform = zoomIdentity
-      .translate(size.width / 2 - worldX * clamped, size.height / 2 - worldY * clamped)
+      .translate(freeWidth / 2 - worldX * clamped, size.height / 2 - worldY * clamped)
       .scale(clamped);
 
     selection.call(behavior.transform, transform);
@@ -273,8 +284,9 @@ export default function App() {
     setSelectedDomain(null);
     // Keep the user's zoom and only pan. Forcing a fixed scale discarded whatever
     // level they had chosen, which made the gesture feel like a reset. The pulse
-    // is what tells them where the target ended up.
-    focusOn(node.x, node.y, camera.scale);
+    // is what tells them where the target ended up. The panel inset keeps the node
+    // centred in the space the panel is not covering.
+    focusOn(node.x, node.y, camera.scale, PANEL_INSET);
     setPulseStart({ productId, startedAt: performance.now() });
   }
 
