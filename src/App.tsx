@@ -128,15 +128,19 @@ export default function App() {
   }, []);
 
   // Draw whenever anything that affects the picture changes.
+  // Skipped when the canvas is not in the DOM (roadmap view); otherwise the
+  // draw loop clears a detached buffer and the map comes back gray.
   useEffect(() => {
+    if (!canvasRef.current) return;
     draw();
-  }, [draw, camera, layout, size, highlighted, pulseStart]);
+  }, [draw, camera, layout, size, highlighted, pulseStart, view]);
 
   // Keep painting while a pulse is running. The loop reads the live ref, so a
   // camera change mid-pulse does not restart it, and it stops itself once the
-  // duration has elapsed.
+  // duration has elapsed. Skipped entirely when the canvas is not mounted so it
+  // does not redraw a detached buffer.
   useEffect(() => {
-    if (!pulseStart) return;
+    if (!pulseStart || !canvasRef.current) return;
 
     let raf = 0;
     const tick = () => {
@@ -179,11 +183,20 @@ export default function App() {
   // then never re-applied. The container is already laid out at this point.
   const hasFittedRef = useRef(false);
 
+  // Re-fit when the canvas comes back after being hidden (e.g. roadmap toggle).
+  useEffect(() => {
+    if (view !== 'map') return;
+    hasFittedRef.current = false;
+  }, [view]);
+
   // Wire up d3-zoom.
+  // Runs only when the layout changes (once), but skips if the canvas is not
+  // mounted. When the user toggles away from the map and back, a new canvas
+  // element is created and the zoom binding must be re-established.
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
-    if (!canvas) return;
+    if (!canvas || !container) return;
 
     const behavior = d3zoom<HTMLCanvasElement, unknown>()
       .scaleExtent([MIN_SCALE, MAX_SCALE])
@@ -224,7 +237,7 @@ export default function App() {
     return () => {
       selection.on('.zoom', null);
     };
-  }, [layout]);
+  }, [layout, view]);
 
   // Click to select. Nodes win over the cluster they sit in, because a node is
   // the more specific target. Clicking a category block that contains no node
@@ -273,7 +286,7 @@ export default function App() {
     return () => {
       selection.on('click', null);
     };
-  }, [layout, camera, focusProduct]);
+  }, [layout, camera, focusProduct, view]);
 
   /**
    * Centre the camera on a world point at a given scale.
