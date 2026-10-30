@@ -8,6 +8,9 @@ interface Props {
   onSelectCategory: (categoryId: string) => void;
   /** Open a domain's category list. */
   onSelectDomain: (domainId: string) => void;
+  /** Hook for the drawer: lets the parent mark the nav as a dialog on mobile. */
+  id?: string;
+  className?: string;
 }
 
 /**
@@ -25,9 +28,11 @@ export default function DomainNav({
   onJumpDomain,
   onSelectCategory,
   onSelectDomain,
+  id,
+  className = 'sidebar',
 }: Props) {
   return (
-    <nav className="sidebar" aria-label="Browse the map">
+    <nav id={id} className={className} aria-label="Browse the map">
       <h2 className="sidebar-title">Browse</h2>
 
       {DOMAINS.map((domain) => (

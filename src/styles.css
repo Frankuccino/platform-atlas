@@ -67,6 +67,35 @@ body {
   color: var(--muted);
 }
 
+/* The drawer toggle. Desktop has the browse list permanently on screen, so the
+   button is not needed there and is hidden rather than merely unstyled. */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font: 500 11px var(--f-mono);
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.nav-toggle svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.nav-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .tools {
   position: relative;
   flex: 1 1 auto;
@@ -599,7 +628,21 @@ body {
   }
 
   .brand {
-    width: 100%;
+    /* Shrink to share the first row with the drawer toggle instead of taking
+       the whole width and pushing it to a second line. */
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* The count is decoration; the map is the point. */
+  .count {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    min-height: 44px;
   }
 
   .tools {
@@ -609,7 +652,386 @@ body {
 
   .jumps {
     order: 2;
+    /* flex: none on the base rule stops this from shrinking, so the row's content
+       width becomes the item width and it overflows the viewport instead of
+       scrolling. It must be allowed to shrink to the toolbar's width first. */
+    flex: 1 1 100%;
+    min-width: 0;
     overflow-x: auto;
     flex-wrap: nowrap;
+    /* The row scrolls, so it must not be clipped by the toolbar's padding. */
+    margin: 0 -14px;
+    padding: 0 14px;
+    scrollbar-width: none;
+  }
+
+  .jumps::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The canvas must be able to shrink below its own content, or the sidebar
+     pushes it off the viewport and the map is unreachable. */
+  .canvas-wrap {
+    min-width: 0;
+  }
+
+  /* The canvas is a gesture surface: without this the browser takes the pinch
+     and drag for itself and the map cannot be zoomed by touch. */
+  .canvas-wrap canvas {
+    touch-action: none;
+  }
+
+  /* The browse list becomes a drawer. It is out of flow on mobile, so the
+     canvas gets the whole width, and it slides in over the map. */
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(84vw, 300px);
+    z-index: 40;
+    transform: translateX(-102%);
+    transition: transform 180ms ease-out;
+    box-shadow: 0 0 40px rgb(17 27 37 / 0.28);
+    touch-action: pan-y;
+  }
+
+  .sidebar.open {
+    transform: none;
+  }
+
+  /* The scrim is only ever shown on mobile, and only while the drawer is open. */
+  .scrim {
+    display: none;
+  }
+
+  .scrim.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgb(17 27 37 / 0.4);
+    border: 0;
+    padding: 0;
+  }
+
+  /* Panels become bottom sheets: full width, anchored to the bottom, and
+     capped in height so the map stays visible behind them. */
+  .panel,
+  .detail {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    max-height: 62%;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 0;
+    touch-action: pan-y;
+  }
+
+  .panel .rows,
+  .detail {
+    overscroll-behavior: contain;
+  }
+
+  /* Touch targets. A finger is not a mouse pointer: 44px is the smallest hit
+     area that is reliably tappable. */
+  .search {
+    min-height: 44px;
+  }
+
+  .jumps button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .nav-domain-head {
+    height: 44px;
+  }
+
+  .nav-domain-jump {
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav-cat {
+    min-height: 44px;
+    padding: 8px 12px 8px 16px;
+  }
+
+  .row {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .panel-head {
+    min-height: 48px;
+  }
+
+  .panel-head .close,
+  .detail .close {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .detail .link,
+  .detail .alt {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   Roadmap view
+   ============================================================ */
+
+.roadmap {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 24px 40px;
+}
+
+.roadmap-head {
+  margin-bottom: 20px;
+}
+
+.roadmap-head h2 {
+  font: 700 20px / 1.2 var(--f-display);
+  color: var(--fg);
+  margin: 0 0 4px;
+}
+
+.roadmap-sub {
+  font: 400 12px / 1.4 var(--f-mono);
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.roadmap-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 500 11px var(--f-mono);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms, background 120ms;
+}
+
+.pill-filter:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.pill-filter-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgb(0 179 167 / 0.08);
+}
+
+.pill-filter-count {
+  font: 400 10px var(--f-mono);
+  color: inherit;
+  opacity: 0.7;
+}
+
+/* Phases */
+
+.phase {
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.phase-done {
+  border-left: 3px solid #22c55e;
+}
+
+.phase-in-progress {
+  border-left: 3px solid var(--accent);
+}
+
+.phase-planned {
+  border-left: 3px solid var(--line);
+  opacity: 0.85;
+}
+
+.phase-head {
+  width: 100%;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--fg);
+  font: 600 13px / 1.2 var(--f-display);
+}
+
+.phase-head:hover {
+  background: var(--bg);
+}
+
+.phase-goal {
+  font: 400 11px / 1.3 var(--f-mono);
+  color: var(--muted);
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.phase-count {
+  font: 500 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.phase-bar {
+  width: 80px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.phase-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.phase-chevron {
+  font: 11px / 1 monospace;
+  color: var(--muted);
+  width: 16px;
+  text-align: center;
+}
+
+/* Milestones */
+
+.milestones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.milestone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}
+
+.milestone:first-child {
+  border-top: 0;
+}
+
+.milestone-title {
+  font: 600 12px / 1.3 var(--f-display);
+  color: var(--fg);
+  min-width: 130px;
+}
+
+.milestone-detail {
+  flex: 1 1 200px;
+  font: 400 11px / 1.4 var(--f-mono);
+  color: var(--muted);
+}
+
+.milestone-doc {
+  font: 400 11px / 1 var(--f-mono);
+  color: var(--accent);
+  text-decoration: none;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.milestone-doc:hover {
+  background: var(--bg);
+}
+
+/* Pills */
+
+.pill {
+  display: inline-block;
+  font: 500 10px / 1 var(--f-mono);
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.pill-done {
+  color: #15803d;
+  background: rgb(34 197 94 / 0.12);
+}
+
+.pill-progress {
+  color: #0e7490;
+  background: rgb(0 179 167 / 0.12);
+}
+
+.pill-planned {
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.pill-all {
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--fg);
+}
+
+/* Roadmap toggle */
+
+.roadmap-toggle {
+  display: inline-flex;
+  font: 500 11px var(--f-mono);
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms;
+}
+
+.roadmap-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.roadmap-toggle.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgb(0 179 167 / 0.08);
+}
+
+@media (max-width: 760px) {
+  .roadmap-toggle {
+    display: none;
   }
 }
