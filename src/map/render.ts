@@ -52,6 +52,12 @@ export interface RenderOptions {
   camera: Camera;
   width: number;
   height: number;
+  /**
+   * Device pixel ratio of the canvas backing store. The camera and the layout are
+   * both authored in CSS pixels, so the transform has to be scaled by this to
+   * land correctly on a high-density screen.
+   */
+  dpr: number;
   /** 0 = fully zoomed out, 1 = fully zoomed in. Drives edge and label density. */
   zoomT: number;
   highlightedProductId: string | null;
@@ -89,12 +95,31 @@ const COLORS = {
   highlight: '#0a6a86',
 };
 
-function applyCamera(ctx: CanvasRenderingContext2D, camera: Camera, width: number, height: number) {
+function applyCamera(
+  ctx: CanvasRenderingContext2D,
+  camera: Camera,
+  width: number,
+  height: number,
+  dpr: number,
+) {
+  // Clear and fill in device pixels, so the whole backing store is reset rather
+  // than just the top-left CSS-pixel corner of it.
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, width * dpr, height * dpr);
   ctx.fillStyle = COLORS.bg;
-  ctx.fillRect(0, 0, width, height);
-  ctx.setTransform(camera.scale, 0, 0, camera.scale, camera.x, camera.y);
+  ctx.fillRect(0, 0, width * dpr, height * dpr);
+  // The camera is authored in CSS pixels, but the backing store is dpr times
+  // larger. Scaling the transform by dpr keeps one world unit equal to one CSS
+  // pixel; without it the map is drawn at a third of its size on a retina screen
+  // and both the picture and the click targets land in the wrong place.
+  ctx.setTransform(
+    camera.scale * dpr,
+    0,
+    0,
+    camera.scale * dpr,
+    camera.x * dpr,
+    camera.y * dpr,
+  );
 }
 
 export function renderMap(
@@ -105,7 +130,7 @@ export function renderMap(
   const { camera, zoomT, highlightedProductId } = options;
   const pulse = options.pulse ?? null;
 
-  applyCamera(ctx, camera, options.width, options.height);
+  applyCamera(ctx, camera, options.width, options.height, options.dpr);
 
   // Font sizes are expressed in screen pixels and divided by the camera scale,
   // so a label is the same readable size at every zoom level. World-space fonts

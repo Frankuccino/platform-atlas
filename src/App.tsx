@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
 // Side effect: adds .transition() to selections, which d3-zoom's transform
 // transition path needs. d3-zoom already depends on this package.
@@ -11,6 +11,7 @@ import ProductDetail from './ProductDetail';
 import CategoryPanel from './CategoryPanel';
 import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
+import RoadmapPage from './RoadmapPage';
 import type { DomainLayout, MapLayout } from './map/layout';
 
 const MIN_SCALE = 0.12;
@@ -26,15 +27,6 @@ const PULSE_DURATION = 2600;
 /** Length of one expand-and-fade cycle, so the ring repeats rather than playing once. */
 const PULSE_CYCLE = 850;
 
-/**
- * The detail panel overlays the right edge of the canvas, so the map's centre is
- * not where the viewer's attention is. Centering a node on the canvas centre
- * leaves it pushed right by half the panel, which reads as a mis-centred jump.
- * This is the panel's width plus its inset, kept in sync with the width and
- * `right` values in `.detail` in styles.css.
- */
-const PANEL_INSET = 308;
-
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +41,8 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [pulseStart, setPulseStart] = useState<{ productId: string; startedAt: number } | null>(null);
+  const [navOpen, setNavOpen] = useState(false);
+  const [view, setView] = useState<'map' | 'roadmap'>('map');
   const [size, setSize] = useState({ width: 800, height: 600 });
 
   const matches = useMemo(() => searchProducts(query), [query]);
@@ -108,7 +102,6 @@ export default function App() {
 
     const scaleForZoomT = Math.min(Math.max(live.camera.scale, MIN_SCALE), MAX_SCALE);
     const zoomT = (scaleForZoomT - MIN_SCALE) / (MAX_SCALE - MIN_SCALE);
-
     let pulse: { productId: string; phase: number } | null = null;
     if (live.pulseStart) {
       const elapsed = performance.now() - live.pulseStart.startedAt;
@@ -120,11 +113,14 @@ export default function App() {
       }
     }
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // renderMap owns the transform: it clears in device pixels and then applies
+    // the camera scaled by the device ratio. Setting a transform here would be
+    // overwritten by the first thing it does.
     renderMap(ctx, live.layout, {
       camera: live.camera,
       width: live.size.width,
       height: live.size.height,
+      dpr,
       zoomT,
       highlightedProductId: live.highlighted,
       pulse,
@@ -155,6 +151,27 @@ export default function App() {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [pulseStart, draw]);
+
+  // The drawer is a mobile-only affordance. Close it on Escape, and whenever the
+  // viewport grows past the breakpoint, so a rotated phone does not leave an open
+  // drawer whose styles no longer apply.
+  useEffect(() => {
+    if (!navOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setNavOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth > 760) setNavOpen(false);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [navOpen]);
 
   // Fit the whole map once, reading the container's real size straight from the
   // DOM. React's size state is not used here because it is still the 800x600
@@ -268,15 +285,23 @@ export default function App() {
    * to wherever the camera had been before. Driving the behaviour updates both,
    * and it emits the zoom event that updates the state.
    */
-  function focusOn(worldX: number, worldY: number, scale: number, rightInset = 0) {
+  function focusOn(
+    worldX: number,
+    worldY: number,
+    scale: number,
+    rightInset = 0,
+    bottomInset = 0,
+  ) {
+    const live = liveRef.current;
     const clamped = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
     const selection = selectionRef.current;
     const behavior = zoomBehaviorRef.current;
     if (!selection || !behavior) return;
 
-    const freeWidth = size.width - rightInset;
+    const freeWidth = live.size.width - rightInset;
+    const freeHeight = live.size.height - bottomInset;
     const transform = zoomIdentity
-      .translate(freeWidth / 2 - worldX * clamped, size.height / 2 - worldY * clamped)
+      .translate(freeWidth / 2 - worldX * clamped, freeHeight / 2 - worldY * clamped)
       .scale(clamped);
 
     selection.call(behavior.transform, transform);
@@ -292,11 +317,47 @@ export default function App() {
     setSelectedDomain(null);
     // Keep the user's zoom and only pan. Forcing a fixed scale discarded whatever
     // level they had chosen, which made the gesture feel like a reset. The pulse
-    // is what tells them where the target ended up. The panel inset keeps the node
-    // centred in the space the panel is not covering.
-    focusOn(node.x, node.y, camera.scale, PANEL_INSET);
+    // is what tells them where the target ended up.
     setPulseStart({ productId, startedAt: performance.now() });
+    // The camera move itself happens in the layout effect below, once the panel
+    // that opened with this selection has rendered and its insets are known.
   }
+
+  /**
+   * The insets the open panel forces on the visible area.
+   *
+   * The panel is a floating card on desktop (right inset) and a bottom sheet on
+   * mobile (bottom inset), so a node must centre on the space that is actually
+   * visible. Measured from the DOM rather than from a constant, so a restyled
+   * panel cannot silently drift the centering again.
+   */
+  function panelInsets(): { right: number; bottom: number } {
+    const wrap = containerRef.current;
+    const panel = wrap?.querySelector<HTMLElement>('.detail, .panel') ?? null;
+    if (!wrap || !panel) return { right: 0, bottom: 0 };
+
+    const w = wrap.getBoundingClientRect();
+    const p = panel.getBoundingClientRect();
+    // A panel that spans the width is a bottom sheet; otherwise it is a side card.
+    if (p.width >= w.width - 1) {
+      return { right: 0, bottom: Math.max(0, w.bottom - p.top) };
+    }
+    return { right: Math.max(0, w.right - p.left), bottom: 0 };
+  }
+
+  // Centre on the selected node once its panel has rendered. A layout effect runs
+  // after the DOM update but before paint, so the insets are correct on the first
+  // frame and the node never appears at the canvas centre before shifting.
+  useLayoutEffect(() => {
+    if (!highlighted) return;
+    const node = layout.nodeById.get(highlighted);
+    if (!node) return;
+    const { right, bottom } = panelInsets();
+    focusOn(node.x, node.y, liveRef.current.camera.scale, right, bottom);
+    // focusOn reads the live size from the ref, so it stays correct even though
+    // this effect only re-runs when the selection changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlighted]);
 
   /**
    * Animate the camera to a transform.
@@ -423,6 +484,28 @@ export default function App() {
           </span>
         </div>
 
+        <button
+          type="button"
+          className="nav-toggle"
+          onClick={() => setNavOpen((open) => !open)}
+          aria-expanded={navOpen}
+          aria-controls="map-nav"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+          Browse
+        </button>
+
+        <button
+          type="button"
+          className={`roadmap-toggle ${view === 'roadmap' ? 'is-active' : ''}`}
+          onClick={() => setView((v) => (v === 'roadmap' ? 'map' : 'roadmap'))}
+          aria-pressed={view === 'roadmap'}
+        >
+          Roadmap
+        </button>
+
         <div className="tools">
           <input
             className="search"
@@ -459,13 +542,38 @@ export default function App() {
       </header>
 
       <div className="body">
-        <DomainNav
-          onJumpDomain={jumpToDomain}
-          onSelectCategory={selectCategory}
-          onSelectDomain={selectDomain}
-        />
+        {view === 'roadmap' ? (
+          <RoadmapPage />
+        ) : (
+          <Fragment>
+            {/* Closing the drawer on a selection is what makes room for the panel
+                that opened with it. */}
+            <button
+              type="button"
+              className={navOpen ? 'scrim open' : 'scrim'}
+              onClick={() => setNavOpen(false)}
+              aria-label="Close the browse list"
+              tabIndex={navOpen ? 0 : -1}
+            />
 
-        <div className="canvas-wrap" ref={containerRef}>
+            <DomainNav
+              id="map-nav"
+              className={navOpen ? 'sidebar open' : 'sidebar'}
+              onJumpDomain={(domainId) => {
+                setNavOpen(false);
+                jumpToDomain(domainId);
+              }}
+              onSelectCategory={(categoryId) => {
+                setNavOpen(false);
+                selectCategory(categoryId);
+              }}
+              onSelectDomain={(domainId) => {
+                setNavOpen(false);
+                selectDomain(domainId);
+              }}
+            />
+
+            <div className="canvas-wrap" ref={containerRef}>
           <canvas ref={canvasRef} />
 
           {selectedDomain && (
@@ -494,6 +602,8 @@ export default function App() {
             />
           )}
         </div>
+          </Fragment>
+        )}
       </div>
     </div>
   );
