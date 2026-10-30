@@ -623,6 +623,26 @@ body {
   padding: 0;
 }
 
+/* Scrim: hidden by default on every viewport. The base rule must be outside
+   the mobile media query; otherwise desktop leaks an unstyled <button> into
+   the layout. */
+.scrim {
+  display: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+@media (max-width: 760px) {
+  .scrim.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgb(17 27 37 / 0.4);
+  }
+}
+
 @media (max-width: 760px) {
   .toolbar {
     flex-wrap: wrap;
@@ -698,21 +718,6 @@ body {
 
   .sidebar.open {
     transform: none;
-  }
-
-  /* The scrim is only ever shown on mobile, and only while the drawer is open. */
-  .scrim {
-    display: none;
-  }
-
-  .scrim.open {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 30;
-    background: rgb(17 27 37 / 0.4);
-    border: 0;
-    padding: 0;
   }
 
   /* Panels become bottom sheets: full width, anchored to the bottom, and
