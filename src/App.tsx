@@ -48,7 +48,9 @@ export default function App() {
   const matches = useMemo(() => searchProducts(query), [query]);
 
   // Measure the container. This is a layout effect so the size is correct before
-  // the fit below reads it.
+  // the fit below reads it. Re-runs when the view toggles back to the map so a
+  // freshly mounted canvas gets measured even though the container size itself
+  // has not changed.
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -67,7 +69,7 @@ export default function App() {
       observer?.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, []);
+  }, [view]);
 
   // The animation loop needs the current camera and layout without restarting,
   // so the latest values are kept in a ref rather than in the effect's deps.

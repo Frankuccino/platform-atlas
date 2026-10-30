@@ -50,8 +50,9 @@ body {
 .brand {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   flex: none;
+  min-width: 0;
 }
 
 .brand h1 {
@@ -60,6 +61,7 @@ body {
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .count {
