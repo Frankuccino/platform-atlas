@@ -15,6 +15,13 @@ spaced-repetition loop for learning them.
 | [navigation.md](navigation.md) | Domain grouping for the 26-category index |
 | [features.md](features.md) | Confirmed scope, open questions, non-goals |
 
+## In-app pages
+
+| Page | How to open |
+| --- | --- |
+| Map | Default view — zoomable product atlas |
+| Roadmap | Click **Roadmap** in the toolbar — phases, milestones, status filters |
+
 ## Quick facts
 
 - Catalog: 26 categories, roughly 180 products, migrating from a single HTML file
