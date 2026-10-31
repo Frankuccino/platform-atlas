@@ -7,6 +7,8 @@ interface Props {
   /** Navigate to another product, used by the alternative and recommendation links. */
   onSelect: (productId: string) => void;
   onClose: () => void;
+  /** Open the full product guide page. */
+  onOpenGuide?: (productId: string) => void;
 }
 
 const MODEL_LABEL: Record<Product['model'], string> = {
@@ -33,7 +35,7 @@ function RecSection({ recs, onSelect }: { recs: Recommendation[]; onSelect: (id:
   );
 }
 
-export default function ProductDetail({ productId, onSelect, onClose }: Props) {
+export default function ProductDetail({ productId, onSelect, onClose, onOpenGuide }: Props) {
   const product = getProduct(productId);
   const category = getCategory(product.categoryId);
   const brandIcon = getBrandIcon(product.id);
@@ -84,6 +86,17 @@ export default function ProductDetail({ productId, onSelect, onClose }: Props) {
       )}
 
       <RecSection recs={recommendations} onSelect={onSelect} />
+
+      {onOpenGuide && (
+        <button
+          type="button"
+          className="guide-open"
+          onClick={() => onOpenGuide(productId)}
+          aria-label={`Open full guide for ${product.name}`}
+        >
+          Full guide →
+        </button>
+      )}
 
       {product.externalAlternatives.length > 0 && (
         <p className="external">

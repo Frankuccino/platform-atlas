@@ -12,6 +12,7 @@ import CategoryPanel from './CategoryPanel';
 import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
 import RoadmapPage from './RoadmapPage';
+import ProductGuidePage from './ProductGuidePage';
 import type { DomainLayout, MapLayout } from './map/layout';
 
 const MIN_SCALE = 0.12;
@@ -42,7 +43,8 @@ export default function App() {
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [pulseStart, setPulseStart] = useState<{ productId: string; startedAt: number } | null>(null);
   const [navOpen, setNavOpen] = useState(false);
-  const [view, setView] = useState<'map' | 'roadmap'>('map');
+  const [view, setView] = useState<'map' | 'roadmap' | 'guide'>('map');
+  const [guideProductId, setGuideProductId] = useState<string | null>(null);
   const [size, setSize] = useState({ width: 800, height: 600 });
 
   const matches = useMemo(() => searchProducts(query), [query]);
@@ -338,6 +340,17 @@ export default function App() {
     // that opened with this selection has rendered and its insets are known.
   }
 
+  /** Open the full product guide page. */
+  function openGuide(productId: string) {
+    setGuideProductId(productId);
+    setView('guide');
+  }
+
+  function backToMap() {
+    setGuideProductId(null);
+    setView('map');
+  }
+
   /**
    * The insets the open panel forces on the visible area.
    *
@@ -557,7 +570,9 @@ export default function App() {
       </header>
 
       <div className="body">
-        {view === 'roadmap' ? (
+        {view === 'guide' && guideProductId ? (
+          <ProductGuidePage productId={guideProductId} onBack={backToMap} />
+        ) : view === 'roadmap' ? (
           <RoadmapPage />
         ) : (
           <Fragment>
@@ -614,6 +629,7 @@ export default function App() {
               productId={highlighted}
               onSelect={focusProduct}
               onClose={() => setHighlighted(null)}
+              onOpenGuide={openGuide}
             />
           )}
         </div>

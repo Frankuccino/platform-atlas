@@ -59,7 +59,29 @@ export const PRODUCTS: Product[] = [
   { id: "hetzner", name: "Hetzner", model: "S", what: "Very cheap European servers and bare metal. Most compute per dollar if you are fine managing things yourself.", categoryId: "cloud", alternatives: ["digitalocean"], externalAlternatives: ["OVHcloud"] },
   { id: "cloudflare", name: "Cloudflare", model: "S", what: "Edge network: CDN, DNS, DDoS and WAF protection, Workers (serverless) and R2 storage. Put it in front of almost any product.", categoryId: "cloud", alternatives: [], externalAlternatives: ["Fastly", "Akamai", "AWS CloudFront"] },
   { id: "fly-io", name: "Fly.io", model: "S", what: "Runs containers in many regions close to users. Good for low-latency apps without Kubernetes.", categoryId: "cloud", alternatives: ["railway", "render"], externalAlternatives: [] },
-  { id: "vercel", name: "Vercel", model: "S", what: "Hosting built around Next.js with preview deploys, serverless and edge functions. Best for React and Next.js frontends.", categoryId: "hosting", alternatives: ["netlify"], externalAlternatives: ["Cloudflare Pages"] },
+  { id: "vercel", name: "Vercel", model: "S", what: "Hosting built around Next.js with preview deploys, serverless and edge functions. Best for React and Next.js frontends.", categoryId: "hosting", alternatives: ["netlify"], externalAlternatives: ["Cloudflare Pages"], guide: {
+    description: "Vercel is a cloud platform for static sites and serverless functions that fits especially well with Next.js and the React ecosystem. It automates the build and deploy pipeline: push to GitHub, get a production deployment with a global CDN, TLS, and preview URLs for every pull request. The platform abstracts away infrastructure decisions so frontend teams can ship without managing servers, load balancers, or CI config. It is the operational layer for the Jamstack and the most common production host for Next.js apps.",
+    certificates: [
+      "Vercel Community Developer Certification",
+      "Next.js Certification (official, via Vercel learning paths)",
+    ],
+    trends: [
+      { title: "Edge runtime adoption for lower-latency middleware", source: "Vercel Blog", date: "2026-10-15" },
+      { title: "v0 AI-generated UI shipped as deployable React code", source: "Vercel Blog", date: "2026-09-28" },
+      { title: "Larger free-tier edge function memory and runtime limits", source: "Vercel Changelog", date: "2026-09-10" },
+    ],
+    stats: {
+      employees: "~300",
+      founded: "2015",
+      headquarters: "San Francisco, CA",
+      funding: "$250M+ series C",
+      marketShare: "Leading host for Next.js/React deployments",
+    },
+    blogPosts: [
+      { title: "Introducing v0: generative UI inside Vercel", url: "https://vercel.com/blog/v0-generative-ui", date: "2026-09-20" },
+      { title: "Edge Middleware goes GA with memory increases", url: "https://vercel.com/blog/edge-middleware-ga", date: "2026-09-05" },
+    ],
+  } },
   { id: "netlify", name: "Netlify", model: "S", what: "Static and Jamstack hosting with forms, functions and deploy previews.", categoryId: "hosting", alternatives: ["vercel"], externalAlternatives: ["Cloudflare Pages"] },
   { id: "render", name: "Render", model: "S", what: "Heroku-style hosting for web services, workers, cron jobs and databases.", categoryId: "hosting", alternatives: ["railway", "fly-io", "heroku"], externalAlternatives: [] },
   { id: "railway", name: "Railway", model: "S", what: "Deploy from a repo with databases and usage-based billing. Quick for prototypes and small backends.", categoryId: "hosting", alternatives: ["render", "fly-io"], externalAlternatives: [] },
