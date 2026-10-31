@@ -12,6 +12,43 @@ export interface Product {
   alternatives: string[];
   /** Alternatives named in the source that are not products here. */
   externalAlternatives: string[];
+  /** Optional deep-dive guide content for this product. */
+  guide?: ProductGuide;
+}
+
+/** Rich guide content for a product deep-dive page. */
+export interface ProductGuide {
+  /** Longer description: what it is, what they offer, who it is for. */
+  description: string;
+  /** Certifications or certificate programs offered by or related to this product. */
+  certificates: string[];
+  /** Current trends or recent developments. */
+  trends: ProductTrend[];
+  /** Key statistics and data points. */
+  stats: ProductStats;
+  /** Recent blog posts, news, or announcements. */
+  blogPosts: ProductBlogPost[];
+}
+
+export interface ProductTrend {
+  title: string;
+  source: string;
+  date: string; // ISO date string
+}
+
+export interface ProductStats {
+  employees?: string;
+  founded?: string;
+  headquarters?: string;
+  funding?: string;
+  marketShare?: string;
+  [key: string]: string | undefined;
+}
+
+export interface ProductBlogPost {
+  title: string;
+  url: string;
+  date: string; // ISO date string
 }
 
 export const PRODUCTS: Product[] = [

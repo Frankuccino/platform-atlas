@@ -614,6 +614,56 @@ body {
   margin: 10px 0 0;
 }
 
+.detail .recs {
+  margin-top: 12px;
+}
+
+.detail .recs > h3 {
+  font: 600 11px / 1.3 var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+
+.detail .rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail .rec {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.detail .rec:hover {
+  border-color: var(--accent);
+}
+
+.detail .rec-name {
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+.detail .rec-reason {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .detail .close {
   font: 500 11px var(--f-mono);
   color: var(--muted);

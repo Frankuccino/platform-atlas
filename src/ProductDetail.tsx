@@ -1,9 +1,10 @@
-import { getBrandIcon, getCategory, getProduct, getProductLinks } from './catalog';
+import { getBrandIcon, getCategory, getProduct, getProductLinks, recommendFor } from './catalog';
 import type { Product } from './catalog/types';
+import type { Recommendation } from './catalog/recommendations';
 
 interface Props {
   productId: string;
-  /** Navigate to another product, used by the alternative links. */
+  /** Navigate to another product, used by the alternative and recommendation links. */
   onSelect: (productId: string) => void;
   onClose: () => void;
 }
@@ -15,23 +16,30 @@ const MODEL_LABEL: Record<Product['model'], string> = {
   C: 'Cloud',
 };
 
-/**
- * Detail panel for one product.
- *
- * Shows the catalog entry: what it is, when to reach for it, and what to
- * compare it against. Alternatives are links that move the camera, so comparing
- * two vendors is one click rather than two searches.
- *
- * Study state (status, confidence, notes) is not here yet. It belongs in this
- * panel once the study loop exists, because the panel is where you look at a
- * product and where you would record what you know about it.
- */
+function RecSection({ recs, onSelect }: { recs: Recommendation[]; onSelect: (id: string) => void }) {
+  if (recs.length === 0) return null;
+  return (
+    <div className="recs">
+      <h3>Recommended for you</h3>
+      <div className="rec-list">
+        {recs.map(({ product, reason }) => (
+          <button key={product.id} type="button" className="rec" onClick={() => onSelect(product.id)} title={reason}>
+            <span className="rec-name">{product.name}</span>
+            <span className="rec-reason">{reason}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ProductDetail({ productId, onSelect, onClose }: Props) {
   const product = getProduct(productId);
   const category = getCategory(product.categoryId);
   const brandIcon = getBrandIcon(product.id);
   const alternatives = product.alternatives.map((id) => getProduct(id));
   const links = getProductLinks(product.id);
+  const recommendations = recommendFor(productId, 6);
 
   return (
     <aside className="detail" aria-label={`Details for ${product.name}`}>
@@ -74,6 +82,8 @@ export default function ProductDetail({ productId, onSelect, onClose }: Props) {
           </div>
         </div>
       )}
+
+      <RecSection recs={recommendations} onSelect={onSelect} />
 
       {product.externalAlternatives.length > 0 && (
         <p className="external">

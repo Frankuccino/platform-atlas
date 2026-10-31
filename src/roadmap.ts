@@ -187,6 +187,34 @@ export const PHASES: Phase[] = [
       },
     ],
   },
+  {
+    id: 'p5-intelligence',
+    title: 'Phase 5 — Intelligence',
+    goal: 'Turn the catalog into a guided learning platform with recommendations and deep-dive guides.',
+    status: 'planned',
+    milestones: [
+      {
+        id: 'm5-recommendations',
+        title: 'Smart recommendations',
+        detail: 'Rule-based suggestions in the detail panel: "runs on", "runs alongside", and adjacent-category picks, derived from layer edges and category adjacency.',
+        status: 'in-progress',
+        doc: 'docs/recommendations.md',
+      },
+      {
+        id: 'm5-deep-dives',
+        title: 'Product deep-dive guides',
+        detail: 'Per-product pages with certificates, current trends, statistics, and recent blog posts. Content curated manually at first, then sourced from RSS and LLM summaries.',
+        status: 'planned',
+        doc: 'docs/data-model.md',
+      },
+      {
+        id: 'm5-ai-enhance',
+        title: 'LLM-enhanced recommendations',
+        detail: 'Groq-powered natural-language suggestions ("Show me tools for a React + Postgres stack") and auto-generated product summaries.',
+        status: 'planned',
+      },
+    ],
+  },
 ];
 
 export function overallStatus(phase: Phase): Status {

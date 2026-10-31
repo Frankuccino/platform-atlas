@@ -9,6 +9,7 @@ export { CATEGORIES, DOMAINS, LAYER_EDGES, PRODUCTS };
 export { CATEGORY_ICONS, MODEL_COLORS, MODEL_LABELS } from './icons';
 export { BRAND_ICONS, getBrandIcon } from './brand-icons';
 export { PRODUCT_LINKS, getProductLinks } from './product-links';
+export { recommendFor, type Recommendation } from './recommendations';
 
 export const productById: ReadonlyMap<string, Product> = new Map(PRODUCTS.map((p) => [p.id, p]));
 export const categoryById: ReadonlyMap<string, Category> = new Map(
