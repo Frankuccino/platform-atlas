@@ -188,6 +188,9 @@ body {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
+  /* Subtle dot grid: composited by the browser, zero canvas draw calls. */
+  background-image: radial-gradient(circle, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .body {
