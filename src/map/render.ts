@@ -106,8 +106,8 @@ function applyCamera(
   // than just the top-left CSS-pixel corner of it.
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, width * dpr, height * dpr);
-  ctx.fillStyle = COLORS.bg;
-  ctx.fillRect(0, 0, width * dpr, height * dpr);
+  // Do NOT fill with a solid color here: the .canvas-wrap CSS background
+  // (dot grid) is meant to show through the transparent canvas.
   // The camera is authored in CSS pixels, but the backing store is dpr times
   // larger. Scaling the transform by dpr keeps one world unit equal to one CSS
   // pixel; without it the map is drawn at a third of its size on a retina screen
