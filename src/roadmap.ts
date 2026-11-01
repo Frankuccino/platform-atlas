@@ -215,6 +215,51 @@ export const PHASES: Phase[] = [
       },
     ],
   },
+  {
+    id: 'p6-ux',
+    title: 'Phase 6 — UX Polish',
+    goal: 'Make the existing surface feel complete, trustworthy, and easy to use.',
+    status: 'planned',
+    milestones: [
+      {
+        id: 'm6-onboarding',
+        title: 'First-run onboarding',
+        detail: 'Dismissible "New? Start here" tip overlay or tour that explains the map, sidebar, and detail panel. One-time, stored in localStorage.',
+        status: 'planned',
+      },
+      {
+        id: 'm6-freshness',
+        title: 'Content freshness signals',
+        detail: 'Show "Updated <date>" or "Data as of <month>" badges on products and guides so users know when content might be stale.',
+        status: 'planned',
+      },
+      {
+        id: 'm6-keyboard',
+        title: 'Keyboard navigation',
+        detail: 'Review flow and map navigable without a pointer: Escape to close panels, arrow keys to move between nodes, Enter to open detail.',
+        status: 'planned',
+        doc: 'docs/features.md',
+      },
+      {
+        id: 'm6-search',
+        title: 'Natural language search',
+        detail: 'Search accepts phrases like "React hosting with Postgres" and filters products by category + layer edge adjacency instead of matching exact text only.',
+        status: 'planned',
+      },
+      {
+        id: 'm6-dark-mode',
+        title: 'Dark mode',
+        detail: 'Toggle between light and dark themes. CSS custom properties on :root and [data-theme="dark"]. Persist choice in localStorage.',
+        status: 'planned',
+      },
+      {
+        id: 'm6-suggest',
+        title: 'Product suggestion form',
+        detail: 'One-field form: "Suggest a product or correction." Submissions go to a GitHub issue or a lightweight backend endpoint.',
+        status: 'planned',
+      },
+    ],
+  },
 ];
 
 export function overallStatus(phase: Phase): Status {
