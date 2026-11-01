@@ -14,6 +14,7 @@ spaced-repetition loop for learning them.
 | [scheduler.md](scheduler.md) | Due calculation, intervals, skip behaviour, determinism |
 | [navigation.md](navigation.md) | Domain grouping for the 26-category index |
 | [features.md](features.md) | Confirmed scope, open questions, non-goals |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules. |
 
 ## In-app pages
 
