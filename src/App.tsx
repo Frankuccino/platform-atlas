@@ -13,6 +13,7 @@ import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
 import RoadmapPage from './RoadmapPage';
 import ProductGuidePage from './ProductGuidePage';
+import Onboarding, { useOnboarding } from './Onboarding';
 import type { DomainLayout, MapLayout } from './map/layout';
 
 const MIN_SCALE = 0.12;
@@ -45,6 +46,7 @@ export default function App() {
   const [navOpen, setNavOpen] = useState(false);
   const [view, setView] = useState<'map' | 'roadmap' | 'guide'>('map');
   const [guideProductId, setGuideProductId] = useState<string | null>(null);
+  const { visible: onboardingVisible, dismiss: dismissOnboarding } = useOnboarding();
   const [size, setSize] = useState({ width: 800, height: 600 });
 
   const matches = useMemo(() => searchProducts(query), [query]);
@@ -636,6 +638,10 @@ export default function App() {
           </Fragment>
         )}
       </div>
+
+      {onboardingVisible && (
+        <Onboarding onDismiss={dismissOnboarding} />
+      )}
     </div>
   );
 }
