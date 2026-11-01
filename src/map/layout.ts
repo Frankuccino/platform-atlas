@@ -1,4 +1,4 @@
-import { CATEGORIES, DOMAINS, PRODUCTS, getCategory } from '../catalog';
+import { CATEGORIES, DOMAINS, PRODUCTS, getCategory, LAYER_EDGES, ALTERNATIVE_EDGES } from '../catalog';
 
 export interface NodeLayout {
   productId: string;
@@ -285,12 +285,42 @@ export function computeLayout(): MapLayout {
 export function searchProducts(query: string): string[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return PRODUCTS.filter(
-    (p) =>
-      p.name.toLowerCase().includes(q) ||
-      p.what.toLowerCase().includes(q) ||
-      CATEGORIES.find((c) => c.id === p.categoryId)?.name.toLowerCase().includes(q),
-  ).map((p) => p.id);
+  const tokens = q.split(/[\s,+#@.-]+/).filter(Boolean);
+
+  const matched = new Set<string>();
+  const matchedCategories = new Set<string>();
+
+  for (const product of PRODUCTS) {
+    const haystack = `${product.name} ${product.what} ${CATEGORIES.find((c) => c.id === product.categoryId)?.name ?? ''}`.toLowerCase();
+    if (tokens.some((t) => haystack.includes(t))) {
+      matched.add(product.id);
+      matchedCategories.add(product.categoryId);
+    }
+  }
+
+  // Expand to adjacent categories via layer edges.
+  const adjacentCategories = new Set<string>();
+  for (const categoryId of matchedCategories) {
+    for (const edge of LAYER_EDGES) {
+      if (edge.from === categoryId) adjacentCategories.add(edge.to);
+      if (edge.to === categoryId) adjacentCategories.add(edge.from);
+    }
+  }
+
+  // Add products from adjacent categories.
+  for (const product of PRODUCTS) {
+    if (adjacentCategories.has(product.categoryId)) {
+      matched.add(product.id);
+    }
+  }
+
+  // Expand to alternative products.
+  for (const edge of ALTERNATIVE_EDGES) {
+    if (matched.has(edge.from)) matched.add(edge.to);
+    if (matched.has(edge.to)) matched.add(edge.from);
+  }
+
+  return Array.from(matched);
 }
 
 export { CATEGORIES };
