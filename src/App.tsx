@@ -63,6 +63,20 @@ export default function App() {
 
   const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
+  const [suggestionOpen, setSuggestionOpen] = useState(false);
+  const [suggestionText, setSuggestionText] = useState('');
+
+  const submitSuggestion = () => {
+    const text = suggestionText.trim();
+    if (!text) return;
+    const url = new URL('https://github.com/Frankuccino/platform-atlas/issues/new');
+    url.searchParams.set('title', 'Product suggestion or correction');
+    url.searchParams.set('body', text);
+    window.open(url.toString(), '_blank');
+    setSuggestionText('');
+    setSuggestionOpen(false);
+  };
+
   const matches = useMemo(() => searchProducts(query), [query]);
 
   // Measure the container. This is a layout effect so the size is correct before
@@ -575,6 +589,15 @@ export default function App() {
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
 
+        <button
+          type="button"
+          className="suggest-toggle"
+          onClick={() => setSuggestionOpen((open) => !open)}
+          aria-pressed={suggestionOpen}
+        >
+          Suggest
+        </button>
+
         <div className="tools">
           <input
             className="search"
@@ -677,6 +700,29 @@ export default function App() {
           </Fragment>
         )}
       </div>
+
+      {suggestionOpen && (
+        <div className="suggest-backdrop" onClick={() => setSuggestionOpen(false)}>
+          <div className="suggest-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Suggest a product or correction</h3>
+            <textarea
+              value={suggestionText}
+              onChange={(e) => setSuggestionText(e.target.value)}
+              placeholder="e.g. Add Railway, or fix the Vercel description"
+              rows={4}
+              autoFocus
+            />
+            <div className="suggest-actions">
+              <button type="button" className="suggest-cancel" onClick={() => setSuggestionOpen(false)}>
+                Cancel
+              </button>
+              <button type="button" className="suggest-submit" onClick={submitSuggestion}>
+                Open in GitHub
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {onboardingVisible && (
         <Onboarding onDismiss={dismissOnboarding} />

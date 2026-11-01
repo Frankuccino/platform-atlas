@@ -1454,3 +1454,76 @@ body {
 .onboarding-next:hover {
   filter: brightness(1.1);
 }
+
+.suggest-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgb(17 27 37 / 0.45);
+}
+
+.suggest-dialog {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  width: min(420px, calc(100% - 32px));
+  box-shadow: 0 12px 40px rgb(17 27 37 / 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.suggest-dialog h3 {
+  font: 700 14px var(--f-display);
+  margin: 0;
+  color: var(--fg);
+}
+
+.suggest-dialog textarea {
+  font: 400 13px var(--f-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.suggest-dialog textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.suggest-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.suggest-cancel {
+  font: 500 11px var(--f-mono);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.suggest-submit {
+  font: 500 11px var(--f-mono);
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.suggest-submit:hover {
+  filter: brightness(1.1);
+}
