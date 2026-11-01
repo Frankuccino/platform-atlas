@@ -2,7 +2,7 @@ import {
   BRAND_ICONS,
   CATEGORY_ICONS,
   LAYER_EDGES,
-  MODEL_COLORS,
+  getModelColors,
   getCategory,
   getDomain,
   getProduct,
@@ -52,22 +52,15 @@ export interface RenderOptions {
   camera: Camera;
   width: number;
   height: number;
-  /**
-   * Device pixel ratio of the canvas backing store. The camera and the layout are
-   * both authored in CSS pixels, so the transform has to be scaled by this to
-   * land correctly on a high-density screen.
-   */
+  /** Device pixel ratio of the canvas backing store. */
   dpr: number;
   /** 0 = fully zoomed out, 1 = fully zoomed in. Drives edge and label density. */
   zoomT: number;
   highlightedProductId: string | null;
-  /**
-   * Transient "you are here" marker for a node the user just jumped to.
-   *
-   * `phase` runs 0..1 and is advanced by the caller on each animation frame, so
-   * the ring expands and fades in a loop rather than being a static outline.
-   */
+  /** Transient "you are here" marker for a node the user just jumped to. */
   pulse?: { productId: string; phase: number } | null;
+  /** Active theme so the canvas can render dark/light palettes. */
+  theme?: 'light' | 'dark';
 }
 
 /**
@@ -78,7 +71,7 @@ export interface RenderOptions {
  */
 const LABEL_CLEARANCE = 10;
 
-const COLORS = {
+const LIGHT_COLORS = {
   bg: '#edf0f3',
   domainFill: '#ffffff',
   domainStroke: '#d3dae1',
@@ -94,6 +87,28 @@ const COLORS = {
   edgeLayer: '#0a6a86',
   highlight: '#0a6a86',
 };
+
+const DARK_COLORS = {
+  bg: '#0f1419',
+  domainFill: '#1a2027',
+  domainStroke: '#2d333b',
+  clusterFill: '#161b22',
+  clusterStroke: '#2d333b',
+  domainLabel: '#7d8590',
+  clusterLabel: '#7d8590',
+  nodeFill: '#1a2027',
+  nodeStroke: '#30363d',
+  nodeLabel: '#e6edf3',
+  nodeLabelMuted: '#7d8590',
+  edgeAlternative: '#3fb950',
+  edgeLayer: '#58a6ff',
+  highlight: '#58a6ff',
+};
+
+function getColors(theme?: 'light' | 'dark') {
+  if (theme === 'dark') return DARK_COLORS;
+  return LIGHT_COLORS;
+}
 
 function applyCamera(
   ctx: CanvasRenderingContext2D,
@@ -143,8 +158,8 @@ export function renderMap(
   // the label is deferred to after the clusters, because the clusters are drawn
   // later and would otherwise paint over it.
   for (const domain of layout.domains) {
-    ctx.fillStyle = COLORS.domainFill;
-    ctx.strokeStyle = COLORS.domainStroke;
+    ctx.fillStyle = getColors(options.theme).domainFill;
+    ctx.strokeStyle = getColors(options.theme).domainStroke;
     ctx.lineWidth = 1.5;
     roundRect(ctx, domain.x, domain.y, domain.width, domain.height, 14);
     ctx.fill();
@@ -154,8 +169,8 @@ export function renderMap(
   // Clusters: the category boxes inside each domain.
   for (const domain of layout.domains) {
     for (const cluster of domain.clusters) {
-      ctx.fillStyle = COLORS.clusterFill;
-      ctx.strokeStyle = COLORS.clusterStroke;
+      ctx.fillStyle = getColors(options.theme).clusterFill;
+      ctx.strokeStyle = getColors(options.theme).clusterStroke;
       ctx.lineWidth = 1;
       roundRect(ctx, cluster.x, cluster.y, cluster.width, cluster.height, 10);
       ctx.fill();
@@ -166,7 +181,7 @@ export function renderMap(
         // Clamped to the reserved band, so the label cannot run down into the
         // nodes below it.
         const labelHeight = Math.min(11 * invScale, CLUSTER_LABEL_BAND);
-        ctx.fillStyle = COLORS.clusterLabel;
+        ctx.fillStyle = getColors(options.theme).clusterLabel;
         ctx.font = `500 ${labelHeight}px "IBM Plex Mono", monospace`;
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
@@ -174,7 +189,7 @@ export function renderMap(
 
         const iconPath = CATEGORY_ICONS[cluster.categoryId];
         if (iconPath) {
-          ctx.fillStyle = COLORS.clusterLabel;
+          ctx.fillStyle = getColors(options.theme).clusterLabel;
           drawIcon(ctx, iconPath, cluster.x + 10 + 8 * invScale, cluster.y + 8 + labelHeight / 2, labelHeight);
         }
       }
@@ -187,7 +202,7 @@ export function renderMap(
   if (zoomT > 0.015) {
     for (const domain of layout.domains) {
       const labelHeight = Math.min(13 * invScale, DOMAIN_LABEL_BAND);
-      ctx.fillStyle = COLORS.domainLabel;
+      ctx.fillStyle = getColors(options.theme).domainLabel;
       ctx.font = `600 ${labelHeight}px "IBM Plex Sans Condensed", sans-serif`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
@@ -201,7 +216,7 @@ export function renderMap(
   if (zoomT < 0.6) {
     const alpha = Math.min(0.3, (0.6 - zoomT) / 0.35);
     ctx.globalAlpha = alpha;
-    ctx.strokeStyle = COLORS.edgeLayer;
+    ctx.strokeStyle = getColors(options.theme).edgeLayer;
     // Screen-constant width, so the layer lines stay visible when the whole
     // map is fitted into the viewport. lineWidth is in world units and is
     // scaled by the camera transform, so the clamp must happen in screen space
@@ -237,13 +252,13 @@ export function renderMap(
 
   for (const node of layout.nodes) {
     const isHighlighted = node.productId === highlightedProductId;
-    const model = MODEL_COLORS[getProduct(node.productId).model] ?? COLORS;
+    const model = getModelColors(options.theme)[getProduct(node.productId).model] ?? getColors(options.theme);
 
     ctx.beginPath();
     ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-    ctx.fillStyle = isHighlighted ? COLORS.highlight : model.fill;
+    ctx.fillStyle = isHighlighted ? getColors(options.theme).highlight : model.fill;
     ctx.fill();
-    ctx.strokeStyle = isHighlighted ? COLORS.highlight : model.stroke;
+    ctx.strokeStyle = isHighlighted ? getColors(options.theme).highlight : model.stroke;
     ctx.lineWidth = isHighlighted ? 2 : 1;
     ctx.stroke();
 
@@ -257,7 +272,7 @@ export function renderMap(
       const spread = 4 + pulse.phase * 12;
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.radius + spread, 0, Math.PI * 2);
-      ctx.strokeStyle = COLORS.highlight;
+      ctx.strokeStyle = getColors(options.theme).highlight;
       ctx.globalAlpha = (1 - pulse.phase) * 0.85;
       ctx.lineWidth = 2 * invScale;
       ctx.stroke();
@@ -304,7 +319,7 @@ export function renderMap(
       // The label sits below the node, on the light cluster fill, so it must be
       // a dark colour. White would be invisible. The highlighted label uses the
       // same accent as the node's fill and ring, so the two read as one unit.
-      ctx.fillStyle = isHighlighted ? COLORS.highlight : COLORS.nodeLabel;
+      ctx.fillStyle = isHighlighted ? getColors(options.theme).highlight : getColors(options.theme).nodeLabel;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText(name, node.x, node.y + node.radius + 4);

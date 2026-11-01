@@ -6,7 +6,7 @@ import type { Category, Domain, Product } from './types';
 
 export * from './types';
 export { CATEGORIES, DOMAINS, LAYER_EDGES, PRODUCTS };
-export { CATEGORY_ICONS, MODEL_COLORS, MODEL_LABELS } from './icons';
+export { CATEGORY_ICONS, MODEL_COLORS, MODEL_LABELS, getModelColors } from './icons';
 export { BRAND_ICONS, getBrandIcon } from './brand-icons';
 export { PRODUCT_LINKS, getProductLinks } from './product-links';
 export { recommendFor, type Recommendation } from './recommendations';

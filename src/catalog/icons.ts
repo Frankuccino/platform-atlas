@@ -56,12 +56,27 @@ export const CATEGORY_ICONS: Record<string, string> = {
 };
 
 /** Colours for the four delivery models, matching the existing legend. */
-export const MODEL_COLORS: Record<string, { fill: string; stroke: string }> = {
+export const MODEL_COLORS_LIGHT: Record<string, { fill: string; stroke: string }> = {
   S: { fill: '#dbeaf7', stroke: '#17497a' },
   O: { fill: '#dcefdc', stroke: '#21571f' },
   B: { fill: '#e6e0f3', stroke: '#48358a' },
   C: { fill: '#f6e6cf', stroke: '#7a4a0c' },
 };
+
+export const MODEL_COLORS_DARK: Record<string, { fill: string; stroke: string }> = {
+  S: { fill: '#0c2d4d', stroke: '#7cbfff' },
+  O: { fill: '#0d2e0d', stroke: '#6ee768' },
+  B: { fill: '#2a1f47', stroke: '#b8a1ff' },
+  C: { fill: '#3d2a15', stroke: '#f5b87a' },
+};
+
+export function getModelColors(theme?: 'light' | 'dark') {
+  if (theme === 'dark') return MODEL_COLORS_DARK;
+  return MODEL_COLORS_LIGHT;
+}
+
+/** Legacy alias kept for any remaining direct access. */
+export const MODEL_COLORS = MODEL_COLORS_LIGHT;
 
 export const MODEL_LABELS: Record<string, string> = {
   S: 'Managed',

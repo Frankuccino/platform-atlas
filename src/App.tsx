@@ -144,8 +144,9 @@ export default function App() {
       zoomT,
       highlightedProductId: live.highlighted,
       pulse,
+      theme,
     });
-  }, []);
+  }, [theme]);
 
   // Draw whenever anything that affects the picture changes.
   // Skipped when the canvas is not in the DOM (roadmap view); otherwise the
