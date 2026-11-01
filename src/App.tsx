@@ -162,25 +162,39 @@ export default function App() {
     return () => cancelAnimationFrame(raf);
   }, [pulseStart, draw]);
 
-  // The drawer is a mobile-only affordance. Close it on Escape, and whenever the
-  // viewport grows past the breakpoint, so a rotated phone does not leave an open
-  // drawer whose styles no longer apply.
+  // Global keyboard shortcuts.
   useEffect(() => {
-    if (!navOpen) return;
-
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setNavOpen(false);
-    };
-    const onResize = () => {
-      if (window.innerWidth > 760) setNavOpen(false);
+      if (event.key === 'Escape') {
+        // Close in reverse order of opening: guide → detail → category → domain → drawer.
+        if (view === 'guide') {
+          setGuideProductId(null);
+          setView('map');
+        } else if (highlighted) {
+          setHighlighted(null);
+        } else if (selectedCategory) {
+          setSelectedCategory(null);
+        } else if (selectedDomain) {
+          setSelectedDomain(null);
+        } else if (navOpen) {
+          setNavOpen(false);
+        }
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('resize', onResize);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [view, highlighted, selectedCategory, selectedDomain, navOpen]);
+
+  // Close the mobile drawer when the viewport crosses the breakpoint, so a
+  // rotated phone does not leave an open drawer whose styles no longer apply.
+  useEffect(() => {
+    if (!navOpen) return;
+    const onResize = () => {
+      if (window.innerWidth > 760) setNavOpen(false);
     };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, [navOpen]);
 
   // Fit the whole map once, reading the container's real size straight from the
