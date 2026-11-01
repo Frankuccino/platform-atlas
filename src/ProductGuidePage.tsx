@@ -61,6 +61,11 @@ export default function ProductGuidePage({ productId, onBack }: Props) {
             <p className="guide-meta">
               <span className={`badge b-${product.model}`}>{MODEL_LABEL[product.model]}</span>
               <span className="guide-category">{category.name}</span>
+              {product.lastUpdated && (
+                <span className="guide-freshness">
+                  · Updated {new Date(product.lastUpdated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </span>
+              )}
             </p>
           </div>
         </div>

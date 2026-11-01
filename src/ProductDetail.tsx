@@ -59,6 +59,9 @@ export default function ProductDetail({ productId, onSelect, onClose, onOpenGuid
 
       <h2>{product.name}</h2>
       <p className="category">{category.name}</p>
+      {product.lastUpdated && (
+        <p className="freshness">Data as of {new Date(product.lastUpdated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+      )}
       <p className="what">{product.what}</p>
 
       {links && (

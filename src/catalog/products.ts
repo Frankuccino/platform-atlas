@@ -14,6 +14,8 @@ export interface Product {
   externalAlternatives: string[];
   /** Optional deep-dive guide content for this product. */
   guide?: ProductGuide;
+  /** ISO date string for when this product's data was last reviewed. */
+  lastUpdated?: string;
 }
 
 /** Rich guide content for a product deep-dive page. */
@@ -81,8 +83,10 @@ export const PRODUCTS: Product[] = [
       { title: "Introducing v0: generative UI inside Vercel", url: "https://vercel.com/blog/v0-generative-ui", date: "2026-09-20" },
       { title: "Edge Middleware goes GA with memory increases", url: "https://vercel.com/blog/edge-middleware-ga", date: "2026-09-05" },
     ],
-  } },
-  { id: "netlify", name: "Netlify", model: "S", what: "Static and Jamstack hosting with forms, functions and deploy previews.", categoryId: "hosting", alternatives: ["vercel"], externalAlternatives: ["Cloudflare Pages"] },
+  },
+  lastUpdated: "2026-10-31",
+},
+{ id: "netlify", name: "Netlify", model: "S", what: "Static and Jamstack hosting with forms, functions and deploy previews.", categoryId: "hosting", alternatives: ["vercel"], externalAlternatives: ["Cloudflare Pages"] },
   { id: "render", name: "Render", model: "S", what: "Heroku-style hosting for web services, workers, cron jobs and databases.", categoryId: "hosting", alternatives: ["railway", "fly-io", "heroku"], externalAlternatives: [] },
   { id: "railway", name: "Railway", model: "S", what: "Deploy from a repo with databases and usage-based billing. Quick for prototypes and small backends.", categoryId: "hosting", alternatives: ["render", "fly-io"], externalAlternatives: [] },
   { id: "heroku", name: "Heroku", model: "S", what: "The original PaaS (owned by Salesforce). Git-push deploys, large add-on marketplace.", categoryId: "hosting", alternatives: ["render", "railway"], externalAlternatives: [] },

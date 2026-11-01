@@ -558,6 +558,13 @@ body {
   margin: 0 0 8px;
 }
 
+.detail .freshness {
+  font: 400 10px var(--f-mono);
+  color: var(--muted);
+  margin: 0 0 10px;
+  opacity: 0.8;
+}
+
 .detail .what {
   font-size: 13px;
   margin: 0;
@@ -1151,6 +1158,12 @@ body {
 
 .guide-category {
   font: 400 12px var(--f-body);
+}
+
+.guide-freshness {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+  opacity: 0.8;
 }
 
 .guide-body {
