@@ -199,14 +199,14 @@ export function renderMap(
   // They are the map's structural story, so they fade in as you zoom out rather
   // than appearing at a hard threshold.
   if (zoomT < 0.6) {
-    const alpha = Math.min(1, (0.6 - zoomT) / 0.35);
+    const alpha = Math.min(0.3, (0.6 - zoomT) / 0.35);
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = COLORS.edgeLayer;
     // Screen-constant width, so the layer lines stay visible when the whole
     // map is fitted into the viewport. lineWidth is in world units and is
     // scaled by the camera transform, so the clamp must happen in screen space
     // before dividing by the scale.
-    const edgeScreenWidth = Math.min(2.5, Math.max(1, 1.8));
+    const edgeScreenWidth = Math.min(1.5, Math.max(0.8, 1));
     ctx.lineWidth = edgeScreenWidth * invScale;
     ctx.lineCap = 'round';
 
@@ -225,17 +225,6 @@ export function renderMap(
           const midX = (fromX + toX) / 2;
           ctx.quadraticCurveTo(midX, fromY, toX, toY);
           ctx.stroke();
-
-          // Arrowhead, so direction is unambiguous.
-          const angle = Math.atan2(toY - fromY, toX - midX);
-          const head = 7;
-          ctx.beginPath();
-          ctx.moveTo(toX, toY);
-          ctx.lineTo(toX - head * Math.cos(angle - 0.4), toY - head * Math.sin(angle - 0.4));
-          ctx.lineTo(toX - head * Math.cos(angle + 0.4), toY - head * Math.sin(angle + 0.4));
-          ctx.closePath();
-          ctx.fillStyle = COLORS.edgeLayer;
-          ctx.fill();
         }
       }
     }
