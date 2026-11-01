@@ -1142,6 +1142,38 @@ body {
   border-color: var(--accent);
 }
 
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font: 500 11px var(--f-mono);
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 120ms, border-color 120ms;
+}
+
+.github-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.github-link svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.github-count {
+  min-width: 14px;
+  text-align: center;
+}
+
 .roadmap-toggle.is-active {
   color: var(--accent);
   border-color: var(--accent);
