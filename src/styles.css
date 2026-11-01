@@ -11,6 +11,16 @@
   --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1419;
+  --surface: #1a2027;
+  --fg: #e6edf3;
+  --muted: #7d8590;
+  --line: #2d333b;
+  --accent: #58a6ff;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1090,6 +1100,24 @@ body {
 
 .roadmap-toggle:hover {
   color: var(--accent);
+  border-color: var(--accent);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: border-color 120ms;
+}
+
+.theme-toggle:hover {
   border-color: var(--accent);
 }
 

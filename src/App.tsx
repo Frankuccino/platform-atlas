@@ -49,6 +49,20 @@ export default function App() {
   const { visible: onboardingVisible, dismiss: dismissOnboarding } = useOnboarding();
   const [size, setSize] = useState({ width: 800, height: 600 });
 
+  // Theme: persisted in localStorage, applied as data-theme on #root.
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const stored = localStorage.getItem('platform-atlas-theme');
+    if (stored === 'dark' || stored === 'light') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('platform-atlas-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+
   const matches = useMemo(() => searchProducts(query), [query]);
 
   // Measure the container. This is a layout effect so the size is correct before
@@ -548,6 +562,16 @@ export default function App() {
           aria-pressed={view === 'roadmap'}
         >
           Roadmap
+        </button>
+
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
         </button>
 
         <div className="tools">
