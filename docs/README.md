@@ -16,6 +16,7 @@ spaced-repetition loop for learning them.
 | [features.md](features.md) | Confirmed scope, open questions, non-goals |
 | [react-best-practices.md](react-best-practices.md) | React structure audit, skills to investigate, tools for quality validation |
 | [quality-baseline.md](quality-baseline.md) | Installed tooling baseline, gate results, and next validation steps |
+| [quality-engineering.md](quality-engineering.md) | Study guide: why quality engineering matters, how to learn it, time investment, and impact on future work |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules. |
 
 ## In-app pages
