@@ -80,7 +80,7 @@ No test runner yet. `typecheck` + `validate` are the current correctness gates.
 - **One stylesheet.** The app is small enough that a single `styles.css` with
   BEM-ish class names is simpler than CSS modules or a design-token pipeline.
 - **No routing library.** The view is a three-state machine (`map | roadmap |
-  guide`). Adding a router would add bundle weight and indirection for three
+guide`). Adding a router would add bundle weight and indirection for three
   views.
 
 ---
@@ -151,7 +151,7 @@ No test runner yet. `typecheck` + `validate` are the current correctness gates.
   explains why, not what. The diff already shows what changed.
   ```
   fix: hide scrim on desktop
-  
+
   The .scrim base rule was inside the mobile media query, so desktop
   rendered an unstyled <button>. Move it to root level.
   ```

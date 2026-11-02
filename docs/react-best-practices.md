@@ -61,37 +61,37 @@ src/
 
 ### 2.1 File organization
 
-| Standard | Current | Gap |
-| --- | --- | --- |
-| **Feature-based folders** (Bulletproof React / Vercel patterns) | Flat `src/` components | Each feature (map, browse, roadmap, guide, onboarding) should own its components, styles, tests, and types. |
-| **Colocated tests** | No test infra | `Component.test.tsx` next to the component, or `__tests__/` inside the feature folder. |
-| **Colocated styles** | One monolithic `styles.css` | At minimum split by feature (`map/map.css`, `guide/guide.css`). CSS modules or plain CSS per feature are both acceptable. |
-| **Component barrel index** | None | `features/map/index.ts` re-exports the public surface of the feature. Keeps imports stable. |
-| **Public API boundary** | `App.tsx` imports everything | `features/` folders expose only what other features need. |
+| Standard                                                        | Current                      | Gap                                                                                                                       |
+| --------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Feature-based folders** (Bulletproof React / Vercel patterns) | Flat `src/` components       | Each feature (map, browse, roadmap, guide, onboarding) should own its components, styles, tests, and types.               |
+| **Colocated tests**                                             | No test infra                | `Component.test.tsx` next to the component, or `__tests__/` inside the feature folder.                                    |
+| **Colocated styles**                                            | One monolithic `styles.css`  | At minimum split by feature (`map/map.css`, `guide/guide.css`). CSS modules or plain CSS per feature are both acceptable. |
+| **Component barrel index**                                      | None                         | `features/map/index.ts` re-exports the public surface of the feature. Keeps imports stable.                               |
+| **Public API boundary**                                         | `App.tsx` imports everything | `features/` folders expose only what other features need.                                                                 |
 
 ### 2.2 Lint / format
 
-| Standard | Current | Gap |
-| --- | --- | --- |
-| ESLint with React + TS + a11y plugins | None | No static analysis beyond `tsc`. |
-| Prettier | None | No enforced formatting. |
-| Import-order / no-circular-deps check | None | `eslint-plugin-import` can catch cycles at lint time. |
+| Standard                              | Current | Gap                                                   |
+| ------------------------------------- | ------- | ----------------------------------------------------- |
+| ESLint with React + TS + a11y plugins | None    | No static analysis beyond `tsc`.                      |
+| Prettier                              | None    | No enforced formatting.                               |
+| Import-order / no-circular-deps check | None    | `eslint-plugin-import` can catch cycles at lint time. |
 
 ### 2.3 Testing
 
-| Standard | Current | Gap |
-| --- | --- | --- |
-| Unit / integration tests | None | `npm run typecheck` + `npm run validate` are correctness gates, but they do not exercise behaviour. |
-| Component tests | None | React Testing Library + Vitest is the standard pair for this stack. |
-| E2E | None | Playwright or Cypress for the canvas interactions, search, panel open/close. |
+| Standard                 | Current | Gap                                                                                                 |
+| ------------------------ | ------- | --------------------------------------------------------------------------------------------------- |
+| Unit / integration tests | None    | `npm run typecheck` + `npm run validate` are correctness gates, but they do not exercise behaviour. |
+| Component tests          | None    | React Testing Library + Vitest is the standard pair for this stack.                                 |
+| E2E                      | None    | Playwright or Cypress for the canvas interactions, search, panel open/close.                        |
 
 ### 2.4 CI / quality gates
 
-| Standard | Current | Gap |
-| --- | --- | --- |
-| CI on push | None | `typecheck`, `validate`, `lint`, `test`, `build` should run on every push. |
-| Bundle size budget | None | Visualizer + CI check prevents accidental bloat. |
-| Accessibility audit | None | `eslint-plugin-jsx-a11y` + axe in E2E. |
+| Standard            | Current | Gap                                                                        |
+| ------------------- | ------- | -------------------------------------------------------------------------- |
+| CI on push          | None    | `typecheck`, `validate`, `lint`, `test`, `build` should run on every push. |
+| Bundle size budget  | None    | Visualizer + CI check prevents accidental bloat.                           |
+| Accessibility audit | None    | `eslint-plugin-jsx-a11y` + axe in E2E.                                     |
 
 ---
 
@@ -100,15 +100,15 @@ src/
 These are existing Hermes skills. Load each one and read the full doc before
 deciding what to adopt.
 
-| Skill | Why it matters | What to validate |
-| --- | --- | --- |
-| `vercel-react-best-practices` | Vercel's official React/Next.js performance and structure guidance. | File colocation rules, server/client boundaries, bundle-splitting advice. |
-| `vercel-composition-patterns` | Composition patterns that scale. | Whether the current detail/panel/guide hierarchy should use compound components or render props. |
-| `frontend-composition` | Lifted state, prop-forwarding, context scope. | Whether the current `App.tsx` prop-drilling to panels is still acceptable or should use context. |
-| `ui-design-patterns` | CSS design systems. | Whether the single `styles.css` is still defensible or should migrate to CSS modules / design tokens. |
-| `web-design-guidelines` | Web Interface Guidelines compliance. | Accessibility, keyboard nav, focus management in panels/modals. |
-| `plan` | Bite-sized implementation plans. | Use to draft the refactor plan once gaps are confirmed. |
-| `project-gap-audit` | Audit current state against target. | Run as the structured gap-analysis step. |
+| Skill                         | Why it matters                                                      | What to validate                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `vercel-react-best-practices` | Vercel's official React/Next.js performance and structure guidance. | File colocation rules, server/client boundaries, bundle-splitting advice.                             |
+| `vercel-composition-patterns` | Composition patterns that scale.                                    | Whether the current detail/panel/guide hierarchy should use compound components or render props.      |
+| `frontend-composition`        | Lifted state, prop-forwarding, context scope.                       | Whether the current `App.tsx` prop-drilling to panels is still acceptable or should use context.      |
+| `ui-design-patterns`          | CSS design systems.                                                 | Whether the single `styles.css` is still defensible or should migrate to CSS modules / design tokens. |
+| `web-design-guidelines`       | Web Interface Guidelines compliance.                                | Accessibility, keyboard nav, focus management in panels/modals.                                       |
+| `plan`                        | Bite-sized implementation plans.                                    | Use to draft the refactor plan once gaps are confirmed.                                               |
+| `project-gap-audit`           | Audit current state against target.                                 | Run as the structured gap-analysis step.                                                              |
 
 ---
 
@@ -116,35 +116,35 @@ deciding what to adopt.
 
 ### 4.1 Static analysis
 
-| Tool | Install | What it validates |
-| --- | --- | --- |
-| **ESLint** + `@typescript-eslint` + `eslint-plugin-react` + `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y` + `eslint-plugin-import` | `npm i -D eslint ...` | TS correctness, React rules, hooks deps, a11y, import cycles. |
-| **Prettier** | `npm i -D prettier` | Formatting consistency. |
-| **Type-coverage** | `npm i -D type-coverage` | % of code with explicit types. Target: >= 95%. |
-| **Knip** | `npm i -D knip` | Unused files, exports, dependencies. |
-| **Depcheck** | `npm i -D depcheck` | Unused dependencies. |
+| Tool                                                                                                                                        | Install                  | What it validates                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------- |
+| **ESLint** + `@typescript-eslint` + `eslint-plugin-react` + `eslint-plugin-react-hooks` + `eslint-plugin-jsx-a11y` + `eslint-plugin-import` | `npm i -D eslint ...`    | TS correctness, React rules, hooks deps, a11y, import cycles. |
+| **Prettier**                                                                                                                                | `npm i -D prettier`      | Formatting consistency.                                       |
+| **Type-coverage**                                                                                                                           | `npm i -D type-coverage` | % of code with explicit types. Target: >= 95%.                |
+| **Knip**                                                                                                                                    | `npm i -D knip`          | Unused files, exports, dependencies.                          |
+| **Depcheck**                                                                                                                                | `npm i -D depcheck`      | Unused dependencies.                                          |
 
 ### 4.2 Testing
 
-| Tool | Install | What it validates |
-| --- | --- | --- |
-| **Vitest** + `@testing-library/react` + `@testing-library/jest-dom` + `jsdom` | `npm i -D vitest @testing-library/react ...` | Unit and component tests. |
-| **Playwright** or **Cypress** | `npm i -D @playwright/test` | E2E: canvas zoom, panel open, search, theme toggle. |
+| Tool                                                                          | Install                                      | What it validates                                   |
+| ----------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------- |
+| **Vitest** + `@testing-library/react` + `@testing-library/jest-dom` + `jsdom` | `npm i -D vitest @testing-library/react ...` | Unit and component tests.                           |
+| **Playwright** or **Cypress**                                                 | `npm i -D @playwright/test`                  | E2E: canvas zoom, panel open, search, theme toggle. |
 
 ### 4.3 Bundle / performance
 
-| Tool | Install | What it validates |
-| --- | --- | --- |
-| **rollup-plugin-visualizer** (already via Vite) | Add to `vite.config.ts` | Bundle composition, size, duplicates. |
-| **Lighthouse** (CI mode) | `npm i -D lighthouse` | Performance, a11y, best-practices score on the deployed URL. |
-| **axe-core** + `jest-axe` or Playwright axe | `npm i -D axe-core` | Automated a11y violations in tests. |
+| Tool                                            | Install                 | What it validates                                            |
+| ----------------------------------------------- | ----------------------- | ------------------------------------------------------------ |
+| **rollup-plugin-visualizer** (already via Vite) | Add to `vite.config.ts` | Bundle composition, size, duplicates.                        |
+| **Lighthouse** (CI mode)                        | `npm i -D lighthouse`   | Performance, a11y, best-practices score on the deployed URL. |
+| **axe-core** + `jest-axe` or Playwright axe     | `npm i -D axe-core`     | Automated a11y violations in tests.                          |
 
 ### 4.4 Type-level checks
 
-| Tool | What it validates |
-| --- | --- |
-| `tsc --noEmit` (already present) | Type correctness. |
-| `tsc --noEmit --declaration` | Declaration emit cleanliness. |
+| Tool                             | What it validates             |
+| -------------------------------- | ----------------------------- |
+| `tsc --noEmit` (already present) | Type correctness.             |
+| `tsc --noEmit --declaration`     | Declaration emit cleanliness. |
 
 ---
 

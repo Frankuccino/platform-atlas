@@ -16,14 +16,14 @@ Group the 26 categories into 6 domains. Each domain is a collapsible group with 
 count. Collapsed by default on first load, so the index is 6 lines instead of 26.
 Expanding one reveals only the categories inside it.
 
-| Domain | Categories |
-| --- | --- |
-| Foundation | Cloud infrastructure, App hosting and deploy platforms, CI/CD containers IaC |
-| Data | Databases and data stores, Data warehouse and pipelines, Storage and media |
-| Runtime | Realtime and messaging, Message queues and event streaming, Workflow and background jobs |
-| Product | Observability, Error tracking and analytics, Incident response, Auth, Search, Feature flags |
-| Platform services | Payments, Communications APIs, Email and notifications, Maps, Integrations |
-| AI and business | AI and ML platforms, Security and secrets, Backend-as-a-service, Customer and business platforms |
+| Domain            | Categories                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| Foundation        | Cloud infrastructure, App hosting and deploy platforms, CI/CD containers IaC                     |
+| Data              | Databases and data stores, Data warehouse and pipelines, Storage and media                       |
+| Runtime           | Realtime and messaging, Message queues and event streaming, Workflow and background jobs         |
+| Product           | Observability, Error tracking and analytics, Incident response, Auth, Search, Feature flags      |
+| Platform services | Payments, Communications APIs, Email and notifications, Maps, Integrations                       |
+| AI and business   | AI and ML platforms, Security and secrets, Backend-as-a-service, Customer and business platforms |
 
 The category rows themselves are unchanged. Only the index gains a level.
 

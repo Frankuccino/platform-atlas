@@ -12,10 +12,10 @@ The catalog is content, not user data. It ships in code.
 export type DeliveryModel = 'managed' | 'open-source' | 'both' | 'cloud';
 
 export interface Product {
-  id: string;            // stable slug, e.g. "vercel"
+  id: string; // stable slug, e.g. "vercel"
   name: string;
   model: DeliveryModel;
-  what: string;          // when to reach for it
+  what: string; // when to reach for it
   alternatives: string[]; // product ids, not display names
 }
 
@@ -23,7 +23,7 @@ export interface Category {
   id: string;
   name: string;
   blurb: string;
-  domain: DomainId;      // new: for grouping the index
+  domain: DomainId; // new: for grouping the index
   productIds: string[];
 }
 ```

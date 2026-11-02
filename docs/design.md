@@ -72,15 +72,15 @@ many-to-many relationship inside one column.
 
 ## Stack
 
-| Layer | Choice | Why |
-| --- | --- | --- |
-| Frontend | React + TypeScript + Vite | Your primary study stack |
-| Rendering | Canvas 2D + d3-zoom | 179 nodes is trivial for canvas; no WebGL needed |
-| Layout | Computed from hierarchy | Nobody hand-places 179 nodes |
-| Database | Neon Postgres (free) | No pausing, no time limit, scale-to-zero |
-| ORM | Drizzle | You already use it in northstar-api |
-| Auth | Refresh-cookie auth, httpOnly | You already built this for Northstar |
-| Deployment | Vercel | Serverless, free, matches the DB decision |
+| Layer      | Choice                        | Why                                              |
+| ---------- | ----------------------------- | ------------------------------------------------ |
+| Frontend   | React + TypeScript + Vite     | Your primary study stack                         |
+| Rendering  | Canvas 2D + d3-zoom           | 179 nodes is trivial for canvas; no WebGL needed |
+| Layout     | Computed from hierarchy       | Nobody hand-places 179 nodes                     |
+| Database   | Neon Postgres (free)          | No pausing, no time limit, scale-to-zero         |
+| ORM        | Drizzle                       | You already use it in northstar-api              |
+| Auth       | Refresh-cookie auth, httpOnly | You already built this for Northstar             |
+| Deployment | Vercel                        | Serverless, free, matches the DB decision        |
 
 ## Migration path
 
