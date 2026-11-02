@@ -1174,6 +1174,34 @@ body {
   text-align: center;
 }
 
+.suggest-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 11px var(--f-mono);
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: filter 120ms, transform 120ms;
+}
+
+.suggest-toggle:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.suggest-toggle:active {
+  transform: translateY(0);
+}
+
+.spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .roadmap-toggle.is-active {
   color: var(--accent);
   border-color: var(--accent);
@@ -1183,6 +1211,18 @@ body {
 @media (max-width: 760px) {
   .roadmap-toggle {
     display: none;
+  }
+
+  .spacer {
+    flex: 1 1 100%;
+    min-height: 0;
+  }
+
+  .suggest-toggle,
+  .theme-toggle,
+  .github-link,
+  .nav-toggle {
+    min-height: 44px;
   }
 }
 

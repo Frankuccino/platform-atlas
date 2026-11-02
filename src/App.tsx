@@ -568,6 +568,42 @@ export default function App() {
           </span>
         </div>
 
+        <nav className="jumps" aria-label="Jump to a domain">
+          {DOMAINS.map((domain) => (
+            <button key={domain.id} type="button" onClick={() => jumpToDomain(domain.id)}>
+              {domain.name}
+            </button>
+          ))}
+          <button type="button" className="reset" onClick={resetView}>
+            Reset
+          </button>
+        </nav>
+
+        <div className="tools">
+          <input
+            className="search"
+            type="search"
+            placeholder="Search a product, category, or what it does"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            aria-label="Search the map"
+          />
+
+          {matches.length > 0 && (
+            <ul className="results" role="listbox">
+              {matches.slice(0, 8).map((id) => (
+                <li key={id}>
+                  <button type="button" onClick={() => focusProduct(id)} role="option">
+                    {id}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="spacer" />
+
         <button
           type="button"
           className={`roadmap-toggle ${view === 'roadmap' ? 'is-active' : ''}`}
@@ -593,7 +629,25 @@ export default function App() {
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
         >
-          {theme === 'light' ? '🌙' : '☀️'}
+          {theme === 'light' ? (
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <g stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </g>
+            </svg>
+          )}
         </button>
 
         <a
@@ -601,7 +655,7 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           className="github-link"
-          title="Star Platform Atlas on GitHub"
+          title="⭐ Star Platform Atlas on GitHub — it helps the project grow!"
           aria-label="Star Platform Atlas on GitHub"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15">
@@ -625,40 +679,6 @@ export default function App() {
           </svg>
           Browse
         </button>
-
-        <div className="tools">
-          <input
-            className="search"
-            type="search"
-            placeholder="Search a product, category, or what it does"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            aria-label="Search the map"
-          />
-
-          {matches.length > 0 && (
-            <ul className="results" role="listbox">
-              {matches.slice(0, 8).map((id) => (
-                <li key={id}>
-                  <button type="button" onClick={() => focusProduct(id)} role="option">
-                    {id}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <nav className="jumps" aria-label="Jump to a domain">
-          {DOMAINS.map((domain) => (
-            <button key={domain.id} type="button" onClick={() => jumpToDomain(domain.id)}>
-              {domain.name}
-            </button>
-          ))}
-          <button type="button" className="reset" onClick={resetView}>
-            Reset
-          </button>
-        </nav>
       </header>
 
       <div className="body">
