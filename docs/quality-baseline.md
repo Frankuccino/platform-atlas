@@ -33,12 +33,18 @@ npm run e2e           # Playwright smoke tests (2 passed)
 | Unit tests | Vitest | 14 component tests passing | 1+ smoke tests |
 | E2E tests | Playwright | 2 smoke tests passing | 1+ smoke tests |
 
-## Knip findings (to review)
+## Knip findings (reviewed)
 
-- Unused exported types/interfaces in `src/catalog/types.ts`, `src/catalog/products.ts`, `src/map/layout.ts`, `src/roadmap.ts`
-- Duplicate export: `MODEL_COLORS_LIGHT` and `MODEL_COLORS` in `src/catalog/icons.ts`
+After review, most flagged exports are intentional public API surface:
 
-These are not necessarily bugs — they may be part of the public API. Review before removing.
+- `ProductGuide`, `ProductTrend`, `ProductStats`, `ProductBlogPost` — interfaces used in product data shapes, needed by any consumer constructing catalog entries.
+- `Recommendation` — exported type from `recommendations.ts`, part of the public contract.
+- `DeliveryModel`, `LayerEdgeKind`, `StudyStatus`, `Confidence`, `Edge` — domain types in `types.ts`.
+- `NodeLayout`, `ClusterLayout` — layout types used by `computeLayout` consumers.
+- `Milestone` — roadmap data shape.
+- `MODEL_COLORS_LIGHT` / `MODEL_COLORS` — duplicate is intentional; `MODEL_COLORS` is a legacy alias kept for backward compatibility.
+
+No dead-code removals at this time. Re-run Knip after any API-breaking changes.
 
 ## ESLint config
 
