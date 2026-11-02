@@ -25,10 +25,7 @@ export default function DomainPanel({ domainId, onSelect, onJump, onClose }: Pro
   const domain = DOMAINS.find((d) => d.id === domainId);
   if (!domain) return null;
 
-  const total = domain.categoryIds.reduce(
-    (sum, id) => sum + getCategory(id).productIds.length,
-    0,
-  );
+  const total = domain.categoryIds.reduce((sum, id) => sum + getCategory(id).productIds.length, 0);
 
   return (
     <aside className="panel" aria-label={`Categories in ${domain.name}`}>

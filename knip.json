@@ -1,0 +1,6 @@
+{
+  "ignore": ["dist/**", "node_modules/**", "coverage/**", ".agents/**"],
+  "ignoreDependencies": ["esbuild", "fsevents"],
+  "entry": ["src/main.tsx"],
+  "project": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+}

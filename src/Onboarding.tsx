@@ -79,7 +79,11 @@ export default function Onboarding({ onDismiss }: Props) {
 
   return (
     <div className="onboarding">
-      <div className="onboarding-backdrop" onClick={isLast ? onDismiss : undefined} />
+      <div
+        className="onboarding-backdrop"
+        onClick={isLast ? onDismiss : undefined}
+        role="presentation"
+      />
       <div className="onboarding-tip" style={style}>
         <div className="onboarding-dot" aria-hidden>
           {step + 1} / {TIPS.length}

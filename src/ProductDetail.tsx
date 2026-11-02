@@ -18,14 +18,26 @@ const MODEL_LABEL: Record<Product['model'], string> = {
   C: 'Cloud',
 };
 
-function RecSection({ recs, onSelect }: { recs: Recommendation[]; onSelect: (id: string) => void }) {
+function RecSection({
+  recs,
+  onSelect,
+}: {
+  recs: Recommendation[];
+  onSelect: (id: string) => void;
+}) {
   if (recs.length === 0) return null;
   return (
     <div className="recs">
       <h3>Recommended for you</h3>
       <div className="rec-list">
         {recs.map(({ product, reason }) => (
-          <button key={product.id} type="button" className="rec" onClick={() => onSelect(product.id)} title={reason}>
+          <button
+            key={product.id}
+            type="button"
+            className="rec"
+            onClick={() => onSelect(product.id)}
+            title={reason}
+          >
             <span className="rec-name">{product.name}</span>
             <span className="rec-reason">{reason}</span>
           </button>
@@ -60,7 +72,13 @@ export default function ProductDetail({ productId, onSelect, onClose, onOpenGuid
       <h2>{product.name}</h2>
       <p className="category">{category.name}</p>
       {product.lastUpdated && (
-        <p className="freshness">Data as of {new Date(product.lastUpdated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+        <p className="freshness">
+          Data as of{' '}
+          {new Date(product.lastUpdated).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          })}
+        </p>
       )}
       <p className="what">{product.what}</p>
 

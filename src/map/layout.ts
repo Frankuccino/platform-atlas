@@ -1,4 +1,11 @@
-import { CATEGORIES, DOMAINS, PRODUCTS, getCategory, LAYER_EDGES, ALTERNATIVE_EDGES } from '../catalog';
+import {
+  CATEGORIES,
+  DOMAINS,
+  PRODUCTS,
+  getCategory,
+  LAYER_EDGES,
+  ALTERNATIVE_EDGES,
+} from '../catalog';
 
 export interface NodeLayout {
   productId: string;
@@ -195,12 +202,7 @@ export function computeLayout(): MapLayout {
   const columnWidths: number[] = [];
   for (let col = 0; col < domainColumns; col++) {
     columnWidths.push(
-      Math.max(
-        ...domainLayouts
-          .filter((_, i) => i % domainColumns === col)
-          .map((d) => d.width),
-        0,
-      ),
+      Math.max(...domainLayouts.filter((_, i) => i % domainColumns === col).map((d) => d.width), 0),
     );
   }
 
@@ -249,9 +251,7 @@ export function computeLayout(): MapLayout {
 
   const nodeById = new Map<string, NodeLayout>();
   for (const node of allNodes) {
-    const domainIndex = DOMAINS.findIndex((dm) =>
-      dm.categoryIds.includes(node.categoryId),
-    );
+    const domainIndex = DOMAINS.findIndex((dm) => dm.categoryIds.includes(node.categoryId));
     const domainLayout = domainLayouts[domainIndex];
     const cluster = clusterById.get(node.categoryId)!;
 
@@ -291,7 +291,8 @@ export function searchProducts(query: string): string[] {
   const matchedCategories = new Set<string>();
 
   for (const product of PRODUCTS) {
-    const haystack = `${product.name} ${product.what} ${CATEGORIES.find((c) => c.id === product.categoryId)?.name ?? ''}`.toLowerCase();
+    const haystack =
+      `${product.name} ${product.what} ${CATEGORIES.find((c) => c.id === product.categoryId)?.name ?? ''}`.toLowerCase();
     if (tokens.some((t) => haystack.includes(t))) {
       matched.add(product.id);
       matchedCategories.add(product.categoryId);

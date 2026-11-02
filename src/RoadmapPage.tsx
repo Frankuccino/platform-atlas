@@ -8,7 +8,15 @@ const STATUS_META: Record<Status | 'all', { label: string; className: string }> 
   all: { label: 'All', className: 'pill-all' },
 };
 
-function PhaseSection({ phase, expanded, onToggle }: { phase: Phase; expanded: boolean; onToggle: () => void }) {
+function PhaseSection({
+  phase,
+  expanded,
+  onToggle,
+}: {
+  phase: Phase;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const done = phase.milestones.filter((m) => m.status === 'done').length;
   const total = phase.milestones.length;
   const pct = Math.round((done / total) * 100);
@@ -41,7 +49,7 @@ function PhaseSection({ phase, expanded, onToggle }: { phase: Phase; expanded: b
                 <span className="milestone-title">{m.title}</span>
                 <span className="milestone-detail">{m.detail}</span>
                 {m.doc && (
-                  <a className="milestone-doc" href={`/${m.doc}`} target="_blank" rel="noopener">
+                  <a className="milestone-doc" href={`/${m.doc}`} target="_blank" rel="noreferrer">
                     {m.doc}
                   </a>
                 )}
@@ -80,8 +88,7 @@ export default function RoadmapPage() {
     return c;
   }, []);
 
-  const toggle = (id: string) =>
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggle = (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="roadmap">

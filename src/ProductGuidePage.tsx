@@ -13,13 +13,7 @@ const MODEL_LABEL: Record<Product['model'], string> = {
   C: 'Cloud',
 };
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="guide-section">
       <h3>{title}</h3>
@@ -63,7 +57,11 @@ export default function ProductGuidePage({ productId, onBack }: Props) {
               <span className="guide-category">{category.name}</span>
               {product.lastUpdated && (
                 <span className="guide-freshness">
-                  · Updated {new Date(product.lastUpdated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  · Updated{' '}
+                  {new Date(product.lastUpdated).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}
                 </span>
               )}
             </p>
@@ -123,7 +121,12 @@ export default function ProductGuidePage({ productId, onBack }: Props) {
               <ul className="guide-blogs">
                 {guide.blogPosts.map((post) => (
                   <li key={post.url}>
-                    <a href={post.url} target="_blank" rel="noreferrer noopener" className="guide-blog-link">
+                    <a
+                      href={post.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="guide-blog-link"
+                    >
                       <span className="guide-blog-title">{post.title}</span>
                       <span className="guide-blog-date">{formatDate(post.date)}</span>
                     </a>

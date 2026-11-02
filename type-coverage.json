@@ -1,0 +1,6 @@
+{
+  "atLeast": 95,
+  "ignoreCatch": true,
+  "ignoreUnread": false,
+  "ignoreFiles": ["vite.config.ts"]
+}

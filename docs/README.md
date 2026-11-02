@@ -7,21 +7,21 @@ spaced-repetition loop for learning them.
 
 ## Docs
 
-| Doc | What it covers |
-| --- | --- |
-| [design.md](design.md) | The two non-obvious decisions, stack choice, migration path |
-| [data-model.md](data-model.md) | Catalog in code, study state in Postgres, core set membership |
-| [scheduler.md](scheduler.md) | Due calculation, intervals, skip behaviour, determinism |
-| [navigation.md](navigation.md) | Domain grouping for the 26-category index |
-| [features.md](features.md) | Confirmed scope, open questions, non-goals |
-| [react-best-practices.md](react-best-practices.md) | React structure audit, skills to investigate, tools for quality validation |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules. |
+| Doc                                                | What it covers                                                                               |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [design.md](design.md)                             | The two non-obvious decisions, stack choice, migration path                                  |
+| [data-model.md](data-model.md)                     | Catalog in code, study state in Postgres, core set membership                                |
+| [scheduler.md](scheduler.md)                       | Due calculation, intervals, skip behaviour, determinism                                      |
+| [navigation.md](navigation.md)                     | Domain grouping for the 26-category index                                                    |
+| [features.md](features.md)                         | Confirmed scope, open questions, non-goals                                                   |
+| [react-best-practices.md](react-best-practices.md) | React structure audit, skills to investigate, tools for quality validation                   |
+| [CONTRIBUTING.md](CONTRIBUTING.md)                 | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules. |
 
 ## In-app pages
 
-| Page | How to open |
-| --- | --- |
-| Map | Default view — zoomable product atlas |
+| Page    | How to open                                                           |
+| ------- | --------------------------------------------------------------------- |
+| Map     | Default view — zoomable product atlas                                 |
 | Roadmap | Click **Roadmap** in the toolbar — phases, milestones, status filters |
 
 ## Quick facts
@@ -33,10 +33,10 @@ spaced-repetition loop for learning them.
 
 ## Rejected options and why
 
-| Option | Why not |
-| --- | --- |
-| SQLite file on Vercel | No writable persistent filesystem on serverless |
-| Turso | Viable, but an extra hosted dependency for a local-first app |
-| Vercel Postgres | Discontinued; existing instances moved to Neon in Dec 2024 |
-| Supabase free | Pauses after a week of low DB activity; needs a keep-alive cron |
-| localStorage only | Loses multi-device; no sync path |
+| Option                | Why not                                                         |
+| --------------------- | --------------------------------------------------------------- |
+| SQLite file on Vercel | No writable persistent filesystem on serverless                 |
+| Turso                 | Viable, but an extra hosted dependency for a local-first app    |
+| Vercel Postgres       | Discontinued; existing instances moved to Neon in Dec 2024      |
+| Supabase free         | Pauses after a week of low DB activity; needs a keep-alive cron |
+| localStorage only     | Loses multi-device; no sync path                                |

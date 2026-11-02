@@ -49,9 +49,10 @@ export function productsInDomain(domainId: string): Product[] {
 }
 
 /** Alternative edges, derived from each product's resolved alternatives. */
-export const ALTERNATIVE_EDGES: { from: string; to: string; kind: 'alternative' }[] = PRODUCTS.flatMap(
-  (p) => p.alternatives.map((to) => ({ from: p.id, to, kind: 'alternative' as const })),
-);
+export const ALTERNATIVE_EDGES: { from: string; to: string; kind: 'alternative' }[] =
+  PRODUCTS.flatMap((p) =>
+    p.alternatives.map((to) => ({ from: p.id, to, kind: 'alternative' as const })),
+  );
 
 /**
  * Fails on any dangling reference. Run in tests and at build time: an edge to a
@@ -65,7 +66,8 @@ export function validateCatalog(): string[] {
       errors.push(`product ${product.id} references unknown category ${product.categoryId}`);
     }
     for (const alt of product.alternatives) {
-      if (!productById.has(alt)) errors.push(`product ${product.id} references unknown product ${alt}`);
+      if (!productById.has(alt))
+        errors.push(`product ${product.id} references unknown product ${alt}`);
     }
   }
 

@@ -26,7 +26,10 @@ for (const [slug, icon] of Object.entries(all)) {
 }
 
 function normalise(value: string): string {
-  return value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  return value
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 /**
@@ -58,7 +61,10 @@ const missing: string[] = [];
 
 for (const product of PRODUCTS) {
   const candidates = [product.name, ALIASES[product.name]].filter(Boolean) as string[];
-  const slug = candidates.map(normalise).map((c) => byTitle.get(c)).find(Boolean);
+  const slug = candidates
+    .map(normalise)
+    .map((c) => byTitle.get(c))
+    .find(Boolean);
   if (slug) {
     covered.push({ name: product.name, slug });
   } else {
@@ -67,7 +73,9 @@ for (const product of PRODUCTS) {
 }
 
 console.log(`products: ${PRODUCTS.length}`);
-console.log(`covered:  ${covered.length} (${((covered.length / PRODUCTS.length) * 100).toFixed(1)}%)`);
+console.log(
+  `covered:  ${covered.length} (${((covered.length / PRODUCTS.length) * 100).toFixed(1)}%)`,
+);
 console.log(`missing:  ${missing.length}`);
 console.log('');
 console.log('still missing:');

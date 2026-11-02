@@ -28,7 +28,10 @@ const all = (ns.default && typeof ns.default === 'object' ? ns.default : ns) as 
 >;
 
 function normalise(value: string): string {
-  return value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  return value
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 const byTitle = new Map<string, string>();
@@ -70,7 +73,10 @@ const missing: string[] = [];
 
 for (const product of PRODUCTS) {
   const candidates = [product.name, ALIASES[product.name]].filter(Boolean) as string[];
-  const slug = candidates.map(normalise).map((c) => byTitle.get(c)).find(Boolean);
+  const slug = candidates
+    .map(normalise)
+    .map((c) => byTitle.get(c))
+    .find(Boolean);
   const icon = slug ? all[slug] : undefined;
   const path = icon?.path;
 
@@ -98,7 +104,7 @@ const lines = [
   ...entries.map((e) => `  ${JSON.stringify(e.id)}: ${JSON.stringify(e.path)},`),
   '};',
   '',
-  '/** The SVG path for a product\'s brand mark, if one exists. */',
+  "/** The SVG path for a product's brand mark, if one exists. */",
   'export function getBrandIcon(productId: string): string | undefined {',
   '  return BRAND_ICONS[productId];',
   '}',

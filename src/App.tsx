@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, Fragment } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  Fragment,
+} from 'react';
 import { zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from 'd3-zoom';
 // Side effect: adds .transition() to selections, which d3-zoom's transform
 // transition path needs. d3-zoom already depends on this package.
@@ -42,7 +50,9 @@ export default function App() {
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-  const [pulseStart, setPulseStart] = useState<{ productId: string; startedAt: number } | null>(null);
+  const [pulseStart, setPulseStart] = useState<{ productId: string; startedAt: number } | null>(
+    null,
+  );
   const [navOpen, setNavOpen] = useState(false);
   const [view, setView] = useState<'map' | 'roadmap' | 'guide'>('map');
   const [guideProductId, setGuideProductId] = useState<string | null>(null);
@@ -98,8 +108,7 @@ export default function App() {
     const container = containerRef.current;
     if (!container) return;
 
-    const measure = () =>
-      setSize({ width: container.clientWidth, height: container.clientHeight });
+    const measure = () => setSize({ width: container.clientWidth, height: container.clientHeight });
 
     measure();
 
@@ -299,6 +308,54 @@ export default function App() {
     };
   }, [layout, view]);
 
+  const focusProduct = useCallback(
+    (productId: string) => {
+      const node = layout.nodeById.get(productId);
+      if (!node) return;
+      setHighlighted(productId);
+      setSelectedCategory(null);
+      setSelectedDomain(null);
+      setPulseStart({ productId, startedAt: performance.now() });
+    },
+    [layout],
+  );
+
+  const clusterAt = useCallback(
+    (x: number, y: number): string | null => {
+      for (const domain of layout.domains) {
+        for (const cluster of domain.clusters) {
+          if (
+            x >= cluster.x &&
+            x <= cluster.x + cluster.width &&
+            y >= cluster.y &&
+            y <= cluster.y + cluster.height
+          ) {
+            return cluster.categoryId;
+          }
+        }
+      }
+      return null;
+    },
+    [layout],
+  );
+
+  const domainAt = useCallback(
+    (x: number, y: number): string | null => {
+      for (const domain of layout.domains) {
+        if (
+          x >= domain.x &&
+          x <= domain.x + domain.width &&
+          y >= domain.y &&
+          y <= domain.y + domain.height
+        ) {
+          return domain.domainId;
+        }
+      }
+      return null;
+    },
+    [layout],
+  );
+
   // Click to select. Nodes win over the cluster they sit in, because a node is
   // the more specific target. Clicking a category block that contains no node
   // opens that category's product list. Clicking empty space clears both.
@@ -346,7 +403,7 @@ export default function App() {
     return () => {
       selection.on('click', null);
     };
-  }, [layout, camera, focusProduct, view]);
+  }, [layout, camera, focusProduct, view, clusterAt, domainAt]);
 
   /**
    * Centre the camera on a world point at a given scale.
@@ -358,13 +415,7 @@ export default function App() {
    * to wherever the camera had been before. Driving the behaviour updates both,
    * and it emits the zoom event that updates the state.
    */
-  function focusOn(
-    worldX: number,
-    worldY: number,
-    scale: number,
-    rightInset = 0,
-    bottomInset = 0,
-  ) {
+  function focusOn(worldX: number, worldY: number, scale: number, rightInset = 0, bottomInset = 0) {
     const live = liveRef.current;
     const clamped = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
     const selection = selectionRef.current;
@@ -378,22 +429,6 @@ export default function App() {
       .scale(clamped);
 
     selection.call(behavior.transform, transform);
-  }
-
-  function focusProduct(productId: string) {
-    const node = layout.nodeById.get(productId);
-    if (!node) return;
-    setHighlighted(productId);
-    // The category panel and the detail panel occupy the same corner, so opening
-    // one must close the other or they overlap.
-    setSelectedCategory(null);
-    setSelectedDomain(null);
-    // Keep the user's zoom and only pan. Forcing a fixed scale discarded whatever
-    // level they had chosen, which made the gesture feel like a reset. The pulse
-    // is what tells them where the target ended up.
-    setPulseStart({ productId, startedAt: performance.now() });
-    // The camera move itself happens in the layout effect below, once the panel
-    // that opened with this selection has rendered and its insets are known.
   }
 
   /** Open the full product guide page. */
@@ -458,10 +493,7 @@ export default function App() {
     const behavior = zoomBehaviorRef.current;
     if (!selection || !behavior) return;
 
-    selection
-      .transition()
-      .duration(durationMs)
-      .call(behavior.transform, transform);
+    selection.transition().duration(durationMs).call(behavior.transform, transform);
   }
 
   /**
@@ -494,38 +526,6 @@ export default function App() {
     const domain = layout.domainById.get(domainId);
     if (!domain) return;
     flyTo(fitDomain(domain), JUMP_DURATION);
-  }
-
-  /** The category block containing a world point, or null if it is empty space. */
-  function clusterAt(x: number, y: number): string | null {
-    for (const domain of layout.domains) {
-      for (const cluster of domain.clusters) {
-        if (
-          x >= cluster.x &&
-          x <= cluster.x + cluster.width &&
-          y >= cluster.y &&
-          y <= cluster.y + cluster.height
-        ) {
-          return cluster.categoryId;
-        }
-      }
-    }
-    return null;
-  }
-
-  /** The domain box containing a world point, or null if it is outside one. */
-  function domainAt(x: number, y: number): string | null {
-    for (const domain of layout.domains) {
-      if (
-        x >= domain.x &&
-        x <= domain.x + domain.width &&
-        y >= domain.y &&
-        y <= domain.y + domain.height
-      ) {
-        return domain.domainId;
-      }
-    }
-    return null;
   }
 
   function resetView() {
@@ -631,20 +631,27 @@ export default function App() {
         >
           {theme === 'light' ? (
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           ) : (
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-              <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
               <g stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
               </g>
             </svg>
           )}
@@ -696,7 +703,9 @@ export default function App() {
               onClick={() => setNavOpen(false)}
               aria-label="Close the browse list"
               tabIndex={navOpen ? 0 : -1}
-            />
+            >
+              <span className="sr-only">Close</span>
+            </button>
 
             <DomainNav
               id="map-nav"
@@ -716,43 +725,54 @@ export default function App() {
             />
 
             <div className="canvas-wrap" ref={containerRef}>
-          <canvas ref={canvasRef} />
+              <canvas ref={canvasRef} />
 
-          {selectedDomain && (
-            <DomainPanel
-              domainId={selectedDomain}
-              onSelect={selectCategory}
-              onJump={jumpToDomain}
-              onClose={() => setSelectedDomain(null)}
-            />
-          )}
+              {selectedDomain && (
+                <DomainPanel
+                  domainId={selectedDomain}
+                  onSelect={selectCategory}
+                  onJump={jumpToDomain}
+                  onClose={() => setSelectedDomain(null)}
+                />
+              )}
 
-          {selectedCategory && (
-            <CategoryPanel
-              categoryId={selectedCategory}
-              onSelect={focusProduct}
-              onJump={jumpToDomain}
-              onClose={() => setSelectedCategory(null)}
-            />
-          )}
+              {selectedCategory && (
+                <CategoryPanel
+                  categoryId={selectedCategory}
+                  onSelect={focusProduct}
+                  onJump={jumpToDomain}
+                  onClose={() => setSelectedCategory(null)}
+                />
+              )}
 
-          {highlighted && (
-            <ProductDetail
-              productId={highlighted}
-              onSelect={focusProduct}
-              onClose={() => setHighlighted(null)}
-              onOpenGuide={openGuide}
-            />
-          )}
-        </div>
+              {highlighted && (
+                <ProductDetail
+                  productId={highlighted}
+                  onSelect={focusProduct}
+                  onClose={() => setHighlighted(null)}
+                  onOpenGuide={openGuide}
+                />
+              )}
+            </div>
           </Fragment>
         )}
       </div>
 
       {suggestionOpen && (
-        <div className="suggest-backdrop" onClick={() => setSuggestionOpen(false)}>
-          <div className="suggest-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Suggest a product or correction</h3>
+        <div
+          className="suggest-backdrop"
+          onClick={() => setSuggestionOpen(false)}
+          role="presentation"
+        >
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
+          <div
+            className="suggest-dialog"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="suggest-title"
+          >
+            <h3 id="suggest-title">Suggest a product or correction</h3>
             <textarea
               value={suggestionText}
               onChange={(e) => setSuggestionText(e.target.value)}
@@ -761,7 +781,11 @@ export default function App() {
               autoFocus
             />
             <div className="suggest-actions">
-              <button type="button" className="suggest-cancel" onClick={() => setSuggestionOpen(false)}>
+              <button
+                type="button"
+                className="suggest-cancel"
+                onClick={() => setSuggestionOpen(false)}
+              >
                 Cancel
               </button>
               <button type="button" className="suggest-submit" onClick={submitSuggestion}>
@@ -772,9 +796,7 @@ export default function App() {
         </div>
       )}
 
-      {onboardingVisible && (
-        <Onboarding onDismiss={dismissOnboarding} />
-      )}
+      {onboardingVisible && <Onboarding onDismiss={dismissOnboarding} />}
     </div>
   );
 }

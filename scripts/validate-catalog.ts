@@ -26,7 +26,9 @@ const layout = computeLayout();
 
 // Every product must have exactly one node.
 if (layout.nodes.length !== PRODUCTS.length) {
-  errors.push(`layout has ${layout.nodes.length} nodes but catalog has ${PRODUCTS.length} products`);
+  errors.push(
+    `layout has ${layout.nodes.length} nodes but catalog has ${PRODUCTS.length} products`,
+  );
 }
 for (const product of PRODUCTS) {
   if (!layout.nodeById.has(product.id)) errors.push(`no layout node for product ${product.id}`);

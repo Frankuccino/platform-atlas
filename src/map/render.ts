@@ -127,14 +127,7 @@ function applyCamera(
   // larger. Scaling the transform by dpr keeps one world unit equal to one CSS
   // pixel; without it the map is drawn at a third of its size on a retina screen
   // and both the picture and the click targets land in the wrong place.
-  ctx.setTransform(
-    camera.scale * dpr,
-    0,
-    0,
-    camera.scale * dpr,
-    camera.x * dpr,
-    camera.y * dpr,
-  );
+  ctx.setTransform(camera.scale * dpr, 0, 0, camera.scale * dpr, camera.x * dpr, camera.y * dpr);
 }
 
 export function renderMap(
@@ -190,7 +183,13 @@ export function renderMap(
         const iconPath = CATEGORY_ICONS[cluster.categoryId];
         if (iconPath) {
           ctx.fillStyle = getColors(options.theme).clusterLabel;
-          drawIcon(ctx, iconPath, cluster.x + 10 + 8 * invScale, cluster.y + 8 + labelHeight / 2, labelHeight);
+          drawIcon(
+            ctx,
+            iconPath,
+            cluster.x + 10 + 8 * invScale,
+            cluster.y + 8 + labelHeight / 2,
+            labelHeight,
+          );
         }
       }
     }
@@ -252,7 +251,8 @@ export function renderMap(
 
   for (const node of layout.nodes) {
     const isHighlighted = node.productId === highlightedProductId;
-    const model = getModelColors(options.theme)[getProduct(node.productId).model] ?? getColors(options.theme);
+    const model =
+      getModelColors(options.theme)[getProduct(node.productId).model] ?? getColors(options.theme);
 
     ctx.beginPath();
     ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
@@ -314,12 +314,15 @@ export function renderMap(
     // The label sits below its node, so it must clear the next row's node as
     // well as the node beside it. The margin keeps a visible gap rather than
     // letting the text sit flush against the row below.
-    const labelFitsRow = node.radius + 4 + labelHeight + LABEL_CLEARANCE <= NODE_PITCH_H - node.radius;
+    const labelFitsRow =
+      node.radius + 4 + labelHeight + LABEL_CLEARANCE <= NODE_PITCH_H - node.radius;
     if (NODE_PITCH > ctx.measureText(name).width + 8 * invScale && labelFitsRow) {
       // The label sits below the node, on the light cluster fill, so it must be
       // a dark colour. White would be invisible. The highlighted label uses the
       // same accent as the node's fill and ring, so the two read as one unit.
-      ctx.fillStyle = isHighlighted ? getColors(options.theme).highlight : getColors(options.theme).nodeLabel;
+      ctx.fillStyle = isHighlighted
+        ? getColors(options.theme).highlight
+        : getColors(options.theme).nodeLabel;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText(name, node.x, node.y + node.radius + 4);

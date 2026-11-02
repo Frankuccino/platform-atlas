@@ -54,7 +54,9 @@ while ((match = catRe.exec(block)) !== null) {
 
     const id = slug(rawName);
     if (idByName.has(id)) {
-      throw new Error(`Slug collision: "${rawName}" and "${nameById.get(id)}" both slug to "${id}"`);
+      throw new Error(
+        `Slug collision: "${rawName}" and "${nameById.get(id)}" both slug to "${id}"`,
+      );
     }
 
     const alternativeNames = altRaw
