@@ -29,7 +29,7 @@ npx vitest run      # no test files yet (exit 1)
 | Build | tsc + Vite | 480.82 kB JS, 20.35 kB CSS | — |
 | Format | Prettier | 290 files formatted | 0 unformatted |
 | Dead code | Knip | Exports/types unused (to review) | 0 unused |
-| Tests | Vitest | No test files | 1+ smoke tests |
+| Tests | Vitest | 1 smoke test passing | 1+ smoke tests |
 
 ## Knip findings (to review)
 
@@ -65,7 +65,6 @@ No test files yet — next step is to add smoke tests.
 ## Next steps
 
 1. Review Knip findings and decide which exports to keep/remove.
-2. Write first smoke test: `App.tsx` renders without crashing.
-3. Write component tests for: `ProductDetail`, `CategoryPanel`, `DomainNav`.
-4. Add Playwright for E2E: toolbar visible, map canvas present, panel open/close.
-5. Run Lighthouse on deployed URL and record scores.
+2. Write component tests for: `ProductDetail`, `CategoryPanel`, `DomainNav`.
+3. Add Playwright for E2E: toolbar visible, map canvas present, panel open/close.
+4. Run Lighthouse on deployed URL and record scores.
