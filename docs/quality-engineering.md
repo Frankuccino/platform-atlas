@@ -81,3 +81,4 @@ This loop should be automatic. If it is not automatic, automate it.
 2. Add Playwright coverage for critical user journeys.
 3. Run Lighthouse on production and record scores.
 4. Make CI post preview comments on pull requests.
+5. Maintain streak contribution hygiene: ensure one meaningful commit per day keeps the graph continuous.
