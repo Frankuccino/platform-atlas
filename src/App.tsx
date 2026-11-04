@@ -73,6 +73,18 @@ export default function App() {
 
   const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
+  // Keyboard shortcut: Ctrl+Shift+T to toggle theme
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key === 'T') {
+        event.preventDefault();
+        toggleTheme();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggleTheme]);
+
   const [starCount, setStarCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -627,7 +639,7 @@ export default function App() {
           className="theme-toggle"
           onClick={toggleTheme}
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode (Ctrl+Shift+T)`}
         >
           {theme === 'light' ? (
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
