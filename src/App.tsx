@@ -97,6 +97,18 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
+  // Keyboard shortcut: Ctrl+Shift+G to open GitHub repo
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key === 'G') {
+        event.preventDefault();
+        window.open('https://github.com/Frankuccino/platform-atlas', '_blank');
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const [starCount, setStarCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -687,8 +699,8 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           className="github-link"
-          title="⭐ Star Platform Atlas on GitHub — it helps the project grow!"
-          aria-label="Star Platform Atlas on GitHub"
+          title="⭐ Star Platform Atlas on GitHub — it helps the project grow! (Ctrl+Shift+G)"
+          aria-label="Star Platform Atlas on GitHub (Ctrl+Shift+G)"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15">
             <path
