@@ -85,6 +85,18 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler);
   }, [toggleTheme]);
 
+  // Keyboard shortcut: Ctrl+Shift+S to open suggestion dialog
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+        event.preventDefault();
+        setSuggestionOpen((open) => !open);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const [starCount, setStarCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -630,6 +642,7 @@ export default function App() {
           className="suggest-toggle"
           onClick={() => setSuggestionOpen((open) => !open)}
           aria-pressed={suggestionOpen}
+          title="Suggest a product or correction (Ctrl+Shift+S)"
         >
           Suggest
         </button>
