@@ -125,7 +125,7 @@ export const CATEGORIES: Category[] = [
     name: 'Workflow and background jobs',
     blurb:
       'Run long or scheduled work reliably: retries, timers, multi-step processes that survive crashes. Includes data pipeline schedulers.',
-    productIds: ['temporal', 'inngest', 'trigger-dev', 'apache-airflow', 'dagster', 'prefect'],
+    productIds: ['inngest', 'trigger-dev', 'apache-airflow'],
   },
   {
     id: 'comms',
@@ -210,14 +210,8 @@ export const CATEGORIES: Category[] = [
       'anthropic-api',
       'google-vertex-ai',
       'aws-bedrock',
-      'hugging-face',
       'replicate',
       'together-ai',
-      'modal',
-      'pinecone',
-      'langfuse',
-      'langsmith',
-      'helicone',
     ],
   },
   {
@@ -233,7 +227,6 @@ export const CATEGORIES: Category[] = [
       'terraform',
       'opentofu',
       'pulumi',
-      'docker',
       'kubernetes',
       'argo-cd',
     ],
@@ -301,5 +294,105 @@ export const CATEGORIES: Category[] = [
     blurb:
       'Systems your sales and support teams live in. Many expose APIs and are worth knowing as integration targets for a B2B product.',
     productIds: ['salesforce', 'hubspot', 'zendesk', 'intercom'],
+  },
+  // AI Engineering Learning Tracks
+  {
+    id: 'ai-parsing',
+    name: 'Unstructured Parsing',
+    blurb:
+      'Tools to extract clean text, tables, and structure from PDFs, scanned documents, and complex layouts. The first step in any RAG or document-processing pipeline.',
+    productIds: ['docling', 'unstructured-io'],
+  },
+  {
+    id: 'ai-tabular',
+    name: 'Tabular Data Preparation',
+    blurb:
+      'Fast, memory-efficient dataframe libraries for cleaning, transforming, and preparing structured data (CSVs, Parquet) before embedding or training.',
+    productIds: ['polars', 'pandas'],
+  },
+  {
+    id: 'ai-vector-db',
+    name: 'Vector Databases & Hybrid Search',
+    blurb:
+      'Databases optimized for vector similarity search with metadata filtering. Includes pgvector for Postgres-native hybrid search (vector + BM25/keyword).',
+    productIds: ['pgvector', 'pinecone', 'chroma', 'weaviate', 'qdrant'],
+  },
+  {
+    id: 'ai-agent-orchestration',
+    name: 'Agentic Orchestration',
+    blurb:
+      'Frameworks for building stateful, multi-step AI agents with tool-calling, memory, loops, and human-in-the-loop. LangGraph is the primary focus.',
+    productIds: ['langgraph', 'llamaindex', 'pydantic-ai'],
+  },
+  {
+    id: 'ai-structured-output',
+    name: 'Structured Outputs & Validation',
+    blurb:
+      'Libraries that enforce guaranteed, type-safe JSON schemas from LLM outputs. Pydantic + Instructor for schema validation and retry-on-failure.',
+    productIds: ['pydantic', 'instructor'],
+  },
+  {
+    id: 'ai-evals-observability',
+    name: 'Evaluations & Observability',
+    blurb:
+      'Tools to trace token costs, latency, and run automated RAG accuracy evaluations (faithfulness, relevance, precision, recall). LangSmith for tracing, RAGAS for metrics.',
+    productIds: ['langsmith', 'arize-phoenix', 'ragas', 'langfuse', 'helicone'],
+  },
+  {
+    id: 'ai-pipelines',
+    name: 'Background Pipelines & Orchestration',
+    blurb:
+      'Schedulers and orchestrators for document ingestion, embedding, and batch AI workloads. Dagster for asset-based pipelines with sensors and lineage.',
+    productIds: ['dagster', 'prefect', 'temporal', 'airflow'],
+  },
+  {
+    id: 'ai-backend-serving',
+    name: 'Backend Serving & Streaming',
+    blurb:
+      'FastAPI + Docker for stateless, horizontally scalable AI APIs with SSE token streaming. LiteLLM as a unified gateway for OpenAI, Anthropic, and local models.',
+    productIds: ['fastapi', 'litellm', 'docker'],
+  },
+  {
+    id: 'ai-frontend-ui',
+    name: 'Frontend AI UI & Generative Components',
+    blurb:
+      'Next.js/React with Vercel AI SDK for streaming chat, inline citations, and generative UI components (charts, tables, approval buttons) streamed from agent tool calls.',
+    productIds: ['vercel-ai-sdk', 'nextjs', 'copilotkit'],
+  },
+  {
+    id: 'ai-core-ml',
+    name: 'Core ML/DL Ecosystem',
+    blurb:
+      'Foundational libraries for running, quantizing, and serving open models. PyTorch for GPU tensors, Hugging Face for models/tokenizers, ONNX for CPU deployment, vLLM for high-throughput LLM serving.',
+    productIds: [
+      'pytorch',
+      'hugging-face',
+      'sentence-transformers',
+      'scikit-learn',
+      'onnx-runtime',
+      'vllm',
+      'ollama',
+    ],
+  },
+  {
+    id: 'ai-infra-cost',
+    name: 'AI Infrastructure & Cost Engineering',
+    blurb:
+      'Tools to route queries to the right model (semantic routing), serve models on serverless GPUs (Modal), and run evals in CI/CD. Keeps LLM costs down and latency low.',
+    productIds: ['modal', 'promptfoo'],
+  },
+  {
+    id: 'ai-security-governance',
+    name: 'AI Security, Guardrails & Governance',
+    blurb:
+      'Prompt injection defense (NeMo Guardrails), PII redaction (Presidio), and document-level RBAC in vector search. Essential for enterprise compliance (GDPR, HIPAA).',
+    productIds: ['nemo-guardrails', 'presidio', 'guardrails-ai'],
+  },
+  {
+    id: 'ai-protocols-ux',
+    name: 'Agent Protocols, Context Engineering & AI UX',
+    blurb:
+      'Model Context Protocol (MCP) for universal tool connectivity. Context engineering: summarization, fact extraction, sliding windows. Generative UI via Vercel AI SDK. System-design math for token budgets.',
+    productIds: ['mcp'],
   },
 ];

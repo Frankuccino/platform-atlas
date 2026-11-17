@@ -39,4 +39,23 @@ export const DOMAINS: Domain[] = [
     name: 'AI and Business',
     categoryIds: ['ai', 'security', 'backend', 'business'],
   },
+  {
+    id: 'ai-engineering',
+    name: 'AI Engineering',
+    categoryIds: [
+      'ai-parsing',
+      'ai-tabular',
+      'ai-vector-db',
+      'ai-agent-orchestration',
+      'ai-structured-output',
+      'ai-evals-observability',
+      'ai-pipelines',
+      'ai-backend-serving',
+      'ai-frontend-ui',
+      'ai-core-ml',
+      'ai-infra-cost',
+      'ai-security-governance',
+      'ai-protocols-ux',
+    ],
+  },
 ];

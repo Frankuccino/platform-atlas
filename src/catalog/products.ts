@@ -760,15 +760,6 @@ export const PRODUCTS: Product[] = [
     externalAlternatives: ['Amazon SNS', 'Azure Service Bus'],
   },
   {
-    id: 'temporal',
-    name: 'Temporal',
-    model: 'B',
-    what: 'Durable execution: write long-running workflows as normal code and the platform handles retries and state.',
-    categoryId: 'workflow',
-    alternatives: ['inngest'],
-    externalAlternatives: ['AWS Step Functions'],
-  },
-  {
     id: 'inngest',
     name: 'Inngest',
     model: 'S',
@@ -794,24 +785,6 @@ export const PRODUCTS: Product[] = [
     categoryId: 'workflow',
     alternatives: ['dagster', 'prefect'],
     externalAlternatives: [],
-  },
-  {
-    id: 'dagster',
-    name: 'Dagster',
-    model: 'B',
-    what: 'Asset-based orchestration for data platforms.',
-    categoryId: 'workflow',
-    alternatives: ['prefect'],
-    externalAlternatives: ['Airflow'],
-  },
-  {
-    id: 'prefect',
-    name: 'Prefect',
-    model: 'B',
-    what: 'Python-first workflow orchestration with a hosted control plane.',
-    categoryId: 'workflow',
-    alternatives: ['dagster'],
-    externalAlternatives: ['Airflow'],
   },
   {
     id: 'twilio',
@@ -1327,15 +1300,6 @@ export const PRODUCTS: Product[] = [
     externalAlternatives: ['Vertex AI', 'Azure AI Foundry'],
   },
   {
-    id: 'hugging-face',
-    name: 'Hugging Face',
-    model: 'B',
-    what: 'Hub for open models and datasets, with hosted inference endpoints.',
-    categoryId: 'ai',
-    alternatives: ['replicate', 'together-ai'],
-    externalAlternatives: [],
-  },
-  {
     id: 'replicate',
     name: 'Replicate',
     model: 'S',
@@ -1352,51 +1316,6 @@ export const PRODUCTS: Product[] = [
     categoryId: 'ai',
     alternatives: [],
     externalAlternatives: ['Fireworks', 'Groq'],
-  },
-  {
-    id: 'modal',
-    name: 'Modal',
-    model: 'S',
-    what: 'Serverless GPUs and batch compute for Python code.',
-    categoryId: 'ai',
-    alternatives: ['replicate'],
-    externalAlternatives: ['RunPod'],
-  },
-  {
-    id: 'pinecone',
-    name: 'Pinecone',
-    model: 'S',
-    what: 'Managed vector database for semantic search and retrieval.',
-    categoryId: 'ai',
-    alternatives: [],
-    externalAlternatives: ['Weaviate', 'Qdrant', 'pgvector'],
-  },
-  {
-    id: 'langfuse',
-    name: 'Langfuse',
-    model: 'B',
-    what: 'Tracing and evaluation for LLM apps; now part of ClickHouse.',
-    categoryId: 'ai',
-    alternatives: ['langsmith'],
-    externalAlternatives: ['Braintrust', 'Arize Phoenix'],
-  },
-  {
-    id: 'langsmith',
-    name: 'LangSmith',
-    model: 'S',
-    what: "LangChain's tracing, evaluation and prompt testing tool.",
-    categoryId: 'ai',
-    alternatives: ['langfuse'],
-    externalAlternatives: ['Braintrust'],
-  },
-  {
-    id: 'helicone',
-    name: 'Helicone',
-    model: 'B',
-    what: 'LLM gateway and logging tool in maintenance mode since its acquisition by Mintlify. Avoid for new projects.',
-    categoryId: 'ai',
-    alternatives: ['langfuse'],
-    externalAlternatives: ['Portkey'],
   },
   {
     id: 'github',
@@ -1496,51 +1415,6 @@ export const PRODUCTS: Product[] = [
     categoryId: 'devops',
     alternatives: ['terraform'],
     externalAlternatives: ['AWS CDK'],
-  },
-  {
-    id: 'docker',
-    name: 'Docker',
-    model: 'B',
-    what: 'Container build and packaging standard, plus the Docker Hub registry.',
-    categoryId: 'devops',
-    alternatives: [],
-    externalAlternatives: ['Podman', 'containerd'],
-    guide: {
-      description:
-        'Docker popularized container packaging for applications. A Dockerfile captures dependencies and runtime into an image; Docker runs that image in an isolated container. Docker Hub is the default public registry. Although Kubernetes became the orchestrator of choice for large fleets, Docker remains the build and local-development standard for most teams.',
-      certificates: ['Docker Certified Associate (DCA)', 'Docker Captain program'],
-      trends: [
-        {
-          title: 'Docker BuildKit hybrid cache speeds CI builds',
-          source: 'Docker Blog',
-          date: '2026-09-25',
-        },
-        {
-          title: 'Docker Compose V2 GA with init systems support',
-          source: 'Docker Blog',
-          date: '2026-09-14',
-        },
-      ],
-      stats: {
-        employees: '~1,000',
-        founded: '2010',
-        headquarters: 'San Francisco, CA',
-        funding: 'Public (NYSE: DOCK)',
-        marketShare: 'Dominant local container runtime and registry',
-      },
-      blogPosts: [
-        {
-          title: 'BuildKit hybrid cache',
-          url: 'https://www.docker.com/blog/buildkit-hybrid-cache',
-          date: '2026-09-25',
-        },
-        {
-          title: 'Docker Compose V2 init support',
-          url: 'https://www.docker.com/blog/compose-v2-init',
-          date: '2026-09-14',
-        },
-      ],
-    },
   },
   {
     id: 'kubernetes',
@@ -1928,5 +1802,1769 @@ export const PRODUCTS: Product[] = [
     categoryId: 'business',
     alternatives: ['zendesk'],
     externalAlternatives: ['Front'],
+  },
+  // AI Engineering Learning Track Products
+  {
+    id: 'docling',
+    name: 'Docling',
+    model: 'O',
+    what: 'IBM open-source document parser for PDFs, Office docs, and HTML. Extracts text, tables, and structure as Markdown/JSON. Best-in-class for complex layouts and scanned pages with OCR.',
+    categoryId: 'ai-parsing',
+    alternatives: ['unstructured-io'],
+    externalAlternatives: ['pdfplumber', 'pymupdf', 'marker'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        'Docling is the primary tool for unstructured parsing in the AI Engineering track. It handles PDFs (digital + scanned), Word, PowerPoint, Excel, and HTML. Output is clean Markdown or JSON with table structure preserved. Uses a layout analysis model (DocLayNet) + table detection (TableFormer) + OCR (Tesseract/EasyOCR).',
+      certificates: ['IBM Docling Contributor Badge'],
+      trends: [
+        {
+          title: 'Docling v2.0 adds multimodal layout understanding',
+          source: 'IBM Research Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'Integration with LangChain and LlamaIndex document loaders',
+          source: 'LangChain Blog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~50 (IBM Research)',
+        founded: '2023',
+        headquarters: 'Zurich, Switzerland',
+        funding: 'IBM Internal',
+        marketShare: 'Leading open-source document parser',
+      },
+      blogPosts: [
+        {
+          title: 'Docling: Production-grade document understanding',
+          url: 'https://github.com/DS4SD/docling',
+          date: '2026-09-20',
+        },
+        {
+          title: 'TableFormer: Table structure recognition',
+          url: 'https://arxiv.org/abs/2307.07513',
+          date: '2023-07-14',
+        },
+      ],
+    },
+  },
+  {
+    id: 'unstructured-io',
+    name: 'Unstructured.io',
+    model: 'B',
+    what: 'Open-core platform for document ingestion and ETL. 25+ connectors (S3, SharePoint, GDrive, Notion, etc.), partitioning strategies, and enrichment. Hosted SaaS removes infrastructure burden.',
+    categoryId: 'ai-parsing',
+    alternatives: ['docling'],
+    externalAlternatives: ['LlamaParse', 'Azure Document Intelligence', 'AWS Textract'],
+    lastUpdated: '2026-10-10',
+    guide: {
+      description:
+        'Unstructured.io is the industry-standard alternative to Docling. It provides a unified API for 25+ source connectors, smart partitioning (fast/hi_res/ocr_only), and enrichment (summaries, embeddings). The open-source library handles parsing; the platform adds connectors, scheduling, and monitoring.',
+      certificates: ['Unstructured Certified Engineer'],
+      trends: [
+        {
+          title: 'Unstructured Platform adds real-time change detection',
+          source: 'Unstructured Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Partitioning strategy auto-selection now GA',
+          source: 'Unstructured Changelog',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~80',
+        founded: '2022',
+        headquarters: 'San Francisco, CA',
+        funding: 'Series B ($40M)',
+        marketShare: 'Enterprise document ingestion leader',
+      },
+      blogPosts: [
+        {
+          title: 'Choosing the right partitioning strategy',
+          url: 'https://unstructured.io/blog/partitioning-strategies',
+          date: '2026-09-10',
+        },
+        {
+          title: 'Building a production RAG pipeline',
+          url: 'https://unstructured.io/blog/production-rag',
+          date: '2026-08-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'polars',
+    name: 'Polars',
+    model: 'O',
+    what: 'Lightning-fast DataFrame library in Rust with Python/Node bindings. Lazy evaluation, streaming, and multi-threaded by default. Handles datasets larger than RAM via query optimization and out-of-core processing.',
+    categoryId: 'ai-tabular',
+    alternatives: ['pandas'],
+    externalAlternatives: ['DuckDB', 'Modin', 'Vaex'],
+    lastUpdated: '2026-10-12',
+    guide: {
+      description:
+        'Polars is the primary tabular tool for AI Engineering. Its expression API enables query optimization (predicate pushdown, projection pushdown) and streaming execution (process 10GB on 4GB RAM). Lazy API builds a query plan; collect() executes. Perfect for cleaning CSVs/Parquet before embedding.',
+      certificates: ['Polars Contributor Program'],
+      trends: [
+        {
+          title: 'Polars 1.0 stable release with streaming GA',
+          source: 'Polars Blog',
+          date: '2026-09-01',
+        },
+        {
+          title: 'PyPolars + PyArrow interop improvements',
+          source: 'Polars Changelog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~20 (core team)',
+        founded: '2020',
+        headquarters: 'Rotterdam, Netherlands',
+        funding: 'Open source (Rust Foundation)',
+        marketShare: 'Fastest-growing DataFrame library',
+      },
+      blogPosts: [
+        {
+          title: 'Polars vs Pandas: When to switch',
+          url: 'https://pola.rs/blog/pandas-vs-polars',
+          date: '2026-09-01',
+        },
+        {
+          title: 'Streaming 100GB CSV on a laptop',
+          url: 'https://pola.rs/blog/streaming-large-data',
+          date: '2026-08-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'pandas',
+    name: 'Pandas',
+    model: 'O',
+    what: 'The original Python DataFrame library. Rich ecosystem, familiar API, but single-threaded and eager evaluation. Use for exploration, small data, or when Polars is overkill.',
+    categoryId: 'ai-tabular',
+    alternatives: ['polars'],
+    externalAlternatives: ['Dask', 'Modin'],
+    lastUpdated: '2026-10-05',
+    guide: {
+      description:
+        "Pandas is the baseline every engineer knows. It's eager, single-threaded, and loads everything into memory. Still excellent for interactive exploration, plotting, and datasets < 1GB. Know it well enough to recognize when to graduate to Polars.",
+      certificates: ['Pandas Developer Certificate (via DataCamp)'],
+      trends: [
+        {
+          title: 'Pandas 2.2 with Copy-on-Write by default',
+          source: 'Pandas Release Notes',
+          date: '2026-08-20',
+        },
+        {
+          title: 'ArrowDtype integration for zero-copy Polars interop',
+          source: 'Pandas Blog',
+          date: '2026-07-15',
+        },
+      ],
+      stats: {
+        employees: '~30 (core)',
+        founded: '2008',
+        headquarters: 'Global (distributed)',
+        funding: 'NumFOCUS sponsored',
+        marketShare: 'Ubiquitous in Python data science',
+      },
+      blogPosts: [
+        {
+          title: "What's new in Pandas 2.2",
+          url: 'https://pandas.pydata.org/docs/whatsnew/v2.2.0.html',
+          date: '2026-08-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'pgvector',
+    name: 'pgvector',
+    model: 'O',
+    what: 'PostgreSQL extension for vector similarity search. Stores embeddings alongside relational data. Supports HNSW and IVFFlat indexes. Enables hybrid search: vector + BM25/keyword + metadata filters in one query.',
+    categoryId: 'ai-vector-db',
+    alternatives: ['pinecone', 'chroma', 'weaviate', 'qdrant'],
+    externalAlternatives: ['Supabase Vector', 'Neon Vector', 'Timescale Vector'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'pgvector is the default vector DB choice for AI Engineering because it runs inside Postgres. No separate infrastructure. Hybrid search: `rank = 0.7 * (1 - embedding <=> $q) + 0.3 * ts_rank_cd(tsv, websearch_to_tsquery($q))`. Filter by tenant_id, doc_type via standard WHERE. HNSW index: `CREATE INDEX ON docs USING hnsw (embedding vector_cosine_ops)`.',
+      certificates: ['PostgreSQL Certified Professional (covers pgvector)'],
+      trends: [
+        {
+          title: 'pgvector 0.8.0 adds HNSW insert performance improvements',
+          source: 'pgvector GitHub',
+          date: '2026-09-25',
+        },
+        {
+          title: 'Supabase launches managed pgvector with auto-indexing',
+          source: 'Supabase Blog',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~5 (core)',
+        founded: '2021',
+        headquarters: 'Open source',
+        funding: 'Community + Supabase/Neon sponsorship',
+        marketShare: 'Most popular Postgres vector extension',
+      },
+      blogPosts: [
+        {
+          title: 'Hybrid search with pgvector + tsvector',
+          url: 'https://github.com/pgvector/pgvector#hybrid-search',
+          date: '2026-09-25',
+        },
+        {
+          title: 'Benchmarking HNSW vs IVFFlat',
+          url: 'https://supabase.com/blog/pgvector-hnsw-benchmark',
+          date: '2026-08-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'pinecone',
+    name: 'Pinecone',
+    model: 'S',
+    what: 'Fully managed vector database with serverless and pod-based options. Built-in metadata filtering, namespaces, and hybrid search (dense + sparse). Best for teams that want zero-ops vector search at scale.',
+    categoryId: 'ai-vector-db',
+    alternatives: ['pgvector', 'chroma', 'weaviate', 'qdrant'],
+    externalAlternatives: ['Zilliz Cloud', 'Upstash Vector'],
+    lastUpdated: '2026-10-10',
+    guide: {
+      description:
+        "Pinecone is the managed alternative when you don't want to run Postgres. Serverless tier scales to zero; pod-based for predictable throughput. Hybrid search combines dense (embeddings) + sparse (BM25) vectors. Namespaces = tenant isolation. REST + gRPC + Python/Node SDKs.",
+      certificates: ['Pinecone Developer Certification'],
+      trends: [
+        {
+          title: 'Pinecone Serverless GA with 100M vectors/index',
+          source: 'Pinecone Blog',
+          date: '2026-09-15',
+        },
+        {
+          title: 'Integrated reranking with Cohere/Rerank models',
+          source: 'Pinecone Changelog',
+          date: '2026-08-20',
+        },
+      ],
+      stats: {
+        employees: '~200',
+        founded: '2019',
+        headquarters: 'New York, NY',
+        funding: 'Series B ($100M+)',
+        marketShare: 'Leading managed vector DB',
+      },
+      blogPosts: [
+        {
+          title: 'Serverless vector search architecture',
+          url: 'https://www.pinecone.io/blog/serverless-vector-search',
+          date: '2026-09-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'chroma',
+    name: 'Chroma',
+    model: 'O',
+    what: 'Open-source embedding database. Simple API, runs in-process or as a server. Good for prototyping and local development. Integrates with LangChain, LlamaIndex, and OpenAI embeddings out of the box.',
+    categoryId: 'ai-vector-db',
+    alternatives: ['pgvector', 'pinecone', 'weaviate', 'qdrant'],
+    externalAlternatives: ['LanceDB', 'Milvus Lite'],
+    lastUpdated: '2026-10-08',
+    guide: {
+      description:
+        'Chroma is the easiest local vector DB to start with. `pip install chromadb` → `chromadb.Client()` → add/query. No Docker required for in-process mode. Persists to disk. Best for dev/prototyping; production teams often migrate to pgvector or Pinecone.',
+      certificates: ['Chroma Contributor Program'],
+      trends: [
+        {
+          title: 'Chroma 0.5 adds HNSW persistence and multi-tenancy',
+          source: 'Chroma Blog',
+          date: '2026-09-10',
+        },
+        {
+          title: 'Chroma Cloud managed service enters beta',
+          source: 'Chroma Blog',
+          date: '2026-08-01',
+        },
+      ],
+      stats: {
+        employees: '~30',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($18M)',
+        marketShare: 'Popular for local dev and prototypes',
+      },
+      blogPosts: [
+        {
+          title: 'Getting started with Chroma',
+          url: 'https://docs.trychroma.com/getting-started',
+          date: '2026-09-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'weaviate',
+    name: 'Weaviate',
+    model: 'B',
+    what: 'Open-core vector database with GraphQL/REST APIs. Built-in modules for vectorization (OpenAI, Cohere, HuggingFace), hybrid search, and multi-tenancy. Kubernetes-native for production deployments.',
+    categoryId: 'ai-vector-db',
+    alternatives: ['pgvector', 'pinecone', 'chroma', 'qdrant'],
+    externalAlternatives: ['Milvus', 'Vespa'],
+    lastUpdated: '2026-10-05',
+    guide: {
+      description:
+        'Weaviate sits between Chroma (simple) and Pinecone (managed). Self-hosted via Docker/K8s; Weaviate Cloud for managed. Modules auto-vectorize on insert. Hybrid search (BM25 + vector) is native. GraphQL API is a differentiator.',
+      certificates: ['Weaviate Certification'],
+      trends: [
+        {
+          title: 'Weaviate 1.25 adds generative search modules',
+          source: 'Weaviate Blog',
+          date: '2026-09-05',
+        },
+        {
+          title: 'Weaviate Cloud now on AWS/GCP/Azure',
+          source: 'Weaviate Changelog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~100',
+        founded: '2019',
+        headquarters: 'Amsterdam, Netherlands',
+        funding: 'Series B ($50M+)',
+        marketShare: 'Strong in self-hosted enterprise',
+      },
+      blogPosts: [
+        {
+          title: 'Hybrid search deep dive',
+          url: 'https://weaviate.io/blog/hybrid-search',
+          date: '2026-09-05',
+        },
+      ],
+    },
+  },
+  {
+    id: 'qdrant',
+    name: 'Qdrant',
+    model: 'B',
+    what: 'Rust-based vector database with REST/gRPC APIs. Payload filtering, payload indexes, and HNSW with quantization. Qdrant Cloud for managed. Excellent performance per dollar.',
+    categoryId: 'ai-vector-db',
+    alternatives: ['pgvector', 'pinecone', 'chroma', 'weaviate'],
+    externalAlternatives: ['Milvus', 'Vespa'],
+    lastUpdated: '2026-10-03',
+    guide: {
+      description:
+        'Qdrant is written in Rust for speed and memory efficiency. Payload (metadata) filtering is first-class with payload indexes. Binary quantization reduces memory 32x with minimal recall loss. Great for cost-sensitive production.',
+      certificates: ['Qdrant Contributor Program'],
+      trends: [
+        {
+          title: 'Qdrant 1.10 adds sparse vectors for hybrid search',
+          source: 'Qdrant Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'Quantization benchmarks: 95% recall at 1/32 memory',
+          source: 'Qdrant Blog',
+          date: '2026-08-10',
+        },
+      ],
+      stats: {
+        employees: '~50',
+        founded: '2021',
+        headquarters: 'Berlin, Germany',
+        funding: 'Series A ($28M)',
+        marketShare: 'Rising star for self-hosted performance',
+      },
+      blogPosts: [
+        {
+          title: 'Binary quantization explained',
+          url: 'https://qdrant.tech/articles/binary-quantization',
+          date: '2026-08-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'langgraph',
+    name: 'LangGraph',
+    model: 'O',
+    what: 'Stateful, multi-actor orchestration for LLM applications. Graph-based: nodes = functions (LLM, tool, human), edges = control flow. Built-in checkpointers (SQLite, Postgres, Redis) for persistence and human-in-the-loop.',
+    categoryId: 'ai-agent-orchestration',
+    alternatives: ['llamaindex', 'pydantic-ai'],
+    externalAlternatives: ['AutoGen', 'CrewAI', 'Semantic Kernel'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'LangGraph is the primary agent orchestration tool for AI Engineering. It models agents as graphs: State → Node (LLM/tool/human) → State. Cycles enable loops (retry, reflection). Checkpointers persist every step → resume after crash, human approval, or time travel. Use `StateGraph` for most cases; `Pregel` for advanced multi-actor.',
+      certificates: ['LangGraph Developer Certification (LangChain Academy)'],
+      trends: [
+        {
+          title: 'LangGraph Platform (hosted) enters public beta',
+          source: 'LangChain Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Streaming intermediate state for real-time UI updates',
+          source: 'LangGraph Changelog',
+          date: '2026-09-15',
+        },
+      ],
+      stats: {
+        employees: '~100 (LangChain team)',
+        founded: '2023 (as library)',
+        headquarters: 'San Francisco, CA',
+        funding: 'LangChain Series B ($35M+)',
+        marketShare: 'Standard for production agent orchestration',
+      },
+      blogPosts: [
+        {
+          title: 'Building a ReAct agent with LangGraph',
+          url: 'https://langchain-ai.github.io/langgraph/tutorials/introduction/',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Human-in-the-loop patterns',
+          url: 'https://langchain-ai.github.io/langgraph/how-tos/human_in_the_loop/',
+          date: '2026-09-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'llamaindex',
+    name: 'LlamaIndex',
+    model: 'O',
+    what: 'Data framework for LLM applications. Focus: data ingestion, indexing, and query engines. Strong for RAG: document loaders, node parsers, retrievers, response synthesizers. Also has agent workflows (Workflows API).',
+    categoryId: 'ai-agent-orchestration',
+    alternatives: ['langgraph', 'pydantic-ai'],
+    externalAlternatives: ['LangChain (core)', 'Haystack'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'LlamaIndex excels at the "data" side of RAG: 160+ loaders, smart chunking (SemanticSplitter, MarkdownNodeParser), retrievers (auto-merging, recursive), and query engines (SubQuestion, SQL). Workflows API (beta) adds agent orchestration. Pair with LangGraph for complex agents.',
+      certificates: ['LlamaIndex Certified Developer'],
+      trends: [
+        {
+          title: 'LlamaIndex Workflows GA for agent orchestration',
+          source: 'LlamaIndex Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'Property graph index for knowledge graphs',
+          source: 'LlamaIndex Blog',
+          date: '2026-08-25',
+        },
+      ],
+      stats: {
+        employees: '~50',
+        founded: '2022',
+        headquarters: 'San Francisco, CA',
+        funding: 'Series B ($30M+)',
+        marketShare: 'Standard for RAG data pipelines',
+      },
+      blogPosts: [
+        {
+          title: 'Advanced RAG with LlamaIndex',
+          url: 'https://www.llamaindex.ai/blog/advanced-rag',
+          date: '2026-09-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'pydantic-ai',
+    name: 'PydanticAI',
+    model: 'O',
+    what: 'Agent framework from the Pydantic team. Type-safe by design: agents are generic over input/output types. Built-in retries, validation, and structured output. Model-agnostic (OpenAI, Anthropic, Gemini, local via Ollama).',
+    categoryId: 'ai-agent-orchestration',
+    alternatives: ['langgraph', 'llamaindex'],
+    externalAlternatives: ['Instructor', 'Marvin'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        "PydanticAI is the newest entrant but brings Pydantic's validation philosophy to agents. Define `Agent[Input, Output]` with Pydantic models. Automatic retry on validation failure with error feedback to LLM. Dependency injection for tools. Best for teams already invested in Pydantic.",
+      certificates: ['PydanticAI Early Adopter Badge'],
+      trends: [
+        {
+          title: 'PydanticAI 0.5 adds graph-based workflows',
+          source: 'Pydantic Blog',
+          date: '2026-10-10',
+        },
+        {
+          title: 'Integration with Logfire for observability',
+          source: 'Pydantic Blog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~15 (Pydantic team)',
+        founded: '2024',
+        headquarters: 'Remote',
+        funding: 'Pydantic (bootstrapped)',
+        marketShare: 'Rapidly growing for type-safe agents',
+      },
+      blogPosts: [
+        { title: 'Introducing PydanticAI', url: 'https://ai.pydantic.dev/', date: '2026-10-10' },
+      ],
+    },
+  },
+  {
+    id: 'pydantic',
+    name: 'Pydantic',
+    model: 'O',
+    what: 'Python data validation via type annotations. Define schemas as classes; get parsing, validation, serialization, and OpenAPI generation. v2 is Rust-backed (pydantic-core) — 10-50x faster. The foundation of type-safe LLM outputs.',
+    categoryId: 'ai-structured-output',
+    alternatives: ['instructor'],
+    externalAlternatives: ['marshmallow', 'attrs', 'dataclasses'],
+    lastUpdated: '2026-10-22',
+    guide: {
+      description:
+        'Pydantic v2 is the bedrock of structured outputs. Define your LLM response schema as a `BaseModel`. Use `model_json_schema()` for OpenAPI/function calling. `Instructor` wraps Pydantic + LLM to retry on validation failure. `model_validate_json()` parses raw LLM output safely.',
+      certificates: ['Pydantic Core Contributor'],
+      trends: [
+        {
+          title: 'Pydantic v2.10 adds experimental `TypeAdapter` for streaming',
+          source: 'Pydantic Changelog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Pydantic + Instructor: the standard for structured LLM output',
+          source: 'Pydantic Blog',
+          date: '2026-09-15',
+        },
+      ],
+      stats: {
+        employees: '~10 (core)',
+        founded: '2017',
+        headquarters: 'Remote',
+        funding: 'Bootstrapped (FastAPI consulting)',
+        marketShare: 'Universal in Python backend/ML',
+      },
+      blogPosts: [
+        {
+          title: 'Pydantic v2 migration guide',
+          url: 'https://docs.pydantic.dev/latest/migration/',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'instructor',
+    name: 'Instructor',
+    model: 'O',
+    what: 'Tiny wrapper that adds structured output + retries to any LLM client (OpenAI, Anthropic, Ollama, etc.). Uses Pydantic models for schema. On validation failure, feeds error back to LLM for correction. Zero dependencies beyond Pydantic.',
+    categoryId: 'ai-structured-output',
+    alternatives: ['pydantic'],
+    externalAlternatives: ['Outlines', 'Guidance', 'jsonformer'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'Instructor is the glue between Pydantic schemas and LLMs. `from instructor import patch; client = patch(openai_client); response = client.chat.completions.create(response_model=MyModel, ...)`. Handles: JSON mode, tool calling, streaming partial outputs, and multi-turn retries. Essential for production LLM apps.',
+      certificates: ['Instructor Contributor'],
+      trends: [
+        {
+          title: 'Instructor 1.5 adds streaming partial validation',
+          source: 'Instructor GitHub',
+          date: '2026-10-05',
+        },
+        {
+          title: 'Support for Anthropic tool use and Google Gemini',
+          source: 'Instructor Changelog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~5 (core)',
+        founded: '2023',
+        headquarters: 'Remote',
+        funding: 'Open source',
+        marketShare: 'De facto standard for structured LLM output',
+      },
+      blogPosts: [
+        {
+          title: 'Structured output patterns with Instructor',
+          url: 'https://python.useinstructor.com/blog/structured-output-patterns',
+          date: '2026-10-05',
+        },
+      ],
+    },
+  },
+  {
+    id: 'langsmith',
+    name: 'LangSmith',
+    model: 'S',
+    what: 'Observability and evaluation platform from LangChain. Traces every LLM call, tool invocation, and chain step. Datasets + evaluators (RAGAS, custom) for automated testing. Prompt playground and versioning. Integrates with LangGraph natively.',
+    categoryId: 'ai-evals-observability',
+    alternatives: ['arize-phoenix', 'langfuse', 'helicone'],
+    externalAlternatives: ['Weights & Biases', 'MLflow', 'Arize'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'LangSmith is the primary observability tool for AI Engineering. `langsmith.trace()` decorates any function. Datasets: curated Q&A pairs with ground truth. Evaluators: RAGAS (faithfulness, answer_relevancy, context_precision, context_recall) + custom Python functions. CI gate: `langsmith evaluate` fails PR if metrics drop.',
+      certificates: ['LangSmith Certified Practitioner'],
+      trends: [
+        {
+          title: 'LangSmith adds RAGAS evaluators natively',
+          source: 'LangChain Blog',
+          date: '2026-09-25',
+        },
+        {
+          title: 'Prompt versioning with A/B testing',
+          source: 'LangSmith Changelog',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~100 (LangChain)',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'LangChain Series B',
+        marketShare: 'Standard for LangChain/LangGraph teams',
+      },
+      blogPosts: [
+        {
+          title: 'Evaluating RAG with LangSmith + RAGAS',
+          url: 'https://blog.langchain.dev/evaluating-rag-langsmith-ragas',
+          date: '2026-09-25',
+        },
+      ],
+    },
+  },
+  {
+    id: 'arize-phoenix',
+    name: 'Arize Phoenix',
+    model: 'O',
+    what: 'Open-source observability for LLM apps. Traces, spans, and evaluations in a local notebook or self-hosted. RAGAS integration. No SaaS dependency — runs entirely in your infrastructure.',
+    categoryId: 'ai-evals-observability',
+    alternatives: ['langsmith', 'langfuse', 'helicone'],
+    externalAlternatives: ['Arize (SaaS)', 'WhyLabs'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        "Phoenix is the open-source choice when you can't send data to LangSmith. `pip install arize-phoenix` → `phoenix.launch_app()` in notebook. Same span format as OpenTelemetry. RAGAS evaluators built-in. Export to Arize SaaS later if needed.",
+      certificates: ['Arize Phoenix Contributor'],
+      trends: [
+        {
+          title: 'Phoenix 4.0 adds OpenTelemetry native export',
+          source: 'Arize Blog',
+          date: '2026-09-15',
+        },
+        { title: 'RAGAS evaluation in 3 lines of code', source: 'Arize Blog', date: '2026-08-20' },
+      ],
+      stats: {
+        employees: '~80 (Arize)',
+        founded: '2023',
+        headquarters: 'Berkeley, CA',
+        funding: 'Arize Series B',
+        marketShare: 'Leading open-source LLM observability',
+      },
+      blogPosts: [
+        {
+          title: 'Getting started with Phoenix',
+          url: 'https://phoenix.arize.com/',
+          date: '2026-09-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'ragas',
+    name: 'RAGAS',
+    model: 'O',
+    what: 'Reference-free evaluation framework for RAG. Metrics: Faithfulness (hallucination), Answer Relevancy, Context Precision, Context Recall, Context Entity Recall. Runs on any LLM judge (GPT-4, local). Integrates with LangSmith, Phoenix, LangFuse.',
+    categoryId: 'ai-evals-observability',
+    alternatives: ['langsmith', 'arize-phoenix', 'langfuse'],
+    externalAlternatives: ['TruLens', 'DeepEval'],
+    lastUpdated: '2026-10-12',
+    guide: {
+      description:
+        'RAGAS is the metric suite, not the platform. `from ragas import evaluate; evaluate(dataset, metrics=[faithfulness, answer_relevancy, context_precision, context_recall])`. Uses an LLM judge (default GPT-4) to score. No ground truth answers needed (reference-free). Run in CI on every prompt change.',
+      certificates: ['RAGAS Contributor'],
+      trends: [
+        {
+          title: 'RAGAS 0.2 adds Context Entity Recall for entity-heavy domains',
+          source: 'RAGAS GitHub',
+          date: '2026-09-10',
+        },
+        {
+          title: 'RAGAS + LangSmith CI integration guide',
+          source: 'LangChain Blog',
+          date: '2026-09-25',
+        },
+      ],
+      stats: {
+        employees: '~10 (core)',
+        founded: '2023',
+        headquarters: 'Remote',
+        funding: 'Open source (Explosion AI)',
+        marketShare: 'Standard RAG evaluation metrics',
+      },
+      blogPosts: [
+        {
+          title: 'RAGAS paper: reference-free RAG evaluation',
+          url: 'https://arxiv.org/abs/2309.15217',
+          date: '2023-09-26',
+        },
+      ],
+    },
+  },
+  {
+    id: 'langfuse',
+    name: 'Langfuse',
+    model: 'B',
+    what: 'Open-core LLM observability. Self-hosted (Docker) or cloud. Traces, metrics, prompt management, datasets, and evaluations. OpenTelemetry native. Strong for teams wanting data ownership with a polished UI.',
+    categoryId: 'ai-evals-observability',
+    alternatives: ['langsmith', 'arize-phoenix', 'helicone'],
+    externalAlternatives: ['Helicone', 'Portkey'],
+    lastUpdated: '2026-10-10',
+    guide: {
+      description:
+        'Langfuse sits between LangSmith (SaaS) and Phoenix (OSS notebook). Self-host with Docker Compose (Postgres + ClickHouse + UI). Prompt CMS with versioning. Datasets + RAGAS evaluators. OpenTelemetry native — drop-in for existing tracing.',
+      certificates: ['Langfuse Certified Engineer'],
+      trends: [
+        {
+          title: 'Langfuse v2 adds prompt playground and A/B testing',
+          source: 'Langfuse Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'OpenTelemetry semantic conventions for LLMs',
+          source: 'Langfuse Blog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~30',
+        founded: '2023',
+        headquarters: 'Berlin, Germany',
+        funding: 'Seed ($12M)',
+        marketShare: 'Popular self-hosted observability',
+      },
+      blogPosts: [
+        {
+          title: 'Self-hosting Langfuse on Kubernetes',
+          url: 'https://langfuse.com/docs/deployment/kubernetes',
+          date: '2026-09-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'helicone',
+    name: 'Helicone',
+    model: 'B',
+    what: 'LLM observability proxy. Drop-in replacement for OpenAI base URL. Logs requests, costs, latency, and errors. Caching, rate limiting, and fallbacks built-in. Cloud or self-hosted.',
+    categoryId: 'ai-evals-observability',
+    alternatives: ['langsmith', 'arize-phoenix', 'langfuse'],
+    externalAlternatives: ['Portkey', 'LiteLLM (observability)'],
+    lastUpdated: '2026-10-08',
+    guide: {
+      description:
+        'Helicone is the easiest observability to add: change `base_url` to `https://oai.helicone.ai`. No code changes. Caches responses (semantic or exact). Rate limits per key. Fallbacks to other providers. Cost dashboard per project/user.',
+      certificates: ['Helicone Contributor'],
+      trends: [
+        {
+          title: 'Helicone adds prompt management and versioning',
+          source: 'Helicone Blog',
+          date: '2026-09-10',
+        },
+        {
+          title: 'Semantic caching reduces costs 30%+',
+          source: 'Helicone Blog',
+          date: '2026-08-05',
+        },
+      ],
+      stats: {
+        employees: '~20',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($5M)',
+        marketShare: 'Easiest drop-in observability',
+      },
+      blogPosts: [
+        {
+          title: 'Helicone quickstart',
+          url: 'https://docs.helicone.ai/quickstart',
+          date: '2026-09-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'dagster',
+    name: 'Dagster',
+    model: 'B',
+    what: 'Data orchestrator with software-defined assets. Define assets (PDFs → chunks → embeddings → pgvector) as Python functions with dependencies. Sensors trigger on S3/GCS upload. Lineage, backfills, and partitions built-in. Dagster+ for managed.',
+    categoryId: 'ai-pipelines',
+    alternatives: ['prefect', 'temporal', 'airflow'],
+    externalAlternatives: ['Mage', 'Kestra'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'Dagster is the primary pipeline tool for AI Engineering. Assets = data products with lineage. `@asset def parsed_pdfs(): ...` → `@asset def embedded_chunks(parsed_pdfs): ...`. Sensors: `@sensor def new_pdf_sensor(context): ...`. Partitions by date/tenant. Dagster UI shows run status, asset graph, and logs.',
+      certificates: ['Dagster Certified Engineer'],
+      trends: [
+        {
+          title: 'Dagster 1.8 adds asset checks and data quality tests',
+          source: 'Dagster Blog',
+          date: '2026-09-25',
+        },
+        { title: 'Dagster+ serverless now GA', source: 'Dagster Blog', date: '2026-09-10' },
+      ],
+      stats: {
+        employees: '~80',
+        founded: '2019',
+        headquarters: 'New York, NY',
+        funding: 'Series C ($100M+)',
+        marketShare: 'Modern standard for data/AI pipelines',
+      },
+      blogPosts: [
+        {
+          title: 'Building an AI ingestion pipeline with Dagster',
+          url: 'https://dagster.io/blog/ai-ingestion-pipeline',
+          date: '2026-09-25',
+        },
+      ],
+    },
+  },
+  {
+    id: 'prefect',
+    name: 'Prefect',
+    model: 'B',
+    what: 'Python-native workflow orchestrator. `@flow` and `@task` decorators. Prefect Cloud for scheduling, UI, and secrets. Simpler than Airflow for Python teams. Good for ad-hoc AI workflows.',
+    categoryId: 'ai-pipelines',
+    alternatives: ['dagster', 'temporal', 'airflow'],
+    externalAlternatives: ['Mage', 'Kestra'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        'Prefect is the "Pythonic Airflow." `@flow def ingest_pdfs(): ...` → `@task def parse_pdf(path): ...`. Runs anywhere (local, K8s, Cloud Run). Prefect Cloud handles scheduling and UI. Less opinionated than Dagster; good for simpler pipelines.',
+      certificates: ['Prefect Certification'],
+      trends: [
+        {
+          title: 'Prefect 3.0 adds native async and structured concurrency',
+          source: 'Prefect Blog',
+          date: '2026-09-15',
+        },
+        {
+          title: 'Prefect Cloud work pools for Kubernetes',
+          source: 'Prefect Changelog',
+          date: '2026-08-20',
+        },
+      ],
+      stats: {
+        employees: '~100',
+        founded: '2018',
+        headquarters: 'Washington, DC',
+        funding: 'Series C ($450M+)',
+        marketShare: 'Popular Python-native orchestrator',
+      },
+      blogPosts: [
+        {
+          title: 'Migrating from Airflow to Prefect',
+          url: 'https://www.prefect.io/blog/airflow-migration',
+          date: '2026-09-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'temporal',
+    name: 'Temporal',
+    model: 'B',
+    what: 'Durable execution platform. Write workflows as normal async code (Python, Go, TypeScript, Java). Temporal persists every step; survives crashes, deployments, and months of pauses. Best for long-running, mission-critical AI workflows.',
+    categoryId: 'ai-pipelines',
+    alternatives: ['dagster', 'prefect', 'airflow'],
+    externalAlternatives: ['Orkes (Conductor)', 'AWS Step Functions'],
+    lastUpdated: '2026-10-10',
+    guide: {
+      description:
+        "Temporal is different: it's durable execution, not just scheduling. Workflows are just async functions that can `await` for days. Built-in retries, timeouts, and saga compensation. Overkill for simple ETL; essential for human-in-the-loop AI agents that wait for approval.",
+      certificates: ['Temporal Developer Certification'],
+      trends: [
+        { title: 'Temporal Python SDK 1.0 GA', source: 'Temporal Blog', date: '2026-09-20' },
+        {
+          title: 'Temporal for AI agent orchestration',
+          source: 'Temporal Blog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~300',
+        founded: '2019',
+        headquarters: 'Seattle, WA',
+        funding: 'Series C ($1.2B valuation)',
+        marketShare: 'Standard for durable execution',
+      },
+      blogPosts: [
+        {
+          title: 'Building durable AI agents with Temporal',
+          url: 'https://temporal.io/blog/ai-agents',
+          date: '2026-08-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'airflow',
+    name: 'Apache Airflow',
+    model: 'O',
+    what: 'The original DAG-based orchestrator. DAGs as Python code. Massive operator ecosystem. Heavy infrastructure (scheduler, webserver, workers, metastore). Still dominant in enterprise data engineering.',
+    categoryId: 'ai-pipelines',
+    alternatives: ['dagster', 'prefect', 'temporal'],
+    externalAlternatives: ['Google Cloud Composer', 'AWS MWAA', 'Astronomer'],
+    lastUpdated: '2026-10-05',
+    guide: {
+      description:
+        'Airflow is the incumbent. DAGs = Python files with `>>` dependencies. Operators for everything. But: heavy infra, no native data lineage, dynamic DAGs are painful. Use when enterprise requires it; prefer Dagster/Prefect for new AI pipelines.',
+      certificates: ['Astronomer Airflow Certification'],
+      trends: [
+        {
+          title: 'Airflow 3.0 (alpha) adds data-aware scheduling',
+          source: 'Airflow Blog',
+          date: '2026-09-01',
+        },
+        {
+          title: 'Dynamic task mapping for parallel PDF processing',
+          source: 'Airflow Docs',
+          date: '2026-08-10',
+        },
+      ],
+      stats: {
+        employees: '~50 (core committers)',
+        founded: '2014',
+        headquarters: 'Apache Foundation',
+        funding: 'Open source',
+        marketShare: 'Enterprise standard, declining for new AI workloads',
+      },
+      blogPosts: [
+        {
+          title: 'Airflow 3.0 roadmap',
+          url: 'https://airflow.apache.org/blog/airflow-3-roadmap',
+          date: '2026-09-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'fastapi',
+    name: 'FastAPI',
+    model: 'O',
+    what: 'Modern Python web framework with automatic OpenAPI docs, dependency injection, and Pydantic validation. Native async support. The standard for AI model serving APIs.',
+    categoryId: 'ai-backend-serving',
+    alternatives: ['litellm', 'docker'],
+    externalAlternatives: ['Starlette', 'aiohttp', 'Flask', 'Django'],
+    lastUpdated: '2026-10-22',
+    guide: {
+      description:
+        'FastAPI is the default backend for AI Engineering. `app = FastAPI()` → `@app.post("/chat") async def chat(req: ChatRequest) -> EventSourceResponse: ...`. Dependency injection for DB pool, LLM client, auth. `EventSourceResponse` for SSE token streaming. Pydantic models = request/response validation + OpenAPI spec.',
+      certificates: ['FastAPI Expert Certification (via TestDriven.io)'],
+      trends: [
+        {
+          title: 'FastAPI 0.115 adds native OpenAPI 3.1 and JSON Schema 2020-12',
+          source: 'FastAPI Changelog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'FastAPI + Pydantic v2 performance gains',
+          source: 'FastAPI Blog',
+          date: '2026-09-15',
+        },
+      ],
+      stats: {
+        employees: '~10 (core)',
+        founded: '2018',
+        headquarters: 'Remote',
+        funding: 'Open source (FastAPI LLC)',
+        marketShare: 'Standard for Python ML/AI APIs',
+      },
+      blogPosts: [
+        {
+          title: 'Streaming LLM responses with FastAPI',
+          url: 'https://fastapi.tiangolo.com/advanced/custom-response/#streamingresponse',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'litellm',
+    name: 'LiteLLM',
+    model: 'O',
+    what: 'Unified proxy for 100+ LLM providers (OpenAI, Anthropic, Azure, Bedrock, Vertex, Ollama, vLLM, etc.). One OpenAI-compatible API format. Load balancing, fallbacks, rate limiting, budgets, and observability. Drop-in replacement for `openai` client.',
+    categoryId: 'ai-backend-serving',
+    alternatives: ['fastapi', 'docker'],
+    externalAlternatives: ['Portkey', 'Gateway (Vercel)', 'OpenRouter'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'LiteLLM is the LLM gateway for AI Engineering. `pip install litellm` → `litellm --model gpt-4o --port 4000`. Routes to any provider. Fallbacks: `litellm --fallbacks anthropic/claude-3.5-sonnet,ollama/llama3`. Budgets per key/team. Proxy mode sits between your app and providers.',
+      certificates: ['LiteLLM Contributor'],
+      trends: [
+        {
+          title: 'LiteLLM v1.40 adds semantic routing and model cascading',
+          source: 'LiteLLM Blog',
+          date: '2026-10-05',
+        },
+        {
+          title: 'Enterprise SSO and audit logs now GA',
+          source: 'LiteLLM Changelog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~20',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($8M)',
+        marketShare: 'Most popular open-source LLM gateway',
+      },
+      blogPosts: [
+        {
+          title: 'LiteLLM proxy quickstart',
+          url: 'https://docs.litellm.ai/docs/proxy/quick_start',
+          date: '2026-10-05',
+        },
+      ],
+    },
+  },
+  {
+    id: 'docker',
+    name: 'Docker',
+    model: 'O',
+    what: 'Container platform. Package your FastAPI + dependencies + model weights into an image. Multi-stage builds for small production images. Docker Compose for local dev (API + Postgres + Redis). Standard for deployment.',
+    categoryId: 'ai-backend-serving',
+    alternatives: ['fastapi', 'litellm'],
+    externalAlternatives: ['Podman', 'containerd', 'Kaniko'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'Docker is the deployment unit. Multi-stage: `FROM python:3.11-slim AS builder` → install deps → `FROM python:3.11-slim` → copy artifacts. Non-root user. Health check: `curl -f http://localhost:8000/health`. Compose for local: API, Postgres (pgvector), Redis, LiteLLM proxy.',
+      certificates: ['Docker Certified Associate (DCA)'],
+      trends: [
+        {
+          title: 'Docker BuildKit hybrid cache speeds CI builds 3x',
+          source: 'Docker Blog',
+          date: '2026-09-25',
+        },
+        {
+          title: 'Docker Scout for vulnerability scanning in CI',
+          source: 'Docker Blog',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~1000',
+        founded: '2010',
+        headquarters: 'San Francisco, CA',
+        funding: 'Public (Docker Inc.)',
+        marketShare: 'Ubiquitous container standard',
+      },
+      blogPosts: [
+        {
+          title: 'Multi-stage builds for Python ML apps',
+          url: 'https://docs.docker.com/build/building/multi-stage/',
+          date: '2026-09-25',
+        },
+      ],
+    },
+  },
+  {
+    id: 'vercel-ai-sdk',
+    name: 'Vercel AI SDK',
+    model: 'O',
+    what: 'React/Next.js toolkit for streaming LLM responses. `useChat` hook handles streaming, tool calls, and generative UI. `streamText`/`streamObject` on server. Supports OpenAI, Anthropic, Google, and custom providers. The standard for AI frontend.',
+    categoryId: 'ai-frontend-ui',
+    alternatives: ['nextjs', 'copilotkit'],
+    externalAlternatives: ['CopilotKit', 'LangChain.js', 'AI SDK (competitors)'],
+    lastUpdated: '2026-10-22',
+    guide: {
+      description:
+        'Vercel AI SDK is the primary frontend tool. Server: `const result = await streamText({ model, messages, tools })`. Client: `const { messages, input, handleSubmit } = useChat()`. Generative UI: tools return React components via `streamUI`. Citations: `result.sources` maps to document chunks.',
+      certificates: ['Vercel AI SDK Certified Developer'],
+      trends: [
+        {
+          title: 'AI SDK 4.0 adds `streamUI` for generative components',
+          source: 'Vercel Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Native support for Anthropic tool use and Citations API',
+          source: 'AI SDK Changelog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~50 (Vercel AI team)',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Vercel (public)',
+        marketShare: 'Standard for React/Next.js AI apps',
+      },
+      blogPosts: [
+        {
+          title: 'Building a streaming chat app',
+          url: 'https://sdk.vercel.ai/docs/guides/building-chat-apps',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Generative UI with streamUI',
+          url: 'https://sdk.vercel.ai/docs/guides/generative-ui',
+          date: '2026-09-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'nextjs',
+    name: 'Next.js',
+    model: 'O',
+    what: 'React framework with App Router, Server Components, and API routes. The platform for Vercel AI SDK. Server Components keep secrets off the client. Edge runtime for low-latency streaming.',
+    categoryId: 'ai-frontend-ui',
+    alternatives: ['vercel-ai-sdk', 'copilotkit'],
+    externalAlternatives: ['Remix', 'Astro', 'TanStack Start'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'Next.js 14+ App Router is the platform. Server Components for data fetching (no waterfall). Route handlers for streaming (`export const runtime = "edge"`). Middleware for auth. `next/font` for performance. Deploy to Vercel with zero config.',
+      certificates: ['Next.js Certification (Vercel)'],
+      trends: [
+        {
+          title: 'Next.js 15 RC adds React 19 and Turbopack stable',
+          source: 'Next.js Blog',
+          date: '2026-10-15',
+        },
+        {
+          title: 'Server Actions for form mutations without API routes',
+          source: 'Next.js Docs',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~100 (Vercel)',
+        founded: '2016',
+        headquarters: 'San Francisco, CA',
+        funding: 'Vercel (public)',
+        marketShare: 'Dominant React meta-framework',
+      },
+      blogPosts: [
+        {
+          title: 'Next.js App Router for AI apps',
+          url: 'https://nextjs.org/docs/app/building-your-application/optimizing/streaming',
+          date: '2026-10-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'copilotkit',
+    name: 'CopilotKit',
+    model: 'O',
+    what: 'React components for in-app AI assistants. `CopilotSidebar`, `CopilotPopup`, `CopilotTextarea`. Agents can read/write application state (React context) and invoke frontend actions. Bridges generative UI and app state.',
+    categoryId: 'ai-frontend-ui',
+    alternatives: ['vercel-ai-sdk', 'nextjs'],
+    externalAlternatives: ['Vercel AI SDK (generative UI)', 'LangChain.js'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'CopilotKit is for embedded AI (not chat-only). `<CopilotKit runtimeUrl="/api/copilot">` wraps your app. Agents access `useCopilotReadable` (read state) and `useCopilotAction` (invoke frontend functions). Great for "AI copilot in your dashboard" use cases.',
+      certificates: ['CopilotKit Contributor'],
+      trends: [
+        {
+          title: 'CopilotKit 1.0 adds CoAgents for LangGraph integration',
+          source: 'CopilotKit Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Generative UI with CopilotKit + Vercel AI SDK',
+          source: 'CopilotKit Blog',
+          date: '2026-09-15',
+        },
+      ],
+      stats: {
+        employees: '~20',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($10M)',
+        marketShare: 'Rising for in-app AI assistants',
+      },
+      blogPosts: [
+        {
+          title: 'Building an AI copilot for your SaaS',
+          url: 'https://docs.copilotkit.ai/quickstart',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'pytorch',
+    name: 'PyTorch',
+    model: 'O',
+    what: 'The universal deep learning framework. `torch.Tensor` = NumPy array on GPU with autograd. Load, quantize, and run open models. `torch.compile` for speed. Foundation for all local model work.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'hugging-face',
+      'sentence-transformers',
+      'scikit-learn',
+      'onnx-runtime',
+      'vllm',
+      'ollama',
+    ],
+    externalAlternatives: ['TensorFlow', 'JAX', 'MLX (Apple)'],
+    lastUpdated: '2026-10-22',
+    guide: {
+      description:
+        "PyTorch is mandatory. Even if you don't train, you use it to: load HF models (`AutoModel.from_pretrained`), quantize (`torch.quantization.quantize_dynamic`), run inference (`model.eval()`), and export ONNX (`torch.onnx.export`). `torch.compile` (v2.0+) gives 2x speedup for free. MPS (Apple Silicon) and CUDA backends.",
+      certificates: ['PyTorch Certified Developer'],
+      trends: [
+        {
+          title: 'PyTorch 2.4 adds `torch.export` for AOT compilation',
+          source: 'PyTorch Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'ExecuTorch for mobile/edge deployment',
+          source: 'PyTorch Blog',
+          date: '2026-09-15',
+        },
+      ],
+      stats: {
+        employees: '~200 (core + Meta)',
+        founded: '2016',
+        headquarters: 'Meta AI (open governance)',
+        funding: 'Linux Foundation / Meta',
+        marketShare: 'Dominant in research and open-source ML',
+      },
+      blogPosts: [
+        {
+          title: 'PyTorch 2.4 release notes',
+          url: 'https://pytorch.org/blog/pytorch-2-4',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'hugging-face',
+    name: 'Hugging Face',
+    model: 'B',
+    what: 'The GitHub of AI. `transformers` library: 3-line API to download/run any model. `sentence-transformers` for embeddings. Hub: 500k+ models, datasets, spaces. `tokenizers` (Rust) for fast encoding. Inference Endpoints for managed hosting.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'pytorch',
+      'sentence-transformers',
+      'scikit-learn',
+      'onnx-runtime',
+      'vllm',
+      'ollama',
+    ],
+    externalAlternatives: ['ModelScope', 'Replicate', 'Together AI'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'Hugging Face is the model hub and client library. `from transformers import AutoTokenizer, AutoModel` → `model = AutoModel.from_pretrained("BAAI/bge-small-en-v1.5")`. `sentence-transformers` wraps this for embeddings: `model.encode(texts)`. Hub has model cards, leaderboards (MTEB), and Inference API.',
+      certificates: ['Hugging Face Expert (via HF Course)'],
+      trends: [
+        {
+          title: 'Transformers 4.45 adds native quantization configs',
+          source: 'HF Blog',
+          date: '2026-10-05',
+        },
+        {
+          title: 'MTEB leaderboard now includes multilingual rerankers',
+          source: 'HF Blog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~500',
+        founded: '2016',
+        headquarters: 'New York, NY / Paris, France',
+        funding: 'Series D ($4.5B valuation)',
+        marketShare: 'Central hub for open models',
+      },
+      blogPosts: [
+        {
+          title: 'Choosing the right embedding model',
+          url: 'https://huggingface.co/blog/embedding-models',
+          date: '2026-10-05',
+        },
+      ],
+    },
+  },
+  {
+    id: 'sentence-transformers',
+    name: 'sentence-transformers',
+    model: 'O',
+    what: 'Library for sentence/text embeddings. Built on transformers. `SentenceTransformer("model-name").encode(texts)` → numpy array. MTEB leaderboard for model selection. Supports cross-encoders for reranking.',
+    categoryId: 'ai-core-ml',
+    alternatives: ['pytorch', 'hugging-face', 'scikit-learn', 'onnx-runtime', 'vllm', 'ollama'],
+    externalAlternatives: ['FlagEmbedding', 'Instructor Embedding', 'Jina Embeddings'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'sentence-transformers is the embedding workhorse. `model = SentenceTransformer("BAAI/bge-small-en-v1.5")` → `embeddings = model.encode(documents, batch_size=32, show_progress_bar=True)`. Fine-tune with `MultipleNegativesRankingLoss`. Cross-encoder: `CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")` for reranking top-k.',
+      certificates: ['Sentence Transformers Contributor'],
+      trends: [
+        {
+          title: 'sentence-transformers 3.0 adds Matryoshka embeddings',
+          source: 'SBERT.net',
+          date: '2026-09-25',
+        },
+        { title: 'New MTEB benchmark for code retrieval', source: 'HF Blog', date: '2026-09-10' },
+      ],
+      stats: {
+        employees: '~10 (UKP Lab)',
+        founded: '2019',
+        headquarters: 'Darmstadt, Germany',
+        funding: 'Open source (UKP Lab)',
+        marketShare: 'Standard for sentence embeddings',
+      },
+      blogPosts: [
+        {
+          title: 'Semantic search with sentence-transformers',
+          url: 'https://sbert.net/examples/applications/semantic-search/README.html',
+          date: '2026-09-25',
+        },
+      ],
+    },
+  },
+  {
+    id: 'scikit-learn',
+    name: 'scikit-learn',
+    model: 'O',
+    what: 'Classical ML in Python. RandomForest, LogisticRegression, SVM, PCA, clustering. Fast, interpretable, no GPU needed. Use for routing, intent classification, anomaly detection — anywhere an LLM is overkill.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'pytorch',
+      'hugging-face',
+      'sentence-transformers',
+      'onnx-runtime',
+      'vllm',
+      'ollama',
+    ],
+    externalAlternatives: ['XGBoost', 'LightGBM', 'CatBoost', 'MLflow'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        'scikit-learn is the "boring but profitable" tool. `clf = LogisticRegression()` → `clf.fit(X_train, y_train)` → `clf.predict_proba(X_test)`. Use for: query routing (SQL vs LLM), intent classification, toxicity detection, embedding dimensionality reduction (PCA/UMAP). Exports to ONNX for production.',
+      certificates: ['scikit-learn Contributor'],
+      trends: [
+        {
+          title: 'scikit-learn 1.5 adds HistGradientBoostingClassifier native categorical',
+          source: 'sklearn Blog',
+          date: '2026-09-10',
+        },
+        {
+          title: 'ONNX export for all estimators now stable',
+          source: 'sklearn Blog',
+          date: '2026-08-20',
+        },
+      ],
+      stats: {
+        employees: '~30 (core)',
+        founded: '2007',
+        headquarters: 'Inria (France) / Global',
+        funding: 'NumFOCUS / Inria',
+        marketShare: 'Universal classical ML',
+      },
+      blogPosts: [
+        {
+          title: 'When to use sklearn vs LLM',
+          url: 'https://scikit-learn.org/stable/user_guide.html',
+          date: '2026-09-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'onnx-runtime',
+    name: 'ONNX Runtime',
+    model: 'O',
+    what: 'High-performance inference engine for ONNX models. Export PyTorch/sklearn → ONNX → run 2-5x faster on CPU. No PyTorch dependency at runtime. Essential for deploying embeddings/rerankers in standard containers.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'pytorch',
+      'hugging-face',
+      'sentence-transformers',
+      'scikit-learn',
+      'vllm',
+      'ollama',
+    ],
+    externalAlternatives: ['TensorRT', 'OpenVINO', 'TVM'],
+    lastUpdated: '2026-10-12',
+    guide: {
+      description:
+        'ONNX Runtime is the deployment target. `torch.onnx.export(model, dummy_input, "model.onnx")` → `ort_session = ort.InferenceSession("model.onnx")` → `ort_session.run(None, {"input": numpy_array})`. Providers: CPU, CUDA, TensorRT, OpenVINO. Quantization: `onnxruntime.quantization.quantize_dynamic`.',
+      certificates: ['ONNX Runtime Contributor'],
+      trends: [
+        {
+          title: 'ONNX Runtime 1.19 adds WebGPU execution provider',
+          source: 'ONNX Runtime Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'ORT for transformers: BERT 3x faster on CPU',
+          source: 'ONNX Runtime Blog',
+          date: '2026-08-15',
+        },
+      ],
+      stats: {
+        employees: '~50 (Microsoft)',
+        founded: '2018',
+        headquarters: 'Microsoft (open governance)',
+        funding: 'Microsoft / Linux Foundation',
+        marketShare: 'Standard for CPU model deployment',
+      },
+      blogPosts: [
+        {
+          title: 'Deploying sentence-transformers with ONNX Runtime',
+          url: 'https://onnxruntime.ai/docs/how-to/huggingface-transformers.html',
+          date: '2026-09-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'vllm',
+    name: 'vLLM',
+    model: 'O',
+    what: 'High-throughput LLM serving engine. PagedAttention = efficient KV cache. OpenAI-compatible API. Continuous batching. Tensor parallelism for multi-GPU. The standard for self-hosting Llama, Qwen, Mistral, etc.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'pytorch',
+      'hugging-face',
+      'sentence-transformers',
+      'scikit-learn',
+      'onnx-runtime',
+      'ollama',
+    ],
+    externalAlternatives: ['TGI (Text Generation Inference)', 'TensorRT-LLM', 'llama.cpp'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'vLLM is the production LLM server. `docker run -p 8000:8000 vllm/vllm-openai --model meta-llama/Meta-Llama-3.1-8B-Instruct`. OpenAI-compatible `/v1/chat/completions`. PagedAttention = near-linear scaling with batch size. Supports AWQ/GPTQ quantized models. Prefill chunking for long contexts.',
+      certificates: ['vLLM Contributor'],
+      trends: [
+        {
+          title: 'vLLM 0.6 adds multi-LoRA serving and prefix caching',
+          source: 'vLLM Blog',
+          date: '2026-10-01',
+        },
+        { title: 'vLLM on AMD ROCm and Intel Gaudi', source: 'vLLM Blog', date: '2026-09-15' },
+      ],
+      stats: {
+        employees: '~80 (UC Berkeley + LMSYS)',
+        founded: '2023',
+        headquarters: 'Berkeley, CA',
+        funding: 'Series A ($40M+)',
+        marketShare: 'Standard for open-model LLM serving',
+      },
+      blogPosts: [
+        {
+          title: 'vLLM PagedAttention explained',
+          url: 'https://blog.vllm.ai/pagedattention',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'ollama',
+    name: 'Ollama',
+    model: 'O',
+    what: 'Local LLM runner for developers. `ollama run llama3.1` downloads, quantizes, and serves with OpenAI-compatible API. Model library with tags. Simple CLI and REST API. Best for local dev and edge.',
+    categoryId: 'ai-core-ml',
+    alternatives: [
+      'pytorch',
+      'hugging-face',
+      'sentence-transformers',
+      'scikit-learn',
+      'onnx-runtime',
+      'vllm',
+    ],
+    externalAlternatives: ['llama.cpp', 'LM Studio', 'GPT4All'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'Ollama is the easiest local LLM. `brew install ollama` → `ollama serve` → `ollama run llama3.1:8b`. Manages model downloads, quantization (q4_k_m default), and API. `curl http://localhost:11434/api/generate -d \'{"model":"llama3.1","prompt":"hi"}\'`. Great for dev; vLLM for production.',
+      certificates: ['Ollama Contributor'],
+      trends: [
+        {
+          title: 'Ollama 0.3 adds multimodal model support (LLaVA)',
+          source: 'Ollama Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Ollama + LiteLLM for local model routing',
+          source: 'LiteLLM Blog',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~20',
+        founded: '2023',
+        headquarters: 'Remote',
+        funding: 'Seed ($10M+)',
+        marketShare: 'Standard for local LLM development',
+      },
+      blogPosts: [
+        { title: 'Ollama model library', url: 'https://ollama.com/library', date: '2026-10-01' },
+      ],
+    },
+  },
+  {
+    id: 'modal',
+    name: 'Modal',
+    model: 'S',
+    what: 'Serverless Python on GPUs. `@modal.function(gpu="A100") def run_inference(...): ...`. Deploy vLLM, training jobs, or batch inference from a single Python file. Scales to zero. No K8s, no YAML.',
+    categoryId: 'ai-infra-cost',
+    alternatives: ['litellm', 'promptfoo'],
+    externalAlternatives: ['RunPod', 'Replicate', 'Beam', 'Banana'],
+    lastUpdated: '2026-10-20',
+    guide: {
+      description:
+        'Modal is the primary GPU serverless tool. `modal run deploy.py` deploys a vLLM endpoint in minutes. `@modal.function(gpu="A100", timeout=3600, secrets=[modal.Secret.from_name("hf-token")])`. Web endpoints auto-generated. Volume mounts for model weights. Pay per second.',
+      certificates: ['Modal Certified Developer'],
+      trends: [
+        { title: 'Modal adds H100 and H200 GPU support', source: 'Modal Blog', date: '2026-10-01' },
+        { title: 'Modal for batch embedding 10M docs', source: 'Modal Blog', date: '2026-09-15' },
+      ],
+      stats: {
+        employees: '~60',
+        founded: '2021',
+        headquarters: 'New York, NY',
+        funding: 'Series B ($100M+)',
+        marketShare: 'Leading serverless GPU platform',
+      },
+      blogPosts: [
+        {
+          title: 'Deploy vLLM on Modal in 50 lines',
+          url: 'https://modal.com/docs/examples/vllm',
+          date: '2026-10-01',
+        },
+      ],
+    },
+  },
+  {
+    id: 'promptfoo',
+    name: 'Promptfoo',
+    model: 'O',
+    what: 'CLI and CI/CD tool for prompt evaluation. Define test cases (YAML) with assertions. Runs against any provider (OpenAI, Anthropic, local). Outputs HTML report. Integrates with GitHub Actions/GitLab CI.',
+    categoryId: 'ai-infra-cost',
+    alternatives: ['modal', 'litellm'],
+    externalAlternatives: ['LangSmith (evals)', 'DeepEval', 'TruLens'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        'Promptfoo is "pytest for prompts." `promptfoo.yaml` defines providers, prompts, and test cases with `assert` (contains, not-contains, regex, JSON schema, custom JS). `npx promptfoo eval` → HTML report. CI: `promptfoo eval` fails on regression. Great for prompt versioning.',
+      certificates: ['Promptfoo Contributor'],
+      trends: [
+        {
+          title: 'Promptfoo 0.5 adds multi-turn conversation testing',
+          source: 'Promptfoo Blog',
+          date: '2026-09-20',
+        },
+        {
+          title: 'GitHub Action for PR comment with eval results',
+          source: 'Promptfoo Docs',
+          date: '2026-09-05',
+        },
+      ],
+      stats: {
+        employees: '~10',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($5M)',
+        marketShare: 'Standard for prompt CI/CD',
+      },
+      blogPosts: [
+        {
+          title: 'Promptfoo quickstart',
+          url: 'https://www.promptfoo.dev/docs/getting-started/',
+          date: '2026-09-20',
+        },
+      ],
+    },
+  },
+  {
+    id: 'nemo-guardrails',
+    name: 'NeMo Guardrails',
+    model: 'O',
+    what: "NVIDIA's programmable guardrails for LLM apps. Colang (DSL) defines flows: user intent → canonical response. Rails: input (jailbreak, PII, off-topic), output (hallucination, tone, format), dialog (multi-turn). Integrates with LangChain/LangGraph.",
+    categoryId: 'ai-security-governance',
+    alternatives: ['presidio', 'guardrails-ai'],
+    externalAlternatives: ['Lakera Guard', 'Rebuff', 'WhyLabs'],
+    lastUpdated: '2026-10-18',
+    guide: {
+      description:
+        'NeMo Guardrails is the most mature guardrails framework. Write `.colang` files: `define flow` → `if user asks for X then refuse`. Rails: `input` (before LLM), `output` (after LLM), `dialog` (multi-turn state). `rails = RailsConfig.from_path("config")` → `rails.generate_async(messages)`.',
+      certificates: ['NVIDIA NeMo Guardrails Certified'],
+      trends: [
+        {
+          title: 'NeMo Guardrails 1.0 adds LLM-based intent classification',
+          source: 'NVIDIA Blog',
+          date: '2026-09-25',
+        },
+        {
+          title: 'Integration with LangGraph checkpointing',
+          source: 'NVIDIA Blog',
+          date: '2026-09-10',
+        },
+      ],
+      stats: {
+        employees: '~30 (NVIDIA)',
+        founded: '2023',
+        headquarters: 'Santa Clara, CA (NVIDIA)',
+        funding: 'NVIDIA',
+        marketShare: 'Leading open-source guardrails',
+      },
+      blogPosts: [
+        {
+          title: 'Building a safe chatbot with NeMo Guardrails',
+          url: 'https://github.com/NVIDIA/NeMo-Guardrails/blob/main/docs/getting_started.md',
+          date: '2026-09-25',
+        },
+      ],
+    },
+  },
+  {
+    id: 'presidio',
+    name: 'Microsoft Presidio',
+    model: 'O',
+    what: 'PII detection and anonymization. Recognizes 20+ entity types (names, emails, phones, SSN, credit cards, medical record numbers). Custom recognizers via regex or spaCy. Fast, production-ready. Redacts before sending to external LLMs.',
+    categoryId: 'ai-security-governance',
+    alternatives: ['nemo-guardrails', 'guardrails-ai'],
+    externalAlternatives: ['AWS Comprehend PII', 'Google DLP', 'Private AI'],
+    lastUpdated: '2026-10-15',
+    guide: {
+      description:
+        'Presidio is the PII redaction standard. `analyzer = AnalyzerEngine()` → `results = analyzer.analyze(text, language="en")` → `anonymizer = AnonymizerEngine()` → `anonymized = anonymizer.anonymize(text, results)`. Add custom recognizers for domain-specific IDs. Run on all outbound LLM calls and logs.',
+      certificates: ['Microsoft Presidio Contributor'],
+      trends: [
+        {
+          title: 'Presidio 2.3 adds medical record number recognizer',
+          source: 'Presidio GitHub',
+          date: '2026-09-15',
+        },
+        {
+          title: 'Presidio + LangChain integration for automatic redaction',
+          source: 'Presidio Blog',
+          date: '2026-08-20',
+        },
+      ],
+      stats: {
+        employees: '~15 (Microsoft)',
+        founded: '2019',
+        headquarters: 'Microsoft (open source)',
+        funding: 'Microsoft',
+        marketShare: 'Standard for PII redaction in AI pipelines',
+      },
+      blogPosts: [
+        {
+          title: 'PII anonymization in RAG pipelines',
+          url: 'https://github.com/microsoft/presidio/blob/main/docs/rag_pii.md',
+          date: '2026-09-15',
+        },
+      ],
+    },
+  },
+  {
+    id: 'guardrails-ai',
+    name: 'Guardrails AI',
+    model: 'O',
+    what: 'Pydantic-based output validation with corrective rails. Define `Guard` with Pydantic model + validators (regex, SQL, semantic). On failure, re-asks LLM with error context. `guard = Guard.from_pydantic(MyModel)` → `validated = guard(llm_output)`.',
+    categoryId: 'ai-security-governance',
+    alternatives: ['nemo-guardrails', 'presidio'],
+    externalAlternatives: ['Instructor (similar)', 'Outlines', 'Guidance'],
+    lastUpdated: '2026-10-12',
+    guide: {
+      description:
+        "Guardrails AI focuses on output validation (vs NeMo's input/output/dialog). `class MyOutput(BaseModel): answer: str = Field(validators=[TwoWordsPainless()])`. Validators: `ValidLength`, `ValidRange`, `ValidRegex`, `ValidSQL`, `ValidChoices`, custom. Re-ask loop built-in. Good complement to NeMo (input) + Presidio (PII).",
+      certificates: ['Guardrails AI Contributor'],
+      trends: [
+        {
+          title: 'Guardrails 0.5 adds semantic validators (embedding similarity)',
+          source: 'Guardrails AI Blog',
+          date: '2026-09-10',
+        },
+        {
+          title: 'Integration with Pydantic v2 and Instructor',
+          source: 'Guardrails AI Changelog',
+          date: '2026-08-25',
+        },
+      ],
+      stats: {
+        employees: '~10',
+        founded: '2023',
+        headquarters: 'San Francisco, CA',
+        funding: 'Seed ($3M)',
+        marketShare: 'Rising for output validation',
+      },
+      blogPosts: [
+        {
+          title: 'Output validation vs input guardrails',
+          url: 'https://www.guardrailsai.com/blog/input-vs-output',
+          date: '2026-09-10',
+        },
+      ],
+    },
+  },
+  {
+    id: 'mcp',
+    name: 'Model Context Protocol (MCP)',
+    model: 'O',
+    what: 'Open standard (Anthropic) for connecting AI agents to tools, data, and APIs. MCP Server exposes resources (files, DB queries), tools (functions), and prompts. MCP Client (Claude, Cursor, custom agents) discovers and invokes. Universal tool interface.',
+    categoryId: 'ai-protocols-ux',
+    alternatives: ['vercel-ai-sdk', 'copilotkit'],
+    externalAlternatives: ['OpenAI Function Calling', 'LangChain Tools', 'AutoGen Tools'],
+    lastUpdated: '2026-10-22',
+    guide: {
+      description:
+        'MCP is the emerging universal tool protocol. Build an MCP server: `@mcp.tool() def search_pgvector(query: str) -> list[Doc]: ...`. Clients: Claude Desktop, Cursor, Continue, custom agents via `mcp-client`. Your pgvector search becomes callable by ANY agent. Transport: stdio (local) or HTTP/SSE (remote).',
+      certificates: ['MCP Contributor (Anthropic)'],
+      trends: [
+        {
+          title: 'MCP spec v1.0 released with HTTP/SSE transport',
+          source: 'Anthropic Blog',
+          date: '2026-10-01',
+        },
+        {
+          title: 'MCP servers for GitHub, Postgres, Slack, and more',
+          source: 'MCP GitHub',
+          date: '2026-09-20',
+        },
+      ],
+      stats: {
+        employees: '~20 (Anthropic + community)',
+        founded: '2024',
+        headquarters: 'Anthropic (open standard)',
+        funding: 'Anthropic / Community',
+        marketShare: 'Emerging universal standard',
+      },
+      blogPosts: [
+        {
+          title: 'Model Context Protocol specification',
+          url: 'https://modelcontextprotocol.io/spec',
+          date: '2026-10-01',
+        },
+        {
+          title: 'Building an MCP server for your knowledge base',
+          url: 'https://modelcontextprotocol.io/quickstart/server',
+          date: '2026-09-20',
+        },
+      ],
+    },
   },
 ];

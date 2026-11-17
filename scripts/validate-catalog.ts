@@ -12,7 +12,9 @@ import {
   CATEGORIES,
   DOMAINS,
   LAYER_EDGES,
+  LEARNING,
   PRODUCTS,
+  USAGE,
   validateCatalog,
 } from '../src/catalog';
 import { computeLayout } from '../src/map/layout';
@@ -80,10 +82,19 @@ for (const edge of LAYER_EDGES) {
   if (!layout.clusterById.has(edge.to)) errors.push(`layer edge to unknown ${edge.to}`);
 }
 
+// Every product on the learning track also needs a usage entry, so the guide's
+// Capabilities and Synergies tabs are never empty.
+const trackedWithoutUsage = Object.keys(LEARNING).filter((id) => !USAGE[id]);
+if (trackedWithoutUsage.length > 0) {
+  errors.push(`learning products missing a usage entry: ${trackedWithoutUsage.join(', ')}`);
+}
+
 console.log(`categories:      ${CATEGORIES.length}`);
 console.log(`domains:         ${DOMAINS.length}`);
 console.log(`products:        ${PRODUCTS.length}`);
 console.log(`layout nodes:    ${layout.nodes.length}`);
+console.log(`learning entries:${Object.keys(LEARNING).length}`);
+console.log(`usage entries:   ${Object.keys(USAGE).length}`);
 console.log(`map size:        ${layout.width} x ${layout.height}`);
 console.log(`alternative edges: ${ALTERNATIVE_EDGES.length}`);
 console.log(`layer edges:     ${LAYER_EDGES.length}`);

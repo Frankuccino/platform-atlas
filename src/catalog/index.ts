@@ -2,6 +2,7 @@ import { CATEGORIES } from './categories';
 import { DOMAINS } from './domains';
 import { LAYER_EDGES } from './edges';
 import { PRODUCTS } from './products';
+import { USAGE } from './usage';
 import type { Category, Domain, Product } from './types';
 
 export * from './types';
@@ -10,6 +11,21 @@ export { CATEGORY_ICONS, MODEL_COLORS, MODEL_LABELS, getModelColors } from './ic
 export { BRAND_ICONS, getBrandIcon } from './brand-icons';
 export { PRODUCT_LINKS, getProductLinks } from './product-links';
 export { recommendFor, type Recommendation } from './recommendations';
+export {
+  LEARNING,
+  TRACK_PHASES,
+  TRACK_CATEGORY_PHASE,
+  trackProducts,
+  type LearningEntry,
+  type TrackPhase,
+} from './learning';
+export { USAGE, usageFor, type Capability, type Synergy, type UsageEntry } from './usage';
+export {
+  WORKFLOW_STAGES,
+  workflowProducts,
+  workflowStageProducts,
+  type WorkflowStage,
+} from './workflow';
 
 export const productById: ReadonlyMap<string, Product> = new Map(PRODUCTS.map((p) => [p.id, p]));
 export const categoryById: ReadonlyMap<string, Category> = new Map(
@@ -93,6 +109,24 @@ export function validateCatalog(): string[] {
   for (const edge of LAYER_EDGES) {
     if (!categoryById.has(edge.from)) errors.push(`layer edge from unknown category ${edge.from}`);
     if (!categoryById.has(edge.to)) errors.push(`layer edge to unknown category ${edge.to}`);
+  }
+
+  for (const [productId, entry] of Object.entries(USAGE)) {
+    if (!productById.has(productId)) {
+      errors.push(`usage entry for unknown product ${productId}`);
+      continue;
+    }
+    if (entry.capabilities.length === 0) {
+      errors.push(`usage ${productId} has no capabilities`);
+    }
+    if (entry.synergies.length === 0) {
+      errors.push(`usage ${productId} has no synergies`);
+    }
+    for (const synergy of entry.synergies) {
+      if (!productById.has(synergy.withId)) {
+        errors.push(`usage ${productId} synergies with unknown product ${synergy.withId}`);
+      }
+    }
   }
 
   return errors;
