@@ -9,6 +9,15 @@
   --accent: #0a6a86;
   --status-done: #22c55e;
   --status-progress: #0e7490;
+  --selection: rgb(10 106 134 / 0.22);
+  --syn-plain: #111b25;
+  --syn-keyword: #cf222e;
+  --syn-builtin: #8250df;
+  --syn-function: #8250df;
+  --syn-string: #0a3069;
+  --syn-number: #0550ae;
+  --syn-operator: #953800;
+  --syn-comment: #6e7781;
   --f-display: 'IBM Plex Sans Condensed', 'Arial Narrow', Arial, sans-serif;
   --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
@@ -25,6 +34,15 @@
   --accent: #58a6ff;
   --status-done: #4ade80;
   --status-progress: #22d3ee;
+  --selection: rgb(88 166 255 / 0.28);
+  --syn-plain: #e6edf3;
+  --syn-keyword: #ff7b72;
+  --syn-builtin: #d2a8ff;
+  --syn-function: #d2a8ff;
+  --syn-string: #a5d6ff;
+  --syn-number: #79c0ff;
+  --syn-operator: #ff7b72;
+  --syn-comment: #8b949e;
 }
 
 * {
@@ -47,6 +65,41 @@ body {
   overflow: hidden;
 }
 
+/* ── Global interaction: focus, selection, motion, scrollbars ────────── */
+
+/* One focus treatment for every interactive element, instead of a per-selector
+   list that silently misses new controls. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+/* Honour the OS "reduce motion" setting: transitions become effectively
+   instant while the hover states themselves stay. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Thin, theme-aware scrollbars for the app's scroll regions. */
+.sidebar,
+.guide-page,
+.track-page,
+.panel .rows,
+.detail,
+.code-pre {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -56,7 +109,7 @@ body {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   padding: 10px 14px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
@@ -116,8 +169,10 @@ body {
 
 .tools {
   position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
+  /* A real basis, so the search keeps a usable width instead of collapsing to
+     nothing while the bar overflows. */
+  flex: 1 1 200px;
+  min-width: 160px;
 }
 
 .search {
@@ -129,13 +184,6 @@ body {
   border-radius: 6px;
   padding: 8px 10px;
   min-height: 36px;
-}
-
-.search:focus-visible,
-.jumps button:focus-visible,
-.detail .close:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .results {
@@ -172,10 +220,25 @@ body {
   background: var(--bg);
 }
 
+.results-empty {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(17 27 37 / 0.12);
+  font: 400 12px var(--f-mono);
+  color: var(--muted);
+}
+
 .jumps {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   flex: none;
 }
 
@@ -185,7 +248,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 7px 9px;
+  padding: 7px 8px;
   cursor: pointer;
   min-height: 36px;
 }
@@ -193,6 +256,17 @@ body {
 .jumps button:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* Below this width the bar cannot hold the brand count, the eight domain pills,
+   a usable search field, and four view controls. The count is decoration and
+   the pills duplicate the Browse drawer and the sidebar, so they are what give
+   way — the search is not. */
+@media (max-width: 1759px) {
+  .jumps,
+  .count {
+    display: none;
+  }
 }
 
 .jumps .reset {
@@ -1134,7 +1208,21 @@ body {
 
 /* Roadmap toggle */
 
-.roadmap-toggle {
+/* Toolbar controls share one hover transition. */
+.nav-toggle,
+.roadmap-toggle,
+.track-toggle,
+.workflow-toggle,
+.theme-toggle {
+  transition:
+    color 120ms,
+    border-color 120ms,
+    background-color 120ms;
+}
+
+.roadmap-toggle,
+.track-toggle,
+.workflow-toggle {
   display: inline-flex;
   font: 500 11px var(--f-mono);
   color: var(--fg);
@@ -1143,12 +1231,11 @@ body {
   border-radius: 6px;
   padding: 8px 12px;
   cursor: pointer;
-  transition:
-    color 120ms,
-    border-color 120ms;
 }
 
-.roadmap-toggle:hover {
+.roadmap-toggle:hover,
+.track-toggle:hover,
+.workflow-toggle:hover {
   color: var(--accent);
   border-color: var(--accent);
 }
@@ -1164,7 +1251,6 @@ body {
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
-  transition: border-color 120ms;
 }
 
 .theme-toggle:hover {
@@ -1235,7 +1321,9 @@ body {
   min-width: 0;
 }
 
-.roadmap-toggle.is-active {
+.roadmap-toggle.is-active,
+.track-toggle.is-active,
+.workflow-toggle.is-active {
   color: var(--accent);
   border-color: var(--accent);
   background: rgb(0 179 167 / 0.08);
@@ -1261,18 +1349,27 @@ body {
 
 /* Product guide page — full viewport deep-dive. */
 .guide-page {
+  flex: 1 1 auto;
+  min-width: 0;
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
+/* Slim sticky bar: identity and back-navigation only. The descriptive copy
+   lives in .guide-lead so it scrolls away instead of eating a quarter of the
+   viewport for the whole read. */
 .guide-head {
   position: sticky;
   top: 0;
   z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 8px 24px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
-  padding: 16px 24px;
 }
 
 .guide-back {
@@ -1281,33 +1378,43 @@ body {
   background: none;
   border: 0;
   cursor: pointer;
-  padding: 0 0 10px;
+  padding: 0;
+  flex: none;
 }
 
-.guide-title-row {
+.guide-back:hover {
+  text-decoration: underline;
+}
+
+.guide-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .guide-icon {
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   color: var(--fg);
+  flex: none;
 }
 
 .guide-head h1 {
-  font: 700 22px / 1.2 var(--f-display);
+  font: 700 16px / 1.2 var(--f-display);
   margin: 0;
+  white-space: nowrap;
 }
 
-.guide-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: var(--muted);
+.guide-bar-phase {
+  font: 500 10.5px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
 }
 
 .guide-category {
@@ -1320,9 +1427,291 @@ body {
   opacity: 0.8;
 }
 
-.guide-body {
-  padding: 20px 24px 60px;
+/* Page intro: category, freshness, and the practice goal. It sits above the
+   columns and scrolls away, which is what keeps the sticky bar slim. */
+.guide-lead {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 24px 0;
+}
+
+.guide-lead-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.guide-lead-goal {
+  margin: 4px 0 0;
   max-width: 760px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* ── Guide tabs ───────────────────────────────────────────────────────── */
+
+.guide-tabs {
+  display: flex;
+  gap: 4px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.guide-tab {
+  font: 500 12px var(--f-mono);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  padding: 8px 12px;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+
+.guide-tab:hover {
+  color: var(--fg);
+}
+
+.guide-tab.is-active {
+  color: var(--accent);
+  background: var(--surface);
+  border-color: var(--line);
+  /* The accent rule sits exactly on the seam with the panel, which is what
+     makes the selected tab read as connected to the content below it. */
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.guide-section-sub {
+  margin: -4px 0 14px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.cap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cap-item {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.cap-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.cap-item h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.cap-detail {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.cap-explain {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.synergy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.synergy {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 10px 12px;
+}
+
+.synergy-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.synergy-cat {
+  font: 400 11px var(--f-mono);
+  color: var(--fg);
+  opacity: 0.65;
+}
+
+.synergy .code-block {
+  margin-top: 8px;
+}
+
+.synergy .cap-explain {
+  margin-bottom: 0;
+}
+
+/* Two-column guide: content on the left, a sticky context rail on the right.
+   The scroll container is full width, so the scrollbar sits at the viewport
+   edge instead of floating in the middle of the screen. */
+.guide-cols {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 20px 24px 60px;
+}
+
+.guide-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 760px;
+}
+
+.guide-rail {
+  flex: 0 0 300px;
+  position: sticky;
+  /* Clear the sticky guide bar (52px) plus a gap, or the rail's first card
+     hides behind it. */
+  top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* On a phone the rail cannot sit beside the content: stack it underneath.
+   Without this the 300px rail leaves the main column a few pixels wide. */
+@media (max-width: 760px) {
+  .guide-cols {
+    flex-direction: column;
+    /* The desktop value is flex-start, which lets a column child size to its
+       content and overflow the viewport. */
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .guide-main {
+    max-width: none;
+  }
+
+  .guide-rail {
+    position: static;
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* The phase chip repeats the rail's Track position card, so it is the first
+   thing to go when the bar runs out of room. */
+@media (max-width: 560px) {
+  .guide-bar-phase {
+    display: none;
+  }
+}
+
+.rail-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 12px 14px;
+}
+
+.rail-title {
+  font: 600 10.5px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.rail-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rail-facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rail-facts dt {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.rail-facts dd {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.rail-comparisons,
+.rail-alts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rail-comparison-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rail-legacy {
+  font: 600 12px var(--f-mono);
+  color: var(--muted);
+}
+
+.rail-modern {
+  font: 600 12px var(--f-mono);
+  color: var(--fg);
+}
+
+.rail-arrow {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.rail-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.rail-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: 600 12px var(--f-mono);
+  color: var(--accent);
+  text-align: left;
+}
+
+.rail-link:hover {
+  text-decoration: underline;
 }
 
 .guide-section {
@@ -1548,6 +1937,11 @@ body {
   background: transparent;
   border: 0;
   color: var(--muted);
+  cursor: pointer;
+}
+
+.onboarding-skip:hover {
+  color: var(--fg);
 }
 
 .onboarding-next {
@@ -1619,6 +2013,11 @@ body {
   cursor: pointer;
 }
 
+.suggest-cancel:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+
 .suggest-submit {
   font: 500 11px var(--f-mono);
   background: var(--accent);
@@ -1631,4 +2030,683 @@ body {
 
 .suggest-submit:hover {
   filter: brightness(1.1);
+}
+
+/* ── Learning track: guide extras ─────────────────────────────────────── */
+
+.guide-code-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Highlighted code blocks ──────────────────────────────────────────── */
+
+.code-block {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 10px 6px 14px;
+  background: var(--line-soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.code-title {
+  font: 600 11px var(--f-mono);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-lang {
+  font: 600 9.5px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex: none;
+}
+
+.code-pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  /* Contain only horizontal chaining: once a long line is scrolled to its
+     edge, a trackpad swipe must not drag the page sideways. Vertical chaining
+     stays on, so the wheel keeps scrolling the page when the cursor is over a
+     code block — otherwise the block swallows the wheel and the page feels
+     stuck. */
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+}
+
+.code-pre code {
+  font: 400 12.5px/1.65 var(--f-mono);
+  color: var(--fg);
+  white-space: pre;
+  font-variant-ligatures: none;
+}
+
+.tok {
+  color: var(--syn-plain);
+}
+
+.tok-keyword {
+  color: var(--syn-keyword);
+}
+
+.tok-builtin {
+  color: var(--syn-builtin);
+}
+
+.tok-function {
+  color: var(--syn-function);
+}
+
+.tok-string {
+  color: var(--syn-string);
+}
+
+.tok-number {
+  color: var(--syn-number);
+}
+
+.tok-operator {
+  color: var(--syn-operator);
+}
+
+.tok-comment {
+  color: var(--syn-comment);
+}
+
+.guide-terms {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-term {
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.guide-term dt {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.guide-term dd {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.guide-exercises {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-exercise {
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.guide-exercise-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.guide-exercise-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.guide-difficulty {
+  font: 600 10px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.guide-difficulty.d-beginner {
+  color: #3fb950;
+  border-color: #3fb95055;
+}
+
+.guide-difficulty.d-intermediate {
+  color: #d29922;
+  border-color: #d2992255;
+}
+
+.guide-difficulty.d-advanced {
+  color: #f85149;
+  border-color: #f8514955;
+}
+
+.guide-minutes {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.guide-exercise-prompt {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── AI Engineering track page ────────────────────────────────────────── */
+
+.track-page {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 22px 28px 56px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.track-head h1 {
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.track-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+.track-phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.track-phase {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 16px 18px 18px;
+}
+
+/* The number sits in a narrow rail of its own; the phase title and every
+   category below it share one content column, so a reader's eye travels down
+   a single vertical edge. The focus card's content aligns with that same
+   badge rail. */
+.track-phase-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.track-phase-num {
+  font: 700 11px/1 var(--f-mono);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px 8px;
+  flex-shrink: 0;
+}
+
+.track-phase-head h2 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.track-phase-outcome {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+.track-phase-count {
+  margin-left: auto;
+  font: 500 10.5px var(--f-mono);
+  color: var(--muted);
+  background: var(--line-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.track-cats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* Aligns the categories and their tiles with the phase title, which starts
+     after the number chip, instead of with the chip itself. */
+  margin-left: 33px;
+}
+
+.track-cat + .track-cat {
+  border-top: 1px solid var(--line-soft);
+  padding-top: 14px;
+}
+
+.track-cat-name {
+  font: 600 11px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.track-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* Tiles size to the container instead of stretching to whatever the widest
+     row allows, so a two-product category does not produce two oversized tiles
+     followed by a trail of empty columns. */
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.track-item {
+  width: 100%;
+  text-align: left;
+  background: var(--line-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--fg);
+}
+
+.track-item:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.track-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.track-item-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.track-item-meta {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.track-foot {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.track-foot p {
+  margin: 0;
+}
+
+.track-focus {
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.track-focus-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.track-focus-label {
+  font: 700 11px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.track-focus-phase {
+  font: 500 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.track-focus-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.track-focus-main {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.track-focus-name {
+  font-size: 16px;
+  margin: 0 0 2px;
+}
+
+.track-focus-goal {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.track-focus-drill {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  /* Grows to share the row with the goal, so the drill summary is never the
+     narrow box squeezed against the button. */
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.track-focus-drill-label {
+  font: 600 10px var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.track-focus-drill-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.track-focus-drill-meta {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.track-focus-open {
+  flex: none;
+  font: 600 12px var(--f-mono);
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  padding: 9px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.track-focus-open:hover {
+  filter: brightness(1.1);
+}
+
+/* ── Track on a narrow viewport ────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .track-page {
+    padding: 16px 14px 44px;
+  }
+
+  /* The drill summary and the button stack instead of sharing one cramped
+     row, and the button takes the full width it needs. */
+  .track-focus-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .track-focus-main,
+  .track-focus-drill {
+    min-width: 0;
+    /* flex-basis is a height now that the body is a column; leaving the
+       desktop basis would reserve 200px of vertical space. */
+    flex: none;
+  }
+
+  .track-focus-open {
+    width: 100%;
+  }
+
+  .track-phase {
+    padding: 14px;
+  }
+
+  .track-phase-head {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+}
+
+/* ── AI application workflow page ──────────────────────────────────────── */
+
+.workflow-page {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 22px 28px 56px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.workflow-head h1 {
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.workflow-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 6px;
+  max-width: 72ch;
+}
+
+.workflow-sub-em {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.workflow-note {
+  font: 400 11.5px var(--f-mono);
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+/* The rail is a continuous vertical line broken by the stage numbers, so the
+   eye reads the stages as one flow rather than eight unrelated cards. */
+.workflow-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.wf-stage {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.wf-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  width: 24px;
+}
+
+.wf-rail::before,
+.wf-rail::after {
+  content: '';
+  flex: 1 1 auto;
+  width: 2px;
+  background: var(--line);
+}
+
+.wf-stage:first-child .wf-rail::before {
+  display: none;
+}
+
+.wf-num {
+  font: 700 11px/1 var(--f-mono);
+  color: #fff;
+  background: var(--accent);
+  border-radius: 6px;
+  padding: 5px 0;
+  width: 24px;
+  text-align: center;
+  flex: none;
+}
+
+.wf-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 14px 16px;
+}
+
+.wf-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wf-head h2 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.wf-outcome {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+.wf-count {
+  margin-left: auto;
+  font: 500 10.5px var(--f-mono);
+  color: var(--muted);
+  background: var(--line-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.wf-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.wf-item {
+  width: 100%;
+  text-align: left;
+  background: var(--line-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--fg);
+}
+
+.wf-item:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.wf-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wf-item-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wf-item-meta {
+  font: 400 11px var(--f-mono);
+  color: var(--muted);
+}
+
+.workflow-foot {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.workflow-foot p {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .workflow-page {
+    padding: 16px 14px 44px;
+  }
+
+  .wf-body {
+    padding: 12px 13px;
+  }
+
+  .wf-head {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
 }

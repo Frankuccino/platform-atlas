@@ -20,6 +20,8 @@ import CategoryPanel from './CategoryPanel';
 import DomainPanel from './DomainPanel';
 import DomainNav from './DomainNav';
 import RoadmapPage from './RoadmapPage';
+import TrackPage from './TrackPage';
+import WorkflowPage from './WorkflowPage';
 import ProductGuidePage from './ProductGuidePage';
 import Onboarding, { useOnboarding } from './Onboarding';
 import type { DomainLayout, MapLayout } from './map/layout';
@@ -42,6 +44,16 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const zoomBehaviorRef = useRef<ZoomBehavior<HTMLCanvasElement, unknown> | null>(null);
   const selectionRef = useRef<Selection<HTMLCanvasElement, unknown, null, undefined> | null>(null);
+  /**
+   * The camera as d3 last wrote it, not as React last rendered it.
+   *
+   * A zoom event can fire between renders, so reading `camera` state to decide
+   * where the user was would be a race. This ref is written in the same handler
+   * that writes the state, so it is always current.
+   */
+  const cameraRef = useRef<Camera>({ x: 0, y: 0, scale: 1 });
+  /** Camera to restore when the map is shown again, or null to fit fresh. */
+  const savedCameraRef = useRef<Camera | null>(null);
 
   const layout: MapLayout = useMemo(() => computeLayout(), []);
 
@@ -54,8 +66,10 @@ export default function App() {
     null,
   );
   const [navOpen, setNavOpen] = useState(false);
-  const [view, setView] = useState<'map' | 'roadmap' | 'guide'>('map');
+  const [view, setView] = useState<'map' | 'roadmap' | 'track' | 'workflow' | 'guide'>('map');
   const [guideProductId, setGuideProductId] = useState<string | null>(null);
+  /** Which view the guide was opened from, so Back returns there. */
+  const [guideFrom, setGuideFrom] = useState<'map' | 'roadmap' | 'track' | 'workflow'>('map');
   const { visible: onboardingVisible, dismiss: dismissOnboarding } = useOnboarding();
   const [size, setSize] = useState({ width: 800, height: 600 });
 
@@ -71,7 +85,7 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+  const toggleTheme = useCallback(() => setTheme((t) => (t === 'light' ? 'dark' : 'light')), []);
 
   // Keyboard shortcut: Ctrl+Shift+T to toggle theme
   useEffect(() => {
@@ -254,7 +268,7 @@ export default function App() {
         // Close in reverse order of opening: guide → detail → category → domain → drawer.
         if (view === 'guide') {
           setGuideProductId(null);
-          setView('map');
+          setView(guideFrom);
         } else if (highlighted) {
           setHighlighted(null);
         } else if (selectedCategory) {
@@ -269,7 +283,7 @@ export default function App() {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [view, highlighted, selectedCategory, selectedDomain, navOpen]);
+  }, [view, guideFrom, highlighted, selectedCategory, selectedDomain, navOpen]);
 
   // Close the mobile drawer when the viewport crosses the breakpoint, so a
   // rotated phone does not leave an open drawer whose styles no longer apply.
@@ -294,6 +308,14 @@ export default function App() {
     hasFittedRef.current = false;
   }, [view]);
 
+  // Remember where the map was left so coming back restores it. Saved on the way
+  // out, not the way in: once the view changes the canvas unmounts and the
+  // camera stops updating, so the ref still holds the last position.
+  useEffect(() => {
+    if (view === 'map') return;
+    savedCameraRef.current = cameraRef.current;
+  }, [view]);
+
   // Wire up d3-zoom.
   // Runs only when the layout changes (once), but skips if the canvas is not
   // mounted. When the user toggles away from the map and back, a new canvas
@@ -307,7 +329,9 @@ export default function App() {
       .scaleExtent([MIN_SCALE, MAX_SCALE])
       .on('zoom', (event) => {
         const { x, y, k } = event.transform;
-        setCamera({ x, y, scale: k });
+        const next = { x, y, scale: k };
+        cameraRef.current = next;
+        setCamera(next);
       });
 
     zoomBehaviorRef.current = behavior;
@@ -319,7 +343,19 @@ export default function App() {
     // Apply the initial fit through the behaviour, so d3's own transform agrees
     // with the camera state from the first frame. Setting state alone would leave
     // d3 at its 1:1 default, and the first wheel zoom would jump there.
-    if (!hasFittedRef.current && container) {
+    //
+    // A camera saved from the previous visit wins over the fit: leaving for a
+    // guide or the roadmap and coming back should return to where the user was,
+    // not to the whole-map overview.
+    const saved = savedCameraRef.current;
+    if (saved) {
+      savedCameraRef.current = null;
+      hasFittedRef.current = true;
+      selection.call(
+        behavior.transform,
+        zoomIdentity.translate(saved.x, saved.y).scale(saved.scale),
+      );
+    } else if (!hasFittedRef.current && container) {
       const width = container.clientWidth;
       const height = container.clientHeight;
       if (width > 10 && height > 10) {
@@ -467,16 +503,26 @@ export default function App() {
     selection.call(behavior.transform, transform);
   }
 
-  /** Open the full product guide page. */
-  function openGuide(productId: string) {
+  /** Open the full product guide page, remembering where to return to. */
+  function openGuide(productId: string, from: 'map' | 'roadmap' | 'track' | 'workflow' = 'map') {
     setGuideProductId(productId);
+    setGuideFrom(from);
     setView('guide');
   }
 
-  function backToMap() {
+  function backFromGuide() {
     setGuideProductId(null);
-    setView('map');
+    setView(guideFrom);
   }
+
+  const guideBackLabel =
+    guideFrom === 'track'
+      ? 'Back to track'
+      : guideFrom === 'workflow'
+        ? 'Back to workflow'
+        : guideFrom === 'roadmap'
+          ? 'Back to roadmap'
+          : 'Back to map';
 
   /**
    * The insets the open panel forces on the visible area.
@@ -565,6 +611,8 @@ export default function App() {
   }
 
   function resetView() {
+    // Reset means "start over", so drop any saved camera and fit the map.
+    savedCameraRef.current = null;
     const margin = 40;
     const scaleX = (size.width - margin * 2) / layout.width;
     const scaleY = (size.height - margin * 2) / layout.height;
@@ -625,7 +673,7 @@ export default function App() {
             aria-label="Search the map"
           />
 
-          {matches.length > 0 && (
+          {matches.length > 0 ? (
             <ul className="results" role="listbox">
               {matches.slice(0, 8).map((id) => (
                 <li key={id}>
@@ -635,6 +683,12 @@ export default function App() {
                 </li>
               ))}
             </ul>
+          ) : (
+            query.trim() && (
+              <p className="results-empty" role="status">
+                No matches for “{query.trim()}”.
+              </p>
+            )
           )}
         </div>
 
@@ -647,6 +701,26 @@ export default function App() {
           aria-pressed={view === 'roadmap'}
         >
           Roadmap
+        </button>
+
+        <button
+          type="button"
+          className={`track-toggle ${view === 'track' ? 'is-active' : ''}`}
+          onClick={() => setView((v) => (v === 'track' ? 'map' : 'track'))}
+          aria-pressed={view === 'track'}
+          title="AI Engineering learning track — 9 phases, syntax, drills"
+        >
+          AI Track
+        </button>
+
+        <button
+          type="button"
+          className={`workflow-toggle ${view === 'workflow' ? 'is-active' : ''}`}
+          onClick={() => setView((v) => (v === 'workflow' ? 'map' : 'workflow'))}
+          aria-pressed={view === 'workflow'}
+          title="AI application workflow — 8 stages in build order, and the tools that fit each"
+        >
+          Workflow
         </button>
 
         <button
@@ -727,9 +801,19 @@ export default function App() {
 
       <div className="body">
         {view === 'guide' && guideProductId ? (
-          <ProductGuidePage productId={guideProductId} onBack={backToMap} />
+          <ProductGuidePage
+            key={guideProductId}
+            productId={guideProductId}
+            backLabel={guideBackLabel}
+            onBack={backFromGuide}
+            onOpenProduct={(id) => openGuide(id, guideFrom)}
+          />
         ) : view === 'roadmap' ? (
           <RoadmapPage />
+        ) : view === 'track' ? (
+          <TrackPage onOpenProduct={(id) => openGuide(id, 'track')} />
+        ) : view === 'workflow' ? (
+          <WorkflowPage onOpenProduct={(id) => openGuide(id, 'workflow')} />
         ) : (
           <Fragment>
             {/* Closing the drawer on a selection is what makes room for the panel

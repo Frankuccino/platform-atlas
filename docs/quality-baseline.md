@@ -15,23 +15,23 @@ npm run build         # typecheck + Vite build
 npm run type-coverage # 99.84%
 npx knip              # unused exports/types (to be reviewed)
 npx prettier --check . # formatting baseline
-npm run test          # 14 component tests passing
+npm run test          # 43 tests passing (14 component + 10 track + 8 syntax + 11 usage)
 npm run e2e           # Playwright smoke tests (2 passed)
 ```
 
 ## Results
 
-| Gate | Tool | Baseline | Target |
-| --- | --- | --- | --- |
-| Lint | ESLint + React + TS + a11y + import | 0 errors, 0 warnings | 0 errors |
-| Typecheck | tsc --noEmit | Clean | Clean |
-| Type coverage | type-coverage | 99.84% (7270/7281) | ≥ 95% |
-| Catalog integrity | validate-catalog.ts | Passing | Passing |
-| Build | tsc + Vite | 481.07 kB JS, 20.35 kB CSS | — |
-| Format | Prettier | 290 files formatted | 0 unformatted |
-| Dead code | Knip | Exports/types unused (to review) | 0 unused |
-| Unit tests | Vitest | 14 component tests passing | 1+ smoke tests |
-| E2E tests | Playwright | 2 smoke tests passing | 1+ smoke tests |
+| Gate              | Tool                                | Baseline                                                         | Target         |
+| ----------------- | ----------------------------------- | ---------------------------------------------------------------- | -------------- |
+| Lint              | ESLint + React + TS + a11y + import | 0 errors, 0 warnings                                             | 0 errors       |
+| Typecheck         | tsc --noEmit                        | Clean                                                            | Clean          |
+| Type coverage     | type-coverage                       | 99.84% (7270/7281)                                               | ≥ 95%          |
+| Catalog integrity | validate-catalog.ts                 | Passing                                                          | Passing        |
+| Build             | tsc + Vite                          | 481.07 kB JS, 20.35 kB CSS                                       | —              |
+| Format            | Prettier                            | 290 files formatted                                              | 0 unformatted  |
+| Dead code         | Knip                                | Exports/types unused (to review)                                 | 0 unused       |
+| Unit tests        | Vitest                              | 43 tests passing (14 component + 10 track + 8 syntax + 11 usage) | 1+ smoke tests |
+| E2E tests         | Playwright                          | 2 smoke tests passing                                            | 1+ smoke tests |
 
 ## Knip findings (reviewed)
 
@@ -49,11 +49,13 @@ No dead-code removals at this time. Re-run Knip after any API-breaking changes.
 ## ESLint config
 
 Created `eslint.config.js` (flat config) with:
+
 - `@typescript-eslint/parser` + plugin
 - `eslint-plugin-react` + `react-hooks` + `jsx-a11y` + `import`
 - TypeScript resolver for import resolution
 
 Warnings fixed:
+
 - Added `clusterAt` and `domainAt` to click handler deps
 - Wrapped `focusProduct`, `clusterAt`, `domainAt` in `useCallback`
 - Fixed `target="_blank"` → `rel="noreferrer"` in RoadmapPage

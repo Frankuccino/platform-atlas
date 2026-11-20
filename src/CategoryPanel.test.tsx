@@ -6,12 +6,7 @@ import CategoryPanel from './CategoryPanel';
 describe('CategoryPanel', () => {
   it('renders category name and blurb', () => {
     render(
-      <CategoryPanel
-        categoryId="cloud"
-        onSelect={() => {}}
-        onJump={() => {}}
-        onClose={() => {}}
-      />,
+      <CategoryPanel categoryId="cloud" onSelect={() => {}} onJump={() => {}} onClose={() => {}} />,
     );
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Cloud');
     expect(screen.getByText(/virtual machines/i)).toBeInTheDocument();
@@ -19,12 +14,7 @@ describe('CategoryPanel', () => {
 
   it('renders product rows', () => {
     render(
-      <CategoryPanel
-        categoryId="cloud"
-        onSelect={() => {}}
-        onJump={() => {}}
-        onClose={() => {}}
-      />,
+      <CategoryPanel categoryId="cloud" onSelect={() => {}} onJump={() => {}} onClose={() => {}} />,
     );
     expect(screen.getByText('AWS')).toBeInTheDocument();
     expect(screen.getByText('Google Cloud')).toBeInTheDocument();
@@ -33,12 +23,7 @@ describe('CategoryPanel', () => {
   it('calls onClose when Close is clicked', () => {
     const onClose = vi.fn();
     render(
-      <CategoryPanel
-        categoryId="cloud"
-        onSelect={() => {}}
-        onJump={() => {}}
-        onClose={onClose}
-      />,
+      <CategoryPanel categoryId="cloud" onSelect={() => {}} onJump={() => {}} onClose={onClose} />,
     );
     screen.getByRole('button', { name: /Close/i }).click();
     expect(onClose).toHaveBeenCalled();
@@ -47,12 +32,7 @@ describe('CategoryPanel', () => {
   it('calls onJump with domain id when domain jump is clicked', () => {
     const onJump = vi.fn();
     render(
-      <CategoryPanel
-        categoryId="cloud"
-        onSelect={() => {}}
-        onJump={onJump}
-        onClose={() => {}}
-      />,
+      <CategoryPanel categoryId="cloud" onSelect={() => {}} onJump={onJump} onClose={() => {}} />,
     );
     screen.getByRole('button', { name: 'Foundation' }).click();
     expect(onJump).toHaveBeenCalledWith('foundation');

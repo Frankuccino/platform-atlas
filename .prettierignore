@@ -2,3 +2,6 @@ dist/
 node_modules/
 coverage/
 *.log
+# Vendored agent skills: tracked for reference, but they are gitignored and
+# formatted by their own authors, so they are not held to this repo's formatter.
+.agents/

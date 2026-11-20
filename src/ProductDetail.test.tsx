@@ -5,36 +5,22 @@ import ProductDetail from './ProductDetail';
 
 describe('ProductDetail', () => {
   it('renders product name and category', () => {
-    render(
-      <ProductDetail
-        productId="supabase"
-        onSelect={() => {}}
-        onClose={() => {}}
-      />,
-    );
+    render(<ProductDetail productId="supabase" onSelect={() => {}} onClose={() => {}} />);
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Supabase');
-    expect(screen.getByText('Postgres plus auth, storage, realtime and edge functions in one open-source backend. Fast way to get a full backend.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Postgres plus auth, storage, realtime and edge functions in one open-source backend. Fast way to get a full backend.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('renders the model badge', () => {
-    render(
-      <ProductDetail
-        productId="supabase"
-        onSelect={() => {}}
-        onClose={() => {}}
-      />,
-    );
+    render(<ProductDetail productId="supabase" onSelect={() => {}} onClose={() => {}} />);
     expect(screen.getByText('Both')).toBeInTheDocument();
   });
 
   it('renders alternatives and close button', () => {
-    render(
-      <ProductDetail
-        productId="supabase"
-        onSelect={() => {}}
-        onClose={() => {}}
-      />,
-    );
+    render(<ProductDetail productId="supabase" onSelect={() => {}} onClose={() => {}} />);
     expect(screen.getByText('Compare with')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
   });

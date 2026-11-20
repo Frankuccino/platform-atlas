@@ -62,18 +62,18 @@ This loop should be automatic. If it is not automatic, automate it.
 
 ## Our current baseline
 
-| Gate | Command | Purpose |
-| --- | --- | --- |
-| Lint | `npm run lint` | ESLint: errors, warnings, a11y hints |
-| Typecheck | `npm run typecheck` | TypeScript: type safety |
-| Type coverage | `npx type-coverage` | Measure how much of the code is typed |
-| Format | `npx prettier --check .` | Consistent formatting |
-| Dead code | `npx knip` | Unused exports, files, types |
-| Catalog integrity | `npm run validate` | Data shape checks |
-| Build | `npm run build` | Vite bundle sanity |
-| Unit tests | `npm run test` | Vitest component tests |
-| E2E smoke | `npm run e2e` | Playwright browser tests |
-| CI | `.github/workflows/ci.yml` | All gates run on push/PR |
+| Gate              | Command                    | Purpose                               |
+| ----------------- | -------------------------- | ------------------------------------- |
+| Lint              | `npm run lint`             | ESLint: errors, warnings, a11y hints  |
+| Typecheck         | `npm run typecheck`        | TypeScript: type safety               |
+| Type coverage     | `npx type-coverage`        | Measure how much of the code is typed |
+| Format            | `npx prettier --check .`   | Consistent formatting                 |
+| Dead code         | `npx knip`                 | Unused exports, files, types          |
+| Catalog integrity | `npm run validate`         | Data shape checks                     |
+| Build             | `npm run build`            | Vite bundle sanity                    |
+| Unit tests        | `npm run test`             | Vitest component tests                |
+| E2E smoke         | `npm run e2e`              | Playwright browser tests              |
+| CI                | `.github/workflows/ci.yml` | All gates run on push/PR              |
 
 ## Next steps
 

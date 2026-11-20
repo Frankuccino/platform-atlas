@@ -6,11 +6,7 @@ import DomainNav from './DomainNav';
 describe('DomainNav', () => {
   it('renders the browse heading and domains', () => {
     render(
-      <DomainNav
-        onJumpDomain={() => {}}
-        onSelectCategory={() => {}}
-        onSelectDomain={() => {}}
-      />,
+      <DomainNav onJumpDomain={() => {}} onSelectCategory={() => {}} onSelectDomain={() => {}} />,
     );
     expect(screen.getByText('Browse')).toBeInTheDocument();
     expect(screen.getByText('Foundation')).toBeInTheDocument();
@@ -19,11 +15,7 @@ describe('DomainNav', () => {
 
   it('renders category rows', () => {
     render(
-      <DomainNav
-        onJumpDomain={() => {}}
-        onSelectCategory={() => {}}
-        onSelectDomain={() => {}}
-      />,
+      <DomainNav onJumpDomain={() => {}} onSelectCategory={() => {}} onSelectDomain={() => {}} />,
     );
     expect(screen.getByText('Cloud infrastructure')).toBeInTheDocument();
     expect(screen.getByText('Databases and data stores')).toBeInTheDocument();

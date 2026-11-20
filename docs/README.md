@@ -7,38 +7,43 @@ spaced-repetition loop for learning them.
 
 ## Docs
 
-| Doc | What it covers |
-| --- | --- |
-| [design.md](design.md) | The two non-obvious decisions, stack choice, migration path |
-| [data-model.md](data-model.md) | Catalog in code, study state in Postgres, core set membership |
-| [scheduler.md](scheduler.md) | Due calculation, intervals, skip behaviour, determinism |
-| [navigation.md](navigation.md) | Domain grouping for the 26-category index |
-| [features.md](features.md) | Confirmed scope, open questions, non-goals |
-| [react-best-practices.md](react-best-practices.md) | React structure audit, skills to investigate, tools for quality validation |
-| [quality-baseline.md](quality-baseline.md) | Installed tooling baseline, gate results, and next validation steps |
-| [quality-engineering.md](quality-engineering.md) | Study guide: why quality engineering matters, how to learn it, time investment, and impact on future work |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules. |
+| Doc                                                | What it covers                                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [design.md](design.md)                             | The two non-obvious decisions, stack choice, migration path                                                   |
+| [data-model.md](data-model.md)                     | Catalog in code, study state in Postgres, core set membership                                                 |
+| [scheduler.md](scheduler.md)                       | Due calculation, intervals, skip behaviour, determinism                                                       |
+| [navigation.md](navigation.md)                     | Domain grouping for the 26-category index                                                                     |
+| [features.md](features.md)                         | Confirmed scope, open questions, non-goals                                                                    |
+| [react-best-practices.md](react-best-practices.md) | React structure audit, skills to investigate, tools for quality validation                                    |
+| [quality-baseline.md](quality-baseline.md)         | Installed tooling baseline, gate results, and next validation steps                                           |
+| [quality-engineering.md](quality-engineering.md)   | Study guide: why quality engineering matters, how to learn it, time investment, and impact on future work     |
+| [ai-engineering-track.md](ai-engineering-track.md) | The 9-phase AI Engineering learning track: phases, content model, how to add a product                        |
+| [workflow.md](workflow.md)                         | The AI application workflow: 8 stages in build order, which tools fit each, and how it differs from the track |
+| [ui-ux.md](ui-ux.md)                               | Aesthetic-usability baseline: principles, what is done, and the backlog                                       |
+| [CONTRIBUTING.md](CONTRIBUTING.md)                 | **Start here to work on the codebase.** Structure, conventions, scripts, architecture rules.                  |
 
 ## In-app pages
 
-| Page | How to open |
-| --- | --- |
-| Map | Default view — zoomable product atlas |
-| Roadmap | Click **Roadmap** in the toolbar — phases, milestones, status filters |
+| Page     | How to open                                                           |
+| -------- | --------------------------------------------------------------------- |
+| Map      | Default view — zoomable product atlas                                 |
+| Roadmap  | Click **Roadmap** in the toolbar — phases, milestones, status filters |
+| Workflow | Click **Workflow** in the toolbar — the AI pipeline in build order    |
+| Track    | Click **AI Track** in the toolbar — the 9-phase learning sequence     |
 
 ## Quick facts
 
-- Catalog: 26 categories, roughly 180 products, migrating from a single HTML file
+- Catalog: 39 categories, 211 products, 7 domains (incl. the AI Engineering learning track)
 - Database: Neon Postgres free, via the Vercel Marketplace
 - Auth: refresh-cookie, httpOnly, session stored server-side
 - Deployment: Vercel
 
 ## Rejected options and why
 
-| Option | Why not |
-| --- | --- |
-| SQLite file on Vercel | No writable persistent filesystem on serverless |
-| Turso | Viable, but an extra hosted dependency for a local-first app |
-| Vercel Postgres | Discontinued; existing instances moved to Neon in Dec 2024 |
-| Supabase free | Pauses after a week of low DB activity; needs a keep-alive cron |
-| localStorage only | Loses multi-device; no sync path |
+| Option                | Why not                                                         |
+| --------------------- | --------------------------------------------------------------- |
+| SQLite file on Vercel | No writable persistent filesystem on serverless                 |
+| Turso                 | Viable, but an extra hosted dependency for a local-first app    |
+| Vercel Postgres       | Discontinued; existing instances moved to Neon in Dec 2024      |
+| Supabase free         | Pauses after a week of low DB activity; needs a keep-alive cron |
+| localStorage only     | Loses multi-device; no sync path                                |
