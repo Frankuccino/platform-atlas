@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Platform Atlas — social card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b1016;
+        --bg-2: #0f1419;
+        --surface: #161d24;
+        --surface-2: #1c242d;
+        --fg: #e9eff5;
+        --muted: #8b98a5;
+        --line: #28323c;
+        --line-soft: #1e2730;
+        --accent: #58a6ff;
+        --teal: #22d3ee;
+        --green: #4ade80;
+        --f-display: 'IBM Plex Sans Condensed', 'Arial Narrow', Arial, sans-serif;
+        --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #05080b;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      /* ---------- the card ---------- */
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(120% 90% at 82% 8%, rgb(88 166 255 / 0.13), transparent 55%),
+          radial-gradient(90% 70% at 6% 96%, rgb(34 211 238 / 0.09), transparent 60%),
+          linear-gradient(160deg, var(--bg-2), var(--bg) 60%, #080d12);
+        color: var(--fg);
+        font-family: var(--f-body);
+        box-shadow: 0 30px 90px rgb(0 0 0 / 0.6);
+      }
+
+      .map {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* ---------- header ---------- */
+
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .mark {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        background: linear-gradient(140deg, var(--accent), var(--teal));
+        box-shadow: 0 0 18px rgb(88 166 255 / 0.55);
+        flex: none;
+      }
+
+      .wordmark {
+        font-family: var(--f-display);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+
+      .top-stats {
+        font-family: var(--f-mono);
+        color: var(--muted);
+        white-space: nowrap;
+        text-align: right;
+      }
+
+      .top-stats b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+
+      /* ---------- hero ---------- */
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--f-mono);
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgb(88 166 255 / 0.1);
+        border: 1px solid rgb(88 166 255 / 0.32);
+        border-radius: 999px;
+        width: fit-content;
+      }
+
+      .eyebrow .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+      }
+
+      h1 {
+        font-family: var(--f-display);
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        line-height: 0.98;
+        margin: 0;
+      }
+
+      h1 .thin {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .sub {
+        color: var(--muted);
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .sub b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+
+      /* ---------- phase panel ---------- */
+
+      .panel {
+        background: linear-gradient(180deg, rgb(28 36 45 / 0.94), rgb(17 23 29 / 0.94));
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgb(0 0 0 / 0.45);
+        backdrop-filter: blur(6px);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .panel-title {
+        font-family: var(--f-mono);
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg);
+        white-space: nowrap;
+      }
+
+      .panel-title span {
+        color: var(--accent);
+      }
+
+      .panel-count {
+        font-family: var(--f-mono);
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .phases {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0;
+        min-height: 0;
+      }
+
+      .phases li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--line-soft);
+        font-family: var(--f-mono);
+        color: #c3ced8;
+        white-space: nowrap;
+        min-width: 0;
+      }
+
+      .phases li:last-child {
+        border-bottom: 0;
+      }
+
+      /* With two columns the ninth row would orphan in the left cell; let it
+         span so the list ends on a full-width line. */
+      .phases li:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .phases .n {
+        color: var(--accent);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        flex: none;
+      }
+
+      .phases .t {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ---------- domain strip ---------- */
+
+      .domains {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .domains-label {
+        font-family: var(--f-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex: none;
+      }
+
+      .chip {
+        font-family: var(--f-mono);
+        color: #c3ced8;
+        background: rgb(28 36 45 / 0.7);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .chip.hot {
+        color: #08131c;
+        background: linear-gradient(140deg, var(--accent), var(--teal));
+        border-color: transparent;
+        font-weight: 600;
+      }
+
+      .foot {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-top: 1px solid var(--line-soft);
+        font-family: var(--f-mono);
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .foot b {
+        color: var(--fg);
+        font-weight: 500;
+      }
+
+      /* ============ 1200 x 630 (OG / link preview) ============ */
+
+      body[data-size='og'] .card {
+        width: 1200px;
+        height: 630px;
+        padding: 40px 48px 30px;
+      }
+
+      body[data-size='og'] .inner {
+        gap: 22px;
+      }
+
+      body[data-size='og'] .wordmark {
+        font-size: 21px;
+      }
+
+      body[data-size='og'] .top-stats {
+        font-size: 13px;
+      }
+
+      body[data-size='og'] .eyebrow {
+        font-size: 11.5px;
+        padding: 5px 12px;
+      }
+
+      body[data-size='og'] h1 {
+        font-size: 52px;
+        max-width: 15ch;
+      }
+
+      body[data-size='og'] .sub {
+        font-size: 16.5px;
+        max-width: 46ch;
+      }
+
+      body[data-size='og'] .hero {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        flex: 1 1 auto;
+        min-height: 0;
+        justify-content: center;
+      }
+
+      body[data-size='og'] .panel {
+        position: absolute;
+        /* The containing block is the card's padding box, so right:0 aligns the
+           panel with the content edge rather than 48px inside it. */
+        top: 118px;
+        right: 0;
+        width: 496px;
+        padding: 16px 18px 12px;
+        max-height: 392px;
+      }
+
+      body[data-size='og'] .panel-title {
+        font-size: 12.5px;
+      }
+
+      body[data-size='og'] .panel-count {
+        font-size: 11.5px;
+      }
+
+      body[data-size='og'] .panel-head {
+        padding-bottom: 10px;
+        margin-bottom: 4px;
+      }
+
+      body[data-size='og'] .phases {
+        grid-template-columns: 1fr;
+      }
+
+      body[data-size='og'] .phases li {
+        font-size: 13.5px;
+        height: 36px;
+      }
+
+      body[data-size='og'] .chips {
+        max-width: 520px;
+      }
+
+      body[data-size='og'] .domains-label {
+        font-size: 11px;
+      }
+
+      body[data-size='og'] .chip {
+        font-size: 12.5px;
+        padding: 6px 12px;
+      }
+
+      body[data-size='og'] .foot {
+        font-size: 12px;
+        padding-top: 14px;
+      }
+
+      /* ============ 1080 x 1080 (square) ============ */
+
+      body[data-size='square'] .card {
+        width: 1080px;
+        height: 1080px;
+        padding: 56px 60px 42px;
+      }
+
+      body[data-size='square'] .inner {
+        gap: 30px;
+      }
+
+      body[data-size='square'] .wordmark {
+        font-size: 28px;
+      }
+
+      body[data-size='square'] .top-stats {
+        font-size: 16px;
+      }
+
+      body[data-size='square'] .eyebrow {
+        font-size: 14px;
+        padding: 7px 16px;
+      }
+
+      body[data-size='square'] h1 {
+        font-size: 84px;
+        max-width: 12ch;
+      }
+
+      body[data-size='square'] .sub {
+        font-size: 22px;
+        max-width: 52ch;
+      }
+
+      body[data-size='square'] .hero {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        flex: 1 1 auto;
+        min-height: 0;
+        justify-content: center;
+      }
+
+      body[data-size='square'] .panel {
+        padding: 22px 26px 16px;
+      }
+
+      body[data-size='square'] .panel-title {
+        font-size: 16px;
+      }
+
+      body[data-size='square'] .panel-count {
+        font-size: 14px;
+      }
+
+      body[data-size='square'] .panel-head {
+        padding-bottom: 14px;
+        margin-bottom: 6px;
+      }
+
+      body[data-size='square'] .phases {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 26px;
+      }
+
+      body[data-size='square'] .phases li {
+        font-size: 17px;
+        height: 44px;
+      }
+
+      body[data-size='square'] .chips {
+        gap: 14px;
+        max-width: 800px;
+      }
+
+      body[data-size='square'] .domains-label {
+        font-size: 13px;
+      }
+
+      body[data-size='square'] .chip {
+        font-size: 16px;
+        padding: 9px 18px;
+      }
+
+      body[data-size='square'] .foot {
+        font-size: 15px;
+        padding-top: 20px;
+      }
+
+      /* ============ 1600 x 900 (wide banner) ============ */
+
+      body[data-size='wide'] .card {
+        width: 1600px;
+        height: 900px;
+        padding: 56px 64px 42px;
+      }
+
+      body[data-size='wide'] .inner {
+        gap: 34px;
+      }
+
+      body[data-size='wide'] .wordmark {
+        font-size: 28px;
+      }
+
+      body[data-size='wide'] .top-stats {
+        font-size: 16px;
+      }
+
+      body[data-size='wide'] .eyebrow {
+        font-size: 14px;
+        padding: 7px 16px;
+      }
+
+      body[data-size='wide'] h1 {
+        font-size: 92px;
+        max-width: 13ch;
+      }
+
+      body[data-size='wide'] .sub {
+        font-size: 24px;
+        max-width: 54ch;
+      }
+
+      body[data-size='wide'] .hero {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        flex: 1 1 auto;
+        min-height: 0;
+        justify-content: center;
+      }
+
+      body[data-size='wide'] .panel {
+        position: absolute;
+        top: 150px;
+        right: 0;
+        width: 660px;
+        padding: 24px 28px 18px;
+        max-height: 560px;
+      }
+
+      body[data-size='wide'] .panel-title {
+        font-size: 17px;
+      }
+
+      body[data-size='wide'] .panel-count {
+        font-size: 14px;
+      }
+
+      body[data-size='wide'] .panel-head {
+        padding-bottom: 16px;
+        margin-bottom: 8px;
+      }
+
+      body[data-size='wide'] .phases {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 30px;
+      }
+
+      body[data-size='wide'] .phases li {
+        font-size: 18px;
+        height: 48px;
+      }
+
+      body[data-size='wide'] .domains-label {
+        font-size: 13px;
+      }
+
+      body[data-size='wide'] .chip {
+        font-size: 16px;
+        padding: 9px 18px;
+      }
+
+      body[data-size='wide'] .foot {
+        font-size: 15px;
+        padding-top: 22px;
+      }
+    </style>
+  </head>
+  <body data-size="og">
+    <div class="card">
+      <svg class="map" id="map" aria-hidden="true" preserveAspectRatio="none"></svg>
+
+      <div class="inner">
+        <header class="top">
+          <div class="brand">
+            <span class="mark"></span>
+            <span class="wordmark">Platform Atlas</span>
+          </div>
+          <div class="top-stats">
+            <b>211</b> products &nbsp;·&nbsp; <b>39</b> categories &nbsp;·&nbsp; <b>7</b> domains
+          </div>
+        </header>
+
+        <div class="hero">
+          <span class="eyebrow"><span class="dot"></span>New · AI Engineering Track</span>
+          <h1>Nine phases.<br /><span class="thin">One track.</span></h1>
+          <p class="sub">
+            <b>9 phases · 42 technologies.</b> From parsing a PDF to governing the model in
+            production — the AI Engineering track is the spine of the atlas.
+          </p>
+        </div>
+
+        <section class="panel" aria-label="AI Engineering track phases">
+          <div class="panel-head">
+            <span class="panel-title">AI Engineering <span>Track</span></span>
+            <span class="panel-count">42 technologies</span>
+          </div>
+          <ol class="phases" id="phases"></ol>
+        </section>
+
+        <div class="domains">
+          <span class="domains-label">7 domains</span>
+          <div class="chips">
+            <span class="chip">Foundation</span>
+            <span class="chip">Data</span>
+            <span class="chip">Runtime</span>
+            <span class="chip">Product</span>
+            <span class="chip">Platform Services</span>
+            <span class="chip">AI and Business</span>
+            <span class="chip hot">AI Engineering</span>
+          </div>
+        </div>
+
+        <footer class="foot">
+          <span>Syntax · terminology · hands-on drills · capabilities · synergies</span>
+          <span>github.com/<b>Frankuccino/platform-atlas</b></span>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      // Size switch: ?s=og | square | wide
+      var size = (location.search.match(/s=(\w+)/) || ['', 'og'])[1];
+      document.body.setAttribute('data-size', size);
+
+      var PHASES = [
+        'Data Foundations',
+        'Vector & Retrieval',
+        'Agents & Orchestration',
+        'Structured Output',
+        'Evals & Observability',
+        'Pipelines',
+        'Serving & Backend',
+        'Frontend & UX',
+        'Core ML, Infra & Protocols',
+      ];
+
+      document.getElementById('phases').innerHTML = PHASES.map(function (title, i) {
+        return (
+          '<li><span class="n">' +
+          String(i + 1).padStart(2, '0') +
+          '</span><span class="t">' +
+          title +
+          '</span></li>'
+        );
+      }).join('');
+
+      // The atlas motif: seven clusters of nodes, the AI one lit.
+      var svg = document.getElementById('map');
+      var W = svg.clientWidth || svg.parentNode.clientWidth;
+      var H = svg.clientHeight || svg.parentNode.clientHeight;
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+      // Deterministic LCG so the artwork is stable between renders.
+      var seed = 20261117;
+      function rnd() {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      }
+
+      var CLUSTERS = [
+        { x: 0.07, y: 0.22, r: 0.1, n: 22, hot: false },
+        { x: 0.2, y: 0.8, r: 0.11, n: 24, hot: false },
+        { x: 0.38, y: 0.12, r: 0.09, n: 18, hot: false },
+        { x: 0.52, y: 0.84, r: 0.1, n: 20, hot: false },
+        { x: 0.68, y: 0.34, r: 0.11, n: 26, hot: false },
+        { x: 0.9, y: 0.86, r: 0.1, n: 22, hot: false },
+        { x: 0.9, y: 0.3, r: 0.13, n: 40, hot: true },
+      ];
+
+      var pts = [];
+      var ns =
+        '<defs><mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="' +
+        W +
+        '" height="' +
+        H +
+        '"><rect width="' +
+        W +
+        '" height="' +
+        H +
+        '" fill="url(#g"/></mask>' +
+        '<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0" stop-color="#fff" stop-opacity="0.9"/>' +
+        '<stop offset="0.55" stop-color="#fff" stop-opacity="0.45"/>' +
+        '<stop offset="1" stop-color="#fff" stop-opacity="0.9"/>' +
+        '</linearGradient></defs>';
+
+      CLUSTERS.forEach(function (c, ci) {
+        var cx = c.x * W;
+        var cy = c.y * H;
+        var local = [];
+        for (var i = 0; i < c.n; i++) {
+          var a = rnd() * Math.PI * 2;
+          var d = Math.sqrt(rnd()) * c.r * Math.min(W, H);
+          var x = cx + Math.cos(a) * d * 1.5;
+          var y = cy + Math.sin(a) * d * 0.85;
+          local.push([x, y]);
+          pts.push({ x: x, y: y, hot: c.hot });
+        }
+        // Ring the cluster so it reads as a territory, like the map's clusters.
+        var ring = 'M' + local.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('L') + 'Z';
+        ns +=
+          '<path d="' +
+          ring +
+          '" fill="none" stroke="' +
+          (c.hot ? '#58a6ff' : '#2b3742') +
+          '" stroke-opacity="' +
+          (c.hot ? '0.34' : '0.3') +
+          '" stroke-width="1"/>';
+        for (var j = 0; j < local.length; j++) {
+          var p = local[j];
+          var q = local[(j + 1) % local.length];
+          ns +=
+            '<line x1="' +
+            p[0].toFixed(1) +
+            '" y1="' +
+            p[1].toFixed(1) +
+            '" x2="' +
+            q[0].toFixed(1) +
+            '" y2="' +
+            q[1].toFixed(1) +
+            '" stroke="' +
+            (c.hot ? '#58a6ff' : '#313d48') +
+            '" stroke-opacity="0.16" stroke-width="1"/>';
+        }
+      });
+
+      pts.forEach(function (p) {
+        ns +=
+          '<circle cx="' +
+          p.x.toFixed(1) +
+          '" cy="' +
+          p.y.toFixed(1) +
+          '" r="' +
+          (p.hot ? 2.6 : 1.8) +
+          '" fill="' +
+          (p.hot ? '#8ec2ff' : '#4a5a68') +
+          '" fill-opacity="' +
+          (p.hot ? '0.75' : '0.3') +
+          '"/>';
+      });
+
+      svg.innerHTML = ns;
+    </script>
+  </body>
+</html>
